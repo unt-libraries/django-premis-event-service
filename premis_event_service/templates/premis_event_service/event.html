@@ -1,0 +1,60 @@
+{% extends "mdstore/base.html" %}
+{% block content %}
+{% load humanize %}
+
+<table id="results" class="table table-striped info">
+	<tr>
+		<th style="width: 20%;">Event Identifier</th>
+		<td><i class="icon-tag"> </i>{{ record.event_identifier }}</td>
+	</tr>
+	<tr>
+		<th>Identifier Type</th>
+		<td><i class="icon-asterisk"> </i> {{ record.event_identifier_type }}</td>
+	</tr>
+	<tr>
+		<th>Event Type</th>
+		<td><i class="icon-asterisk"> </i> {{ record.event_type }}</td>
+	</tr>
+	<tr>
+		<th>Event Date</th>
+		<td><i class="icon-calendar"> </i> {{ record.event_date_time }}</td>
+	</tr>
+	<tr>
+		<th>Event Details</th>
+		<td><i class="icon-leaf"></i> {{ record.event_detail }}</td>
+	</tr>
+	<tr>
+		<th>Date Added</th>
+		<td><i class="icon-calendar"> </i> {{ record.event_added }}</td>
+	</tr>
+	<tr>
+		<th>Linking Agent Identifier Value</th>
+		<td><i class="icon-link"></i>{{ record.linking_agent_identifier_value }}</td>
+	</tr>
+	<tr>
+		<th>Linking Agent Identifier Type</th>
+		<td><i class="icon-asterisk"> </i> {{ record.linking_agent_identifier_type }}</td>
+	</tr>
+	<tr>
+		<th>Linking Agent Role</th>
+		<td>{{ record.linking_agent_role }}</td>
+	</tr>
+	<tr>
+		<th>Outcome</th>
+		<td>{% if record.event_outcome_detail == "Failure" %}<i class="icon-remove"></i>{% else %}<i class="icon-ok"></i>{% endif %} {{ record.event_outcome }}</td>
+	</tr>
+	<tr>
+		<th>Outcome Detail</th>
+		<td><i class="icon-time"> </i> {{ record.event_outcome_detail }}</td>
+	</tr>
+	<tr>
+		<th>Linked Objects</th>
+		<td>
+			{% for lo in record.linking_objects.values %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+		</td>
+	</tr>
+</table>
+<a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/APP/event/{{ record.event_identifier }}/">
+	ATOMPUB <i class="icon-rss"></i>
+</a>
+{% endblock %}

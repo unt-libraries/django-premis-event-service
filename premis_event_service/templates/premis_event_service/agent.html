@@ -1,0 +1,91 @@
+{% extends "mdstore/base.html" %}
+{% block content %}
+{% load humanize %}
+
+<!-- If we have entries, iterate and display them -->
+{% if agents|length > 1 %}
+<div class="alert alert-success">
+    There are {{ num_agents|intcomma }} total agents.
+</div>
+<h1 class="main"><i class="icon-white icon-flag"></i>Agents</h1>
+    <table id="results" class="table table-striped table-hover">
+        <thead><tr>
+            <th>
+                Identifier
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Type
+            </th>
+        </tr></thead>
+        <!-- iterate through search results and display if not suppressed / deleted -->
+        {% for agent in agents %}
+            <tr>
+                <td>
+                    <i class="icon-tag"></i> <a href='http://{{ request.META.HTTP_HOST }}/agent/{{ agent.agent_identifier }}'>http://{{ request.META.HTTP_HOST }}/agent/{{ agent.agent_identifier }}</a>
+                </td>
+                <td>
+                    {{ agent.agent_name }}
+                </td>
+                <td>
+                    {% if agent.agent_type == 'Software' %}
+                    <i class="icon-save"></i>
+                    {% else %}{% if agent.agent_type == 'Organization' %}
+                    <i class="icon-leaf"></i>
+                    {% else %}{% if agent.agent_type == 'Event' %}
+                    <i class="icon-calendar"></i>
+                    {% else %}{% if agent.agent_type == 'Personal' %}
+                    <i class="icon-user"></i>
+                    {% endif %}{% endif %}{% endif %}{% endif %}
+                    {{ agent.agent_type }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}{% if agents|length == 1 %}
+    <table class="table table-striped info">
+        <colgroup>
+            <col class="labels">
+            <col class="data">
+        </colgroup>
+        <h3 class="main"><i class="icon-white icon-flag"></i> http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}</h3>
+            <tr>
+                <th style="width: 20%;">Agent ID:</th>
+                <td><i class="icon-tag"></i> <a href='http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}  '>http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}</a></td>
+            </tr>
+            <tr>
+                <th style="width: 20%;">Agent Type:</th>
+                <td>
+                    {% if agents.0.agent_type == 'Software' %}
+                    <i class="icon-save"></i>
+                    {% else %}{% if agent.agent_type == 'Organization' %}
+                    <i class="icon-leaf"></i>
+                    {% else %}{% if agent.agent_type == 'Event' %}
+                    <i class="icon-calendar"></i>
+                    {% else %}{% if agent.agent_type == 'Personal' %}
+                    <i class="icon-user"></i>
+                    {% endif %}{% endif %}{% endif %}{% endif %}
+                    {{ agents.0.agent_type }}
+                </td>
+            </tr>
+            <tr>
+                <th style="width: 20%;">Agent Name:</th>
+                <td>{{ agents.0.agent_name }}</td>
+            </tr>
+            <tr>
+                <th style="width: 20%;">Agent Note:</th>
+                <td>{{ agents.0.agent_note }}</td>
+            </tr>
+    </table>
+    <a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}.xml">
+        XML/ATOM
+    </a>
+    <a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}.json">
+        JSON
+    </a>
+{% endif %}{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "mdstore/base.html" %}
+{% block content %}
+{% load humanize %}
+
+	<div class="alert alert-success">
+	There are {{ num_events|intcomma }} total events.
+ 	<small>Here are the <em>10 most recent</em> events.</small>
+    </div>
+
+<!-- If we have entries, iterate and display them -->
+{% if entries %}
+    <table id="results" class="table table-striped table-hover">
+        <thead><tr>
+            <th>
+                Identifier
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Event Type
+            </th>
+            <th>
+                Linked Object(s)
+            </th>
+            <th>
+                Outcome
+            </th>
+        </tr></thead>
+        <!-- iterate through search results and display if not suppressed / deleted -->
+        {% for entry in entries %}
+            <tr>
+                <td class="data" style="vertical-align:middle">
+                    <i class="icon-tag"></i> <a href='{{ entry.event_identifier }}'>{{ entry.event_identifier }}</a>
+                </td>
+                <td class="data" style="vertical-align:middle">
+                    <i class="icon-calendar"></i> {{ entry.event_date_time }}
+                </td>
+                <td class="data" style="vertical-align:middle">
+                    <i class="icon-asterisk"></i> {{ entry.event_type }}
+                </td>
+                <td>
+                    {% for lo in entry.linking_objects.values %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+                </td>
+                <td>
+                    <span title="{{ entry.entry_outcome }}" class="label label-{{ entry.is_good|yesno:"success,important" }}">{{ entry.event_outcome|slice:"53:" }}</span>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% endblock %}

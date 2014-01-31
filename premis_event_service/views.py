@@ -6,7 +6,6 @@ from django.core.paginator import Paginator
 from django.template.context import RequestContext
 from django.utils import simplejson
 from django.contrib.sites.models import Site
-from coda import bagindexer
 from coda.bagatom import makeObjectFeed, addObjectFromXML, \
     updateObjectFromXML, wrapAtom, makeServiceDocXML
 from presentation import premisEventXMLToObject, premisEventXMLgetObject, \
@@ -19,7 +18,7 @@ import uuid
 import re
 import urllib
 import datetime
-from premis_event.forms import EventSearchForm
+from .forms import EventSearchForm
 
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = translateDict
@@ -88,7 +87,7 @@ def humanEvent(request, identifier=None):
 
     event_object = get_object_or_404(Event, event_identifier=identifier)
     return render_to_response(
-        'premis_event/event.html',
+        'premis_event_service/event.html',
         {
             'site_title': Site.objects.get_current().name,
             'record': event_object,
@@ -174,7 +173,7 @@ def event_search(request):
     paginated_entries = paginate_entries(request, events, num_per_page=20)
     # render to the template
     return render_to_response(
-        'premis_event/search.html',
+        'premis_event_service/search.html',
         {
             'search_form': EventSearchForm(initial=initial),
             'site_title': Site.objects.get_current().name,
@@ -350,7 +349,7 @@ def recent_event_list(request):
     events = Event.objects.all().order_by('-event_date_time')[:10]
     # render to the template
     return render_to_response(
-        'premis_event/recent_event_list.html',
+        'premis_event_service/recent_event_list.html',
         {
             'site_title': Site.objects.get_current().name,
             'entries': events,
@@ -401,7 +400,7 @@ def humanAgent(request, identifier=None):
             tup for tup in AGENT_TYPE_CHOICES if tup[0] == a['agent_type']
         ][0][0]
     return render_to_response(
-        'premis_event/agent.html',
+        'premis_event_service/agent.html',
         {
             'site_title': Site.objects.get_current().name,
             'agents': agents,
@@ -676,7 +675,7 @@ def app_agent(request, identifier=None):
             agent_object = premisAgentXMLToObject(request.raw_post_data)
             agent_object.save()
             returnXML = objectToAgentXML(agent_object)
-            returnEntry = bagindexer.wrapAtom(
+            returnEntry = wrapAtom(
                 returnXML,
                 agent_object.agent_name,
                 agent_object.agent_name
@@ -711,7 +710,7 @@ def app_agent(request, identifier=None):
             agent_object = premisAgentXMLToObject(request.raw_post_data)
             agent_object.save()
             returnXML = objectToAgentXML(agent_object)
-            returnEntry = bagindexer.wrapAtom(
+            returnEntry = wrapAtom(
                 returnXML, agent_object.agent_name, agent_object.agent_name
             )
             entryText = XML_HEADER % etree.tostring(

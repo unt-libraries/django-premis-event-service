@@ -2,7 +2,7 @@ import simplejson
 from lxml import etree
 import uuid
 import datetime
-from coda import bagatom
+import bagatom
 import httplib2
 import urllib2
 import urlparse

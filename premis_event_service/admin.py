@@ -1,5 +1,6 @@
 from django.contrib import admin
-from premis_event.models import Event, Agent, LinkObject
+
+from .models import Event, Agent, LinkObject
 
 
 class EventAdmin(admin.ModelAdmin):

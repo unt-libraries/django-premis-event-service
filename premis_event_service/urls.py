@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns(
-    'premis_event.views',
+    'premis_event_service.views',
     # begin CODA Family url structure >
     (r'^APP/$', 'app'),
     # node urls

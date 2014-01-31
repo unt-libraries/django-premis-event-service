@@ -54,11 +54,11 @@
                 <td>
                     {% if agents.0.agent_type == 'Software' %}
                     <i class="icon-save"></i>
-                    {% else %}{% if agent.agent_type == 'Organization' %}
+                    {% else %}{% if agents.0.agent_type == 'Organization' %}
                     <i class="icon-leaf"></i>
-                    {% else %}{% if agent.agent_type == 'Event' %}
+                    {% else %}{% if agents.0.agent_type == 'Event' %}
                     <i class="icon-calendar"></i>
-                    {% else %}{% if agent.agent_type == 'Personal' %}
+                    {% else %}{% if agents.0.agent_type == 'Personal' %}
                     <i class="icon-user"></i>
                     {% endif %}{% endif %}{% endif %}{% endif %}
                     {{ agents.0.agent_type }}
@@ -79,6 +79,10 @@
     <a class="btn btn-success btn-large" href="{% url 'premis_event_service.views.json_agent' agents.0.agent_identifier %}">
         JSON
     </a>
+{% else %}
+<div class="alert alert-success">
+    There are no agents.
+</div>
 {% endif %}
 
 

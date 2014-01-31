@@ -50,10 +50,10 @@
             <col class="labels">
             <col class="data">
         </colgroup>
-        <h3 class="main"><i class="icon-white icon-flag"></i> http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}</h3>
+        <h3 class="main"><i class="icon-white icon-flag"></i> http://{{ request.get_host }}{% url 'premis_event_service.views.humanAgent' agents.0.agent_identifier %}</h3>
             <tr>
                 <th style="width: 20%;">Agent ID:</th>
-                <td><i class="icon-tag"></i> <a href='http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}  '>http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}</a></td>
+                <td><i class="icon-tag"></i> <a href="http://{{ request.get_host }}{% url 'premis_event_service.views.humanAgent' agents.0.agent_identifier %}">http://{{ request.get_host }}{% url 'premis_event_service.views.humanAgent' agents.0.agent_identifier %}</a></td>
             </tr>
             <tr>
                 <th style="width: 20%;">Agent Type:</th>
@@ -79,10 +79,10 @@
                 <td>{{ agents.0.agent_note }}</td>
             </tr>
     </table>
-    <a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}.xml">
+    <a class="btn btn-success btn-large" href="{% url 'premis_event_service.views.agentXML' agents.0.agent_identifier %}">
         XML/ATOM
     </a>
-    <a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/agent/{{ agents.0.agent_identifier }}.json">
+    <a class="btn btn-success btn-large" href="{% url 'premis_event_service.views.json_agent' agents.0.agent_identifier %}">
         JSON
     </a>
 {% endif %}{% endif %}

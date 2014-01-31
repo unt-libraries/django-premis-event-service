@@ -367,7 +367,7 @@ def json_agent(request, identifier=None):
     response = HttpResponse(mimetype='application/json')
     # construct the dictionary with values from aggregates
     jsonDict = {
-        'id': request.META.get('HTTP_REFERER'),
+        'id': "http://%s%s" % (request.get_host(), a.get_absolute_url()),
         'type': [c for c in AGENT_TYPE_CHOICES if c[0] == a.agent_type][0][1],
         'name': a.agent_name,
         'note': a.agent_note,
@@ -452,7 +452,7 @@ def agentXML(request, identifier):
             )
         returnXML = objectToPremisAgentXML(
             agentObject,
-            webRoot=request.META['HTTP_HOST'] + '/',
+            webRoot=request.get_host() + '/',
         )
         returnText = XML_HEADER % etree.tostring(returnXML, pretty_print=True)
     else:

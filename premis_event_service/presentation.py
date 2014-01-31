@@ -240,8 +240,8 @@ def objectToPremisAgentXML(agentObject, webRoot):
     agentIdentifierValue = etree.SubElement(
         agentIdentifier, PREMIS + "agentIdentifierValue"
     )
-    agentIdentifierValue.text = 'http://%s/%s/' % (
-        webRoot, agentObject.agent_identifier
+    agentIdentifierValue.text = 'http://%s%s' % (
+        webRoot, agentObject.get_absolute_url()
     )
     agentIdentifierType = etree.SubElement(
         agentIdentifier, PREMIS + "agentIdentifierType"

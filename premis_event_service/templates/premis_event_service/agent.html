@@ -10,15 +10,9 @@
 <h1 class="main"><i class="icon-white icon-flag"></i>Agents</h1>
     <table id="results" class="table table-striped table-hover">
         <thead><tr>
-            <th>
-                Identifier
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                Type
-            </th>
+            <th>Identifier</th>
+            <th>Name</th>
+            <th>Type</th>
         </tr></thead>
         <!-- iterate through search results and display if not suppressed / deleted -->
         {% for agent in agents %}
@@ -44,7 +38,7 @@
             </tr>
         {% endfor %}
     </table>
-{% else %}{% if agents|length == 1 %}
+{% elif agents|length == 1 %}
     <table class="table table-striped info">
         <colgroup>
             <col class="labels">
@@ -85,7 +79,7 @@
     <a class="btn btn-success btn-large" href="{% url 'premis_event_service.views.json_agent' agents.0.agent_identifier %}">
         JSON
     </a>
-{% endif %}{% endif %}
+{% endif %}
 
 
 {% endblock %}

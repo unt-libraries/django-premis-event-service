@@ -1,9 +1,10 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.conf import settings
-from coda import util
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.fields import DateField, ChoiceField, MultipleChoiceField
 from django import forms
+
 
 # construct choices for the agent type
 AGENT_TYPE_CHOICES = [
@@ -155,6 +156,5 @@ class Event(models.Model):
             return True
         return False
 
-    # kinda confused about this here. - joey
     is_good.short_description = "Pass?"
     is_good.boolean = True

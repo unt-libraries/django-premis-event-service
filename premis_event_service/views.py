@@ -1,22 +1,23 @@
+import uuid
+import re
+import urllib
+import datetime
+from django.utils import simplejson
+from lxml import etree
+
 from django.http import HttpResponse, HttpResponseBadRequest, \
     HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.template.context import RequestContext
-from django.utils import simplejson
+
 from coda.bagatom import makeObjectFeed, addObjectFromXML, \
     updateObjectFromXML, wrapAtom, makeServiceDocXML
 from presentation import premisEventXMLToObject, premisEventXMLgetObject, \
     premisAgentXMLToObject, objectToPremisEventXML, objectToPremisAgentXML, \
     objectToAgentXML, translateDict
-from lxml import etree
-from datetime import datetime
 from .models import Event, Agent, AGENT_TYPE_CHOICES
-import uuid
-import re
-import urllib
-import datetime
 from .forms import EventSearchForm
 
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG

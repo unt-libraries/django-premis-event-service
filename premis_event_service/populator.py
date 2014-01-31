@@ -2,6 +2,7 @@ import uuid
 import math
 import random
 import datetime
+
 from coda import util
 
 """
@@ -22,7 +23,7 @@ def d100():
 def populate(
         webRoot, agentId, successRate, startDate, endDate, maxTimeGap,
         maxObjects=None, debug=False
-    ):
+):
     """
     Given a PREMIS Event service at webRoot, start to generate events with a
     success rate of successRate %.  Start dating events at startDate and set

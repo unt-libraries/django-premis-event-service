@@ -1,10 +1,11 @@
 from datetime import datetime
+import uuid
+from lxml import etree
+
+from django.shortcuts import get_object_or_404
+
 from coda.bagatom import getValueByName, getNodeByName, getNodesByName
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
-from django.shortcuts import get_object_or_404
-from lxml import etree
-import uuid
-
 from . import settings
 
 PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
@@ -21,10 +22,10 @@ translateDict = {
     "event_detail": ["eventDetail"],
     "event_outcome": ["eventOutcomeInformation", "eventOutcome"],
     "event_outcome_detail": ["eventOutcomeInformation", "eventOutcomeDetail"],
-    "linking_agent_identifier_type": ["linkingAgentIdentifier", \
-        "linkingAgentIdentifierType"],
-    "linking_agent_identifier_value": ["linkingAgentIdentifier", \
-        "linkingAgentIdentifierValue"],
+    "linking_agent_identifier_type": ["linkingAgentIdentifier",
+                                      "linkingAgentIdentifierType"],
+    "linking_agent_identifier_value": ["linkingAgentIdentifier",
+                                       "linkingAgentIdentifierValue"],
 }
 
 
@@ -52,8 +53,8 @@ def premisEventXMLToObject(eventXML):
         newEventObject.event_identifier = uuid.uuid4().hex
     newEventObject.save()
     for linkingObjectIDNode in linkingObjectIDNodes:
-        identifierValue = getValueByName(linkingObjectIDNode, \
-            "linkingObjectIdentifierValue")
+        identifierValue = getValueByName(
+            linkingObjectIDNode, "linkingObjectIdentifierValue")
         try:
             linkObject = LinkObject.objects.get(
                 object_identifier=identifierValue
@@ -61,10 +62,10 @@ def premisEventXMLToObject(eventXML):
         except LinkObject.DoesNotExist, dne:
             linkObject = LinkObject()
             linkObject.object_identifier = identifierValue
-            linkObject.object_type = getValueByName(linkingObjectIDNode, \
-                "linkingObjectIdentifierType")
-            linkObject.object_role = getValueByName(linkingObjectIDNode, \
-                "linkingObjectRole")
+            linkObject.object_type = getValueByName(
+                linkingObjectIDNode, "linkingObjectIdentifierType")
+            linkObject.object_role = getValueByName(
+                linkingObjectIDNode, "linkingObjectRole")
             linkObject.save()
         except LinkObject.MultipleObjectsReturned, mob:
             linkObject = LinkObject.objects.filter(
@@ -79,8 +80,8 @@ def premisEventXMLToObject(eventXML):
         try:
             datetimeObject = datetime.strptime(dateString, altDateFormat)
         except ValueError:
-            raise Exception("Unable to parse %s (%s) into datetime object" % \
-                (dateString, newEventObject.event_date_time))
+            raise Exception("Unable to parse %s (%s) into datetime object" %
+                            (dateString, newEventObject.event_date_time))
     newEventObject.event_date_time = datetimeObject
     return newEventObject
 
@@ -172,13 +173,13 @@ def objectToPremisEventXML(eventObject):
         baseName = chain[0]
         baseNode = getNodeByName(eventXML, baseName)
         chain = chain[1:]
-        if baseNode == None:
+        if baseNode is None:
             baseNode = etree.SubElement(eventXML, PREMIS + baseName)
         for i in range(len(chain)):
             chainItem = chain[i]
             parentNode = baseNode
             baseNode = getNodeByName(eventXML, chainItem)
-            if baseNode == None:
+            if baseNode is None:
                 baseNode = etree.SubElement(parentNode, PREMIS + chainItem)
         try:
             baseNode.text = getattr(eventObject, fieldName)
@@ -225,8 +226,8 @@ def objectToAgentXML(agentObject):
     agentName = etree.SubElement(agentXML, PREMIS + "agentName")
     agentName.text = agentObject.agent_name
     agentType = etree.SubElement(agentXML, PREMIS + "agentType")
-    agentType.text = [tup for tup in AGENT_TYPE_CHOICES if \
-        tup[0] == agentObject.agent_type][0][1]
+    agentType.text = [tup for tup in AGENT_TYPE_CHOICES if
+                      tup[0] == agentObject.agent_type][0][1]
     return agentXML
 
 
@@ -251,8 +252,8 @@ def objectToPremisAgentXML(agentObject, webRoot):
     agentName = etree.SubElement(agentXML, PREMIS + "agentName")
     agentName.text = agentObject.agent_name
     agentType = etree.SubElement(agentXML, PREMIS + "agentType")
-    agentType.text = [tup for tup in AGENT_TYPE_CHOICES if \
-        tup[0] == agentObject.agent_type][0][1]
+    agentType.text = [tup for tup in AGENT_TYPE_CHOICES if
+                      tup[0] == agentObject.agent_type][0][1]
     return agentXML
 
 
@@ -267,7 +268,7 @@ def doSimpleXMLAssignment(recordObject, fieldName, node, chain):
     for i in range(len(chain)):
         chainItem = chain[i]
         currentNode = getNodeByName(currentNode, chainItem)
-    if currentNode != None and currentNode.text:
+    if currentNode is not None and currentNode.text:
         value = currentNode.text.strip()
     else:
         value = None

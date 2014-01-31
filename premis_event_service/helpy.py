@@ -10,7 +10,9 @@ import re
 import sys
 import uuid
 from datetime import datetime
+
 from coda.util import sendPREMISEvent
+
 
 class Event(object):
     __slots__ = ("event_identifier event_identifier_type event_type "

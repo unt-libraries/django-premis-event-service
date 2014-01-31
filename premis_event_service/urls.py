@@ -1,4 +1,7 @@
-from django.conf.urls.defaults import *
+try:
+    from django.conf.urls import patterns, url
+except ImportError:
+    from django.conf.urls.defaults import *  # In case of Django<=1.3
 
 urlpatterns = patterns(
     'premis_event_service.views',

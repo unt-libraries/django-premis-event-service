@@ -24,13 +24,10 @@
             <div class="navbar-inner">
                 <div class="container-fluid" style="padding-left: 40px;">
                     <ul class="nav">
-                        <li><a class="brand" href="http://{{ request.META.HTTP_HOST }}/event/">PREMIS Event Service</a></li>
-                        <li><a href="">About</a></li>
-                        <li>
-                            <a href="/feed/">
-                                <i class="icon-white icon-rss"></i>
-                            </a>
-                        </li>
+                        <li><a class="brand" href="{% url 'premis_event_service.views.recent_event_list' %}">PREMIS Event Service</a></li>
+                        <li><a href="{% url 'premis_event_service.views.recent_event_list' %}">Events</a></li>
+                        <li><a href="{% url 'premis_event_service.views.event_search' %}">Search</a></li>
+                        <li><a href="{% url 'premis_event_service.views.humanAgent' %}">Agents</a></li>
                         <li class="divider-vertical"></li>
                     </ul>
                 </div>

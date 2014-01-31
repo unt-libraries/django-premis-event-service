@@ -2,7 +2,7 @@ import uuid
 import re
 import urllib
 import datetime
-from django.utils import simplejson
+import json
 from lxml import etree
 
 from django.http import HttpResponse, HttpResponseBadRequest, \
@@ -330,7 +330,7 @@ def json_event_search(request):
             }
         }
     response = HttpResponse(mimetype='application/json')
-    simplejson.dump(
+    json.dump(
         event_json,
         fp=response,
         indent=4,
@@ -374,7 +374,7 @@ def json_agent(request, identifier=None):
         'note': a.agent_note,
     }
     # dump to response
-    simplejson.dump(
+    json.dump(
         jsonDict,
         fp=response,
         indent=4,

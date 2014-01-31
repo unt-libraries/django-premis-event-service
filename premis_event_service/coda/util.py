@@ -1,4 +1,4 @@
-import simplejson
+import json
 from lxml import etree
 import uuid
 import datetime
@@ -25,7 +25,7 @@ svn_version_path = "/usr/bin/svnversion"
 def parseVocabularySources(jsonFilePath):
     choiceList = []
     jsonString = open(jsonFilePath, "r").read()
-    jsonDict = simplejson.loads(jsonString)
+    jsonDict = json.loads(jsonString)
     terms = jsonDict["terms"]
     for term in terms:
         choiceList.append((term['name'], term['label']))

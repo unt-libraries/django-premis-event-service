@@ -3,7 +3,6 @@ from coda.bagatom import getValueByName, getNodeByName, getNodesByName
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from django.shortcuts import get_object_or_404
 from lxml import etree
-from django.contrib.sites.models import Site
 import uuid
 
 from . import settings
@@ -212,8 +211,6 @@ def objectToAgentXML(agentObject):
     Agent Django object -> XML
     """
 
-    # get current site for domain prefix
-    domain_prefix = Site.objects.get_current().domain
     agentXML = etree.Element(PREMIS + "agent", nsmap=PREMIS_NSMAP)
     agentIdentifier = etree.SubElement(agentXML, PREMIS + "agentIdentifier")
     agentIdentifierValue = etree.SubElement(
@@ -238,8 +235,6 @@ def objectToPremisAgentXML(agentObject, webRoot):
     Agent Django object -> XML
     """
 
-    # get current site for domain prefix
-    domain_prefix = Site.objects.get_current().domain
     agentXML = etree.Element(PREMIS + "agent", nsmap=PREMIS_NSMAP)
     agentIdentifier = etree.SubElement(agentXML, PREMIS + "agentIdentifier")
     agentIdentifierValue = etree.SubElement(

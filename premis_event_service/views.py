@@ -5,7 +5,6 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.template.context import RequestContext
 from django.utils import simplejson
-from django.contrib.sites.models import Site
 from coda.bagatom import makeObjectFeed, addObjectFromXML, \
     updateObjectFromXML, wrapAtom, makeServiceDocXML
 from presentation import premisEventXMLToObject, premisEventXMLgetObject, \
@@ -89,7 +88,6 @@ def humanEvent(request, identifier=None):
     return render_to_response(
         'premis_event_service/event.html',
         {
-            'site_title': Site.objects.get_current().name,
             'record': event_object,
             'maintenance_message': MAINTENANCE_MSG,
         },
@@ -176,7 +174,6 @@ def event_search(request):
         'premis_event_service/search.html',
         {
             'search_form': EventSearchForm(initial=initial),
-            'site_title': Site.objects.get_current().name,
             'linking_object_id': linking_object_id,
             'start_date': start_date,
             'end_date': end_date,
@@ -351,7 +348,6 @@ def recent_event_list(request):
     return render_to_response(
         'premis_event_service/recent_event_list.html',
         {
-            'site_title': Site.objects.get_current().name,
             'entries': events,
             'num_events': Event.objects.count(),
             'maintenance_message': MAINTENANCE_MSG,
@@ -402,7 +398,6 @@ def humanAgent(request, identifier=None):
     return render_to_response(
         'premis_event_service/agent.html',
         {
-            'site_title': Site.objects.get_current().name,
             'agents': agents,
             'num_agents': Agent.objects.count(),
             'maintenance_message': MAINTENANCE_MSG,

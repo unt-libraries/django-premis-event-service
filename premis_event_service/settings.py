@@ -3,14 +3,20 @@ Default values for various app-defined settings
 
 Formula: FOO = getattr(settings, 'FOO', "default_value")
 
-(default_value is used if the setting is not found in the project's settings.py)
+These settings values will be used only if they are not found in the project
+settings.py module. If you want to override any of these values, just redefine
+them in that file rather than here.
 '''
 from django.conf import settings
 
 # Used in coda/util.py
-EVENT_ID_TYPE_XML = getattr(settings, 'EVENT_ID_TYPE_XML', "TODO")
-LINK_AGENT_ID_TYPE_XML = getattr(settings, 'LINK_AGENT_ID_TYPE_XML', "TODO")
-LINK_AGENT_ID_ROLE_XML = getattr(settings, 'LINK_AGENT_ID_ROLE_XML', "TODO")
+EVENT_ID_TYPE_XML = getattr(settings, 'EVENT_ID_TYPE_XML',
+    "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID")
+LINK_AGENT_ID_TYPE_XML = getattr(settings, 'LINK_AGENT_ID_TYPE_XML',
+    "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL")
+LINK_AGENT_ID_ROLE_XML = getattr(settings, 'LINK_AGENT_ID_ROLE_XML', 
+    "http://id.loc.gov/vocabulary/preservation/eventRelatedAgentRole/exe"
+)
 
 # Used in coda/bagatom.py
 BAGATOM_BAG_NAMESPACE = getattr(settings, 'BAGATOM_BAG_NAMESPACE', "TODO")
@@ -21,17 +27,17 @@ BAGATOM_NODE_NAMESPACE = getattr(settings, 'BAGATOM_NODE_NAMESPACE', "TODO")
 EVENT_OUTCOME_CHOICES = getattr(settings, 'EVENT_OUTCOME_CHOICES',
     (
         ('', 'None'),
-        ('TODO', 'Success'),
-        ('TODO', 'Failure'),
+        ('http://purl.org/net/untl/vocabularies/eventOutcomes/#success', 'Success'),
+        ('http://purl.org/net/untl/vocabularies/eventOutcomes/#failure', 'Failure'),
     )
 )
 EVENT_TYPE_CHOICES = getattr(settings, 'EVENT_TYPE_CHOICES',
     (
         ('', 'None'),
-        ('TODO', 'Fixity Check'),
-        ('TODO', 'Replication'),
-        ('TODO', 'Ingestion'),
-        ('TODO', 'Migration'),
+        ('http://id.loc.gov/vocabulary/preservation/eventType/fix', 'Fixity Check'),
+        ('http://id.loc.gov/vocabulary/preservation/eventType/rep', 'Replication'),
+        ('http://id.loc.gov/vocabulary/preservation/eventType/ing', 'Ingestion'),
+        ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
     )
 )
 

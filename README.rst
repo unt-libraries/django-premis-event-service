@@ -41,10 +41,10 @@ Acknowledgements
 The Premis Event Service was developed at the UNT Libraries and has been worked on 
 by a number of developers over the years including
 
- Kurt Nordstrom  
- Joey Liechty  
- Lauren Ko  
- Stephen Eisenhauer  
- Mark Phillips  
+Kurt Nordstrom  
+Joey Liechty  
+Lauren Ko  
+Stephen Eisenhauer  
+Mark Phillips  
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu

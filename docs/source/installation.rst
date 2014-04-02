@@ -24,7 +24,7 @@ environments is highly recommended before going forward.
 Install
 -------
 
-To install this package, do one of the following:
+To install this package, do **one (1)** of the following:
 
 - Place the premis_event_service folder in your Django project directory
   (alongside the manage.py file)
@@ -37,35 +37,15 @@ To install this package, do one of the following:
 Quick start
 -----------
 
-1. Update your INSTALLED_APPS setting as follows::
+1. Follow the Mandatory Configuration instructions in :doc:`configuration`.
 
-    INSTALLED_APPS = (
-        ...
-        'django.contrib.humanize',
-        'premis_event_service',
-    )
-
-2. Define the following settings group (if you don't already have it) and
-   ensure that it contains at least the entries shown below:
-
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        'django.contrib.auth.context_processors.auth',
-        'django.core.context_processors.debug',
-        'django.core.context_processors.i18n',
-        'django.core.context_processors.media',
-        'django.core.context_processors.request',
-    )
-
-3. Add the MAINTENANCE_MSG setting to the bottom of your project settings::
-
-    MAINTENANCE_MSG = ''  # Message to show during maintenance
-
-4. Include the event service URLconf in your project urls.py like this (do not
-   modify this line -- this app must be served from top-level URLs for now)::
+4. Include the event service URLconf in your project ``urls.py`` like this (do 
+   not modify this line -- this app must be served from top-level URLs for 
+   in its current state)::
 
     url(r'', include('premis_event_service.urls')),
 
-5. Run `python manage.py syncdb` to create the event service models.
+5. Run ``python manage.py syncdb`` to create the event service models.
 
 6. Start the development server and visit http://127.0.0.1:8000/premis/event/
    to see event information.

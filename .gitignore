@@ -50,3 +50,6 @@ coverage.xml
 docs/build/
 
 *~
+
+# Virtualenv
+venv/

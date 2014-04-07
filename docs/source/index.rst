@@ -8,6 +8,7 @@ Contents:
    :maxdepth: 2
 
    overview
+   technical_overview
    installation
    configuration
    usage

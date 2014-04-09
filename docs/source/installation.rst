@@ -1,8 +1,13 @@
+============
 Installation
 ============
 
 The project's README.rst file contains some basic installation instructions.
-We'll elaborate a bit here:
+We'll elaborate a bit in this section.
+
+.. contents::
+    :local:
+    :depth: 2
 
 Dependencies
 ------------
@@ -39,15 +44,19 @@ Quick start
 
 1. Follow the Mandatory Configuration instructions in :doc:`configuration`.
 
-4. Include the event service URLconf in your project ``urls.py`` like this (do 
+2. Include the event service URLconf in your project ``urls.py`` like this (do 
    not modify this line -- this app must be served from top-level URLs for 
    in its current state)::
 
     url(r'', include('premis_event_service.urls')),
 
-5. Run ``python manage.py syncdb`` to create the event service models.
+3. Run ``python manage.py syncdb`` to create the event service models. If 
+   asked to create a superuser account, follow the prompts to do so. You will 
+   need at least one superuser account.
 
-6. Start the development server and visit http://127.0.0.1:8000/premis/event/
-   to see event information.
+4. Start the development server using: ``python manage.py runserver``
 
-7. Visit http://127.0.0.1:8000/premis/agent/ to see agent information.
+5. Visit http://127.0.0.1:8000/admin/ in a web browser and log in using your 
+   superuser credentials.
+
+6. Continue to :doc:`first_steps` to begin setting up Agents.

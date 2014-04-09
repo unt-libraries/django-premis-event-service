@@ -11,6 +11,7 @@ Contents:
    technical_overview
    installation
    configuration
+   administration
    usage
    api
    development

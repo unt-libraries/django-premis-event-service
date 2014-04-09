@@ -8,6 +8,10 @@ project's ``settings.py`` file.
 Note: Make sure you only make changes in your project's ``settings.py``, not 
 the ``settings.py`` file inside the ``premis_event_service`` app directory.
 
+.. contents::
+    :local:
+    :depth: 2
+
 Mandatory Configuration
 -----------------------
 

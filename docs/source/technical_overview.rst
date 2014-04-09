@@ -2,6 +2,10 @@
 Technical Overview
 ==================
 
+.. contents::
+    :local:
+    :depth: 2
+
 Events
 ======
 

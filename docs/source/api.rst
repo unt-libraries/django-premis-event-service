@@ -1,6 +1,15 @@
-====
-APIs
-====
+===
+API
+===
+
+The bulk of event creation using the Event Service will probably take place 
+via software as opposed to by hand. This section explains the AtomPub API 
+(Application Programming Interface) used for interacting with the Event 
+Service from your custom applications and scripts.
+
+.. contents::
+    :local:
+    :depth: 2
 
 Introduction
 ============

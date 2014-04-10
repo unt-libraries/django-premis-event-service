@@ -13,7 +13,7 @@ the ``settings.py`` file inside the ``premis_event_service`` app directory.
     :depth: 2
 
 Mandatory Configuration
------------------------
+=======================
 
 1. Update your INSTALLED_APPS setting as follows::
 
@@ -39,11 +39,42 @@ Mandatory Configuration
     MAINTENANCE_MSG = ''  # Message to show during maintenance
 
 Customizing the Controlled Vocabulary
--------------------------------------
+=====================================
 
-TODO: General info about controlled event/agent vocabularies
+Deciding on Controlled Vocabulary Design
+----------------------------------------
 
-TODO: How to update settings.py for event/agent vocabularies::
+The Premis Event Service was designed to us a wide variety of or identifiers 
+for values within PREMIS Event Objects. That being said there are some best 
+practices that can be suggested to new a implementer.
+
+It is advantageous for someone implementing the Premis Event Service to make 
+use of existing controlled vocabularies whenever possible for some of the 
+concepts that are used throughout the application.  For example the Library of 
+Congress has added a number of `Preservation Vocabulary`_ entries to its 
+`Authorities and Vocabularies Service`_. Starting with these identifiers for 
+concepts such as "Fixity Check", "Replication", "Ingestion", or "Migration" is 
+a suggestion unless there is a reason to deviate from these in a local 
+implementation. 
+
+.. _Preservation Vocabulary: http://id.loc.gov/vocabulary/preservation.html
+.. _Authorities and Vocabularies Service: http://id.loc.gov/
+
+Additional concepts that are not covered by the Library of Congress Authorities 
+and Vocabularies Service are those for the outcome of an event,  for example 
+“Success” and “Failure”.  The Premis Event Service has placeholders set aside 
+for these values that utilize the controlled vocabularies at the University of
+North Texas: http://purl.org/NET/untl/vocabularies/
+
+The Premis Event Service will work without fully fleshed out controlled 
+vocabularies, and the authors have worked to give examples with reasonable 
+values which can be added to or modified to meet local needs.
+
+Configuring a Custom Controlled Vocabulary
+------------------------------------------
+
+You can replace the default event outcome and event type vocabularies by 
+putting statements like the ones shown here in your ``settings.py`` file::
 
     EVENT_OUTCOME_CHOICES = (
         ('', 'None'),

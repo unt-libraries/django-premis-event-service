@@ -14,16 +14,46 @@ For information about the APIs, refer to the next section (:doc:`api`).
     :local:
     :depth: 2
 
-Browsing Events
-===============
+Events
+======
 
-URL: http://``host``/event/
+Browse All
+----------
 
-TODO: More information needed
+URL: ``http://[host]/event/``
+
+Human readable HTML listing of events.
+
+View One
+--------
+
+URL: ``http://[host]/event/[id]/``
+
+Human readable HTML listing of a single event. Contains links to other 
+formats/representations of the event, such as PREMIS XML.
+
+Search
+------
+
+URL: ``http://[host]/event/search/``
+
+Web interface for searching events. Events can be filtered by outcome, type, 
+start/end dates, or Linked Object ID.
 
 Browsing Agents
 ===============
 
-URL: http://``host``/agent/
+Browse All
+----------
 
-TODO: More information needed
+URL: ``http://[host]/agent/``
+
+Human readable HTML listing of agents.
+
+View One
+--------
+
+URL: ``http://[host]/agent/[id]/``
+
+Human readable HTML listing of a single agent. Contains links to other 
+formats/representations of the agent, such as PREMIS XML.

@@ -18,7 +18,7 @@ installation).
 
 To manage or create other user accounts, do the following:
 
-1. Visit the Django admin interface (http://``host``/admin/) in a web browser.
+1. Visit the Django admin interface (``http://[host]/admin/``) in a web browser.
 2. Log in using your superuser account (if you haven't already).
 3. Click **Users**. This takes you to the list of Users.
 4. Click the **Add user** button near the top-right corner of the page.
@@ -37,7 +37,7 @@ be a person, an institution, or anything else.
 
 To create a new agent (or to manage existing ones), do the following:
 
-1. Visit the Django admin interface (http://``host``/admin/) in a web browser.
+1. Visit the Django admin interface (``http://[host]/admin/``) in a web browser.
 2. Log in using your superuser account (if you haven't already).
 3. Click **Agents**. This takes you to the list of Agents, which will be empty 
    at first.

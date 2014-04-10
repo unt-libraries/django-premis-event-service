@@ -27,7 +27,7 @@ API URL Structure
 =================
 
 APIs for communicating with the Event Service programmatically are located
-under the `/APP/` URL tree:
+under the ``/APP/`` URL tree:
 
 /APP/
 -----
@@ -36,7 +36,7 @@ AtomPub service document
 
 The service document is an XML file that explains, to an AtomPub aware client, 
 what services and URLs exist at this site. It's an integral part of the 
-AtomPub specification, and allows for things like auto-discovery and the like.
+AtomPub specification, and allows for things like auto-discovery.
 
 /APP/event/
 -----------
@@ -107,3 +107,9 @@ Permalink for Atom entry for a given agent
 
 The authoritative link for a given PREMIS Agent entry, based on the agent's 
 unique id. Next are the URLs designed for human consumption.
+
+
+Examples
+========
+
+TODO

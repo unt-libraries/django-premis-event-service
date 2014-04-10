@@ -60,21 +60,20 @@ This is a lot at first glance, but the pieces are more or less logical. The
 relevant things that a given PREMIS event record keeps track of are the 
 following:
 
-- Event Identifier - This is a unique identifier assigned to every event when 
+- **Event Identifier** - This is a unique identifier assigned to every event when 
   it is entered into the system. This is what is used to reference given event.
-- Event Type - This is an arbitrary value to categorize the kind of event 
-  we're logging.
-- Examples might include fixity checking, virus scanning or replication.
-- Event Time - This is a timestamp for when the event itself occurred.
-- Event Added - This is a timestamp for when the event was logged.
-- Event Outcome - This is the simple description of the outcome. Usually 
+- **Event Type** - This is an arbitrary value to categorize the kind of event 
+  we're logging. Examples might include fixity checking, virus scanning or replication.
+- **Event Time** - This is a timestamp for when the event itself occurred.
+- **Event Added** - This is a timestamp for when the event was logged.
+- **Event Outcome** - This is the simple description of the outcome. Usually 
   something like "pass" or "fail".
-- Outcome Details - A more detailed record of the outcome. Perhaps output from 
+- **Outcome Details** - A more detailed record of the outcome. Perhaps output from 
   a secondary program might go here.
-- Agent - This is the identifier for the agent that initiated the event. An 
+- **Agent** - This is the identifier for the agent that initiated the event. An 
   agent can be anything, from a person, to an institution, to a program. The 
   PREMIS event service will also allow you to track agent entries as well.
-- Linked Objects - These are identifiers for relevant objects that the event 
+- **Linked Objects** - These are identifiers for relevant objects that the event 
   is associated with. If your system uses object identifiers, you could put 
   those identifiers here when an event pertains to them.
 
@@ -111,4 +110,5 @@ looks like the following::
 
 As you can see from the above example, the agent's identifier above 
 corresponds with the agent in the event example. You are able to create and 
-register agents through the administrative panel on the PREMIS microservice.
+register agents through the administrative panel on the PREMIS microservice; 
+see the :doc:`administration` section to learn how.

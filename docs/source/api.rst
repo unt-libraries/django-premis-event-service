@@ -108,8 +108,3 @@ Permalink for Atom entry for a given agent
 The authoritative link for a given PREMIS Agent entry, based on the agent's 
 unique id. Next are the URLs designed for human consumption.
 
-
-Examples
-========
-
-TODO

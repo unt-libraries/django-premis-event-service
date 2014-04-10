@@ -73,8 +73,12 @@ values which can be added to or modified to meet local needs.
 Configuring a Custom Controlled Vocabulary
 ------------------------------------------
 
-You can replace the default event outcome and event type vocabularies by 
-putting statements like the ones shown here in your ``settings.py`` file::
+The Event Service makes no attempt to validate values given to it against any 
+set of allowed values; it is up to your policies and integrations to enforce 
+consistency across the events you store.
+
+However, you can change the choices that are shown in the "Search" interface 
+by adding some statements like these to your  ``settings.py`` file::
 
     EVENT_OUTCOME_CHOICES = (
         ('', 'None'),

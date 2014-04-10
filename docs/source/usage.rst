@@ -17,41 +17,41 @@ For information about the APIs, refer to the next section (:doc:`api`).
 Events
 ======
 
-Browse All
-----------
+Browse all Events
+-----------------
 
 URL: ``http://[host]/event/``
 
 Human readable HTML listing of events.
 
-View One
---------
+View a single Event
+-------------------
 
 URL: ``http://[host]/event/[id]/``
 
 Human readable HTML listing of a single event. Contains links to other 
 formats/representations of the event, such as PREMIS XML.
 
-Search
-------
+Search for Events
+-----------------
 
 URL: ``http://[host]/event/search/``
 
 Web interface for searching events. Events can be filtered by outcome, type, 
 start/end dates, or Linked Object ID.
 
-Browsing Agents
-===============
+Agents
+======
 
-Browse All
-----------
+Browse all Agents
+-----------------
 
 URL: ``http://[host]/agent/``
 
 Human readable HTML listing of agents.
 
-View One
---------
+View a single Agent
+-------------------
 
 URL: ``http://[host]/agent/[id]/``
 

@@ -59,4 +59,4 @@ Quick start
 5. Visit http://127.0.0.1:8000/admin/ in a web browser and log in using your 
    superuser credentials.
 
-6. Continue to :doc:`first_steps` to begin setting up Agents.
+6. Continue to :doc:`administration` to begin setting up Agents.

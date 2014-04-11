@@ -108,3 +108,155 @@ Permalink for Atom entry for a given agent
 The authoritative link for a given PREMIS Agent entry, based on the agent's 
 unique id. Next are the URLs designed for human consumption.
 
+Example
+=======
+
+.. highlight:: xml
+   :linenothreshold: 5
+
+Imagine that we have just completed a mass server-to-server data copy, and 
+as part of that migrated data we have a directory called ``object_123/`` which 
+contains a collection of files that represents a migrated digital object. 
+This digital object conveniently enough, has the localidentifier (for our 
+system) of ``object_123``.
+
+We have a script ``validate_object`` that we can run 
+on our objects to make certain that the files match a previously stored 
+fixity digest and are intact after this migration. In this case, we wish to 
+log an event of the validation in order to properly track our actions. To begin 
+with, we run the ``validate_object`` script on our directory and wait for it to 
+run.
+
+Let's say that it runs and comes back with an 
+error: ``Validation of object_123/ failed Details: Generated sum for 
+object_123/data/pic_002.tif does not match stored value``. Obviously, we have 
+to deal with the problem at some point, but right now we just want to log an 
+event that will accurately reflect the results of the script. So, we create 
+a PREMIS event XML tree::
+
+    <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
+        <premis:eventType>
+            validateObject
+        </premis:eventType>
+        <premis:linkingAgentIdentifier>
+            <premis:linkingAgentIdentifierValue>
+                validateObjectScript
+            </premis:linkingAgentIdentifierValue>
+            <premis:linkingAgentIdentifierType>
+                Program
+            </premis:linkingAgentIdentifierType>
+        </premis:linkingAgentIdentifier>
+        <premis:eventIdentifier>
+            <premis:eventIdentifierType>
+                TEMP
+            </premis:eventIdentifierType>
+            <premis:eventIdentifierValue>
+                TEMP
+            </premis:eventIdentifierValue>
+        </premis:eventIdentifier>
+        <premis:eventDetail>Validation of object
+            object_123
+        </premis:eventDetail>
+        <premis:eventOutcomeInformation>
+            <premis:eventOutcomeDetail>
+                Generated sum for object_123/data/pic_002.tif does not match stored value
+            </premis:eventOutcomeDetail>
+            <premis:eventOutcome>
+                Failure
+            </premis:eventOutcome>
+        </premis:eventOutcomeInformation>
+        <premis:eventDateTime>
+            2011-01-27 16:39:49
+        </premis:eventDateTime>
+        <premis:linkingObjectIdentifier>
+            <premis:linkingObjectIdentifierType>
+                Local Identifier
+            </premis:linkingObjectIdentifierType>
+            <premis:linkingObjectIdentifierValue>
+                object_123
+            </premis:linkingObjectIdentifierValue>
+            <premis:linkingObjectRole />
+        </premis:linkingObjectIdentifier>
+    </premis:event>
+
+As you can see, the values chosen for the tags in the PREMIS event XML are 
+arbitrary, and it is the responsibility of the user to select something that 
+makes sense in the context of their organization. One thing to note is that 
+the values for the ``eventIdentifierType`` and ``eventIdentifierValue`` will be 
+overwritten, because the Event Service manages the event identifiers, and 
+assigns new ones upon ingest.
+
+Now, in order to send the event to the Event Service, it must be wrapped in an 
+Atom entry, so the following Atom wrapper XML tree is created::
+
+    <entry xmlns="http://www.w3.org/2005/Atom">
+        <title>PREMIS event entry for object_123</title>
+        <id>PREMIS event entry for object_123</id>
+        <updated>2011-­‐01-­‐27T16:40:30Z</updated>
+        <author>
+            <name>Object Verification Script</name>
+        </author>
+        <content type="application/xml">
+            <premis:event xmlns:premis="http://www.loc.gov/standards/premis/v1">
+                ...
+            </premis:event>
+        </content>
+    </entry>
+
+(With the previously-generated PREMIS XML going inside of the "content" tag.)
+
+Now that the entry is generated and wrapped in a valid Atom document, it is 
+ready for upload. In order to do this, we POST the Atom XML to the 
+``/APP/event/`` URL.
+
+When the Event Service receives the POST, it reads the content and parses 
+the XML. If it finds a valid XML PREMIS event document, it will assign the 
+event an identifier, index the values and save them, and then generate a 
+return document, also wrapped in an Atom entry. It will look something like::
+
+    <entry xmlns="http://www.w3.org/2005/Atom">
+        <title>bfa2cf2c2a4f11e089b3005056935974</title>
+        <id>bfa2cf2c2a4f11e089b3-005056935974</id>
+        <updated>2011-01-27T16:40:30Z</updated>
+        <author>
+            <name>Object Verification Script</name>
+        </author>
+        <content type="application/xml">
+            <premis:event xmlns:premis="http://www.loc.gov/standards/premis/v1">
+                <premis:eventType>validateObject</premis:eventType>
+                <premis:linkingAgentIdentifier>
+                    <premis:linkingAgentIdentifierValue>
+                        validateObjectScript
+                    </premis:linkingAgentIdentifierValue>
+                    <premis:linkingAgentIdentifierType>
+                        Program
+                    </premis:linkingAgentIdentifierType>
+                </premis:linkingAgentIdentifier>
+                <premis:eventIdentifier>
+                    <premis:eventIdentifierType>
+                        UUID
+                    </premis:eventIdentifierType>
+                    <premis:eventIdentifierValue>
+                        bfa2cf2c2a4f11e089b3-005056935974
+                    </premis:eventIdentifierValue>
+                </premis:eventIdentifier>
+                ...
+            </premis:event>
+        </content>
+    </entry>
+
+As you can see, the identifier has been changed to a UUID, which, in this 
+case, is ``bfa2cf2c2a4f11e089b3-­‐005056935974``. This identifier is unique 
+and will be what the microservice will use to refer to that individual event 
+in the future.
+
+If the POST is successful, the updated record will be returned, along with a 
+status of "200". If the status is something else, there was an error, and 
+the event cannot be considered to have been reliably recorded.
+
+Later, when we (or, perhaps, another script) wish to review the event to 
+find out what went wrong with the file validation, we would access it by 
+sending an HTTP GET request to 
+``/APP/event/bfa2cf2c2a4f11e089b3-005056935974``, which would return an Atom 
+entry containing the final event record, which we could then analyze and use 
+for whatever purposes desired.

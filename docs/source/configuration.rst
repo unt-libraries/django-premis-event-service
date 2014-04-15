@@ -23,8 +23,8 @@ Mandatory Configuration
         'premis_event_service',
     )
 
-2. Make sure you have a TEMPLATE_CONTEXT_PROCESSORS setting defined containing 
-   at least the entries shown below::
+2. Make sure you have a ``TEMPLATE_CONTEXT_PROCESSORS`` setting defined
+   containing at least the entries shown below::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         'django.contrib.auth.context_processors.auth',
@@ -34,7 +34,16 @@ Mandatory Configuration
         'django.core.context_processors.request',
     )
 
-3. Add a MAINTENANCE_MSG setting at the bottom of the file::
+3. In your ``MIDDLEWARE_CLASSES`` setting, remove or comment out the
+   ``CsrfViewMiddleware`` entry::
+
+    MIDDLEWARE_CLASSES = (
+        ...
+        #'django.middleware.csrf.CsrfViewMiddleware',
+        ...
+    )
+
+4. Add a ``MAINTENANCE_MSG`` setting at the bottom of the file::
 
     MAINTENANCE_MSG = ''  # Message to show during maintenance
 

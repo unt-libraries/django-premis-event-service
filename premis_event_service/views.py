@@ -38,6 +38,8 @@ AGENT_LIST = Event.objects.order_by().values_list(
 ).distinct()
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
+# Get a request's body (POST data). Works with all Django versions.
+get_request_body = lambda r: getattr(r, 'body', getattr(r, 'raw_post_data', ''))
 
 def app(request):
     """
@@ -474,9 +476,10 @@ def app_event(request, identifier=None):
     """
 
     returnEvent = None
+    request_body = get_request_body(request)
     # are we POSTing a new identifier here?
     if request.method == 'POST' and not identifier:
-        xmlDoc = etree.fromstring(request.raw_post_data)
+        xmlDoc = etree.fromstring(request_body)
         newEvent = addObjectFromXML(
             xmlDoc, premisEventXMLToObject, "event", "event_identifier",
             EVENT_UPDATE_TRANSLATION_DICT
@@ -570,7 +573,7 @@ def app_event(request, identifier=None):
         return resp
     # updating an existing record
     elif request.method == 'PUT' and identifier:
-        xmlDoc = etree.fromstring(request.raw_post_data)
+        xmlDoc = etree.fromstring(request_body)
         updatedEvent = updateObjectFromXML(
             xmlObject=xmlDoc,
             XMLToObjectFunc=premisEventXMLgetObject,
@@ -638,6 +641,7 @@ def app_agent(request, identifier=None):
     Return a representation of a given agent
     """
 
+    request_body = get_request_body(request)
     # full paginated ATOM PUB FEED
     if not identifier:
         # we just want to look at it.
@@ -668,7 +672,7 @@ def app_agent(request, identifier=None):
             resp.status_code = 200
             return resp
         elif request.method == 'POST':
-            agent_object = premisAgentXMLToObject(request.raw_post_data)
+            agent_object = premisAgentXMLToObject(request_body)
             agent_object.save()
             returnXML = objectToAgentXML(agent_object)
             returnEntry = wrapAtom(
@@ -703,7 +707,7 @@ def app_agent(request, identifier=None):
             resp.status_code = 200
             return resp
         elif request.method == 'PUT':
-            agent_object = premisAgentXMLToObject(request.raw_post_data)
+            agent_object = premisAgentXMLToObject(request_body)
             agent_object.save()
             returnXML = objectToAgentXML(agent_object)
             returnEntry = wrapAtom(

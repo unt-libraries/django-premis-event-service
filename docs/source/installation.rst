@@ -34,8 +34,8 @@ To install this package, do **one (1)** of the following:
 - Place the ``premis_event_service`` folder in your Django project directory
   (alongside the ``manage.py`` file)
 - Place the ``premis_event_service`` folder somewhere in your PYTHON_PATH
-.. - Install using: pip install <path to django-premis-event-service>
-..   (activate your Django virtualenv before running) (NOT YET AVAILABLE)
+- Install using: pip install <path to django-premis-event-service>
+  (activate your Django virtualenv before running)
 .. - Install from PyPI using: pip install django-premis-event-service
 ..   (activate your Django virtualenv before running) (NOT YET AVAILABLE)
 

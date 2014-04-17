@@ -10,14 +10,24 @@ We'll elaborate a bit in this section.
     :depth: 2
 
 Dependencies
-------------
+============
 
 - Python 2.6+ (not Python 3)
 - Django (Tested on 1.6.1, at least 1.3 or higher required)
-- lxml (Ubuntu/Debian users should `apt-get build-dep python-lxml` first)
+- lxml (Ubuntu/Debian users should ``apt-get build-dep python-lxml`` first)
+
+Important security warning
+==========================
+
+This application **does not** attempt to authenticate requests or differentiate 
+between clients in any way -- even for write and edit operations via the API. 
+Do not simply expose the application to the public in your server configuration.
+Instead, use a network firewall to whitelist the server to authorized clients, 
+or use a web server configuration directive (such as Apache's 
+``<LimitExcept GET>``) to set up who is allowed to POST/PUT/DELETE events.
 
 Before you begin
-----------------
+================
 
 The instructions below assume that you have a Django project already created.
 If you don't, you can create one using the "django-admin.py startproject" 
@@ -27,7 +37,7 @@ preferences and needs.  Some understanding of WSGI hosting and Python virtual
 environments is highly recommended before going forward.
 
 Install
--------
+=======
 
 To install this package, do **one (1)** of the following:
 
@@ -40,7 +50,7 @@ To install this package, do **one (1)** of the following:
 ..   (activate your Django virtualenv before running) (NOT YET AVAILABLE)
 
 Quick start
------------
+===========
 
 1. Follow the Mandatory Configuration instructions in :doc:`configuration`.
 

@@ -8,7 +8,7 @@ env:
   - TOX_ENV=py27-djangomaster
   - TOX_ENV=flake8
 matrix:
-  allowed_failures:
+  allow_failures:
     - env: TOX_ENV=py27-django17
     - env: TOX_ENV=py27-django18
     - env: TOX_ENV=py27-djangomaster

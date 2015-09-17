@@ -1,7 +1,3 @@
-import os
-
-
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'p&grn73^$c!ae=o)igek_rn2t#(_sb9g1kqwxcpv16-ie__1=1'
 

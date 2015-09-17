@@ -1,4 +1,3 @@
-
 SECRET_KEY = 'p&grn73^$c!ae=o)igek_rn2t#(_sb9g1kqwxcpv16-ie__1=1'
 
 DEBUG = True
@@ -26,16 +25,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'tests.urls'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'premis',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'db'
-    }
-}
 
 LANGUAGE_CODE = 'en-us'
 

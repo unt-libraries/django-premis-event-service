@@ -59,57 +59,72 @@ by a number of developers over the years including
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 
-## Developing
+Developing
+----------
 
 To take advantage of the dev environment that is already configured, you need to have Docker and Docker Compose installed.
 
-Install [Docker](https://docs.docker.com)
+Install Docker_
+
+.. _Docker: https://docs.docker.com
 
 Install Docker Compose
-```sh
-$ pip install docker-compose
-```
+
+.. code-block :: sh
+
+  $ pip install docker-compose
+
 
 Clone the repository.
-```sh
-$ git clone https://github.com/unt-libraries/django-premis-event-service.git
-$ cd django-premis-event-service
-```
+
+.. code-block :: sh
+
+  $ git clone https://github.com/unt-libraries/django-premis-event-service.git
+  $ cd django-premis-event-service
+
 
 Start the app and run the migrations.
-```sh
-# start the app
-$ docker-compose up -d
 
-# optional: add a superuser in order to login to the admin interface
-$ docker-compose run --rm web ./manage.py createsuperuser
-```
+.. code-block :: sh
+
+  # start the app
+  $ docker-compose up -d
+
+  # optional: add a superuser in order to login to the admin interface
+  $ docker-compose run --rm web ./manage.py createsuperuser
+
 
 The code is in a volume that is shared between your workstation and the web container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
 
 However, if the requirements files change, it is important that you rebuild the web container for those packages to be installed. This is something that could happen when switching between feature branches, or when pulling updates from the remote.
 
-```sh
-# stop the app
-$ docker-compose stop
+.. code-block :: sh
 
-# remove the web container
-$ docker-compose rm web
+  # stop the app
+  $ docker-compose stop
 
-# rebuild the web container
-$ docker-compose build web
+  # remove the web container
+  $ docker-compose rm web
 
-# start the app
-$ docker-compose up -d
-```
+  # rebuild the web container
+  $ docker-compose build web
 
-#### Running the Tests
+  # start the app
+  $ docker-compose up -d
+
+
+Running the Tests
+-----------------
 To run the tests via Tox, use this command.
-```sh
-$ docker-compose run --rm web tox
-```
 
-To run the tests only with the development environment (i.e. with Django 1.8)
-```sh
-$ docker-compose run --rm web py.test
-```
+.. code-block :: sh
+
+  $ docker-compose run --rm web tox
+
+
+To run the tests only with the development environment.
+
+.. code-block :: sh
+
+  $ docker-compose run --rm web py.test
+

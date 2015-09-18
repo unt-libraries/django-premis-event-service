@@ -1,0 +1,2 @@
+lxml==3.3.0beta4
+httplib2==0.8

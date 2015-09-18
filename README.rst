@@ -55,7 +55,8 @@ by a number of developers over the years including
 * Joey Liechty   
 * Lauren Ko   
 * Stephen Eisenhauer   
-* Mark Phillips   
+* Mark Phillips
+* Damon Kelley
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 

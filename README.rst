@@ -1,6 +1,9 @@
 PREMIS Event Service
 ====================
 
+.. image:: https://travis-ci.org/unt-libraries/django-premis-event-service.svg?branch=master
+    :target: https://travis-ci.org/unt-libraries/django-premis-event-service
+
 PREMIS Event Service is a Django application for managing PREMIS Events in a
 structured, centralized, and searchable manner.
 

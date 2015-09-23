@@ -28,6 +28,17 @@ AGENTS = [
 ]
 
 
+class AgentFactory(factory.django.DjangoModelFactory):
+
+    class Meta:
+        model = models.Agent
+
+    agent_identifier = factory.fuzzy.FuzzyText()
+    agent_name = factory.fuzzy.FuzzyText()
+    agent_type = factory.fuzzy.FuzzyChoice(v for k, v in models.AGENT_TYPE_CHOICES)
+    agent_note = factory.fuzzy.FuzzyText()
+
+
 class LinkObjectFactory(factory.django.DjangoModelFactory):
 
     class Meta:

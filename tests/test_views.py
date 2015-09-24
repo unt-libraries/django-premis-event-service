@@ -135,3 +135,10 @@ def test_agent_xml_returns_not_found_with_premis_identifier(rf):
     request = rf.get('/.premis')
     response = views.agentXML(request, identifier)
     assert response.status_code == 404
+
+
+def test_eventXML(rf):
+    request = rf.get('/')
+    response = views.eventXML(request)
+    assert response.status_code == 200
+    assert "So you would like XML for the event with identifier" in response.content

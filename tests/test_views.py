@@ -90,3 +90,48 @@ def test_json_agent_payload(rf):
     assert payload['type'] == agent.agent_type
     assert payload['name'] == agent.agent_name
     assert payload['note'] == agent.agent_note
+
+
+@pytest.mark.django_db
+def test_agent_xml_returns_ok(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.get('/')
+    response = views.agentXML(request, agent.agent_identifier)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_agent_xml_returns_not_found(rf):
+    identifier = 'ark:/00001/dne'
+    request = rf.get('/')
+    response = views.agentXML(request, identifier)
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_agent_xml_content_type(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.get('/')
+    response = views.agentXML(request, agent.agent_identifier)
+    assert response.get('Content-Type') == 'application/atom+xml'
+
+
+@pytest.mark.django_db
+def test_agent_xml_returns_ok_with_premis_identifier(rf):
+    # Create an agent and update the identifier to include `.premis`.
+    agent = factories.AgentFactory.create()
+    agent.identifier = 'ark:/00001/coda1n.premis'
+    agent.save()
+
+    request = rf.get('/.premis')
+    response = views.agentXML(request, agent.agent_identifier)
+
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_agent_xml_returns_not_found_with_premis_identifier(rf):
+    identifier = 'ark:/00001/coda1n.premis'
+    request = rf.get('/.premis')
+    response = views.agentXML(request, identifier)
+    assert response.status_code == 404

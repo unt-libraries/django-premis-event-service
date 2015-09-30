@@ -66,3 +66,13 @@ class EventFactory(factory.django.DjangoModelFactory):
     linking_agent_identifier_type = URL_TYPE
     linking_agent_identifier_value = factory.fuzzy.FuzzyChoice(AGENTS)
     linking_agent_role = ''
+
+    @factory.post_generation
+    def linking_objects(self, create, extracted, **kwargs):
+        """Post generation hook to add related LinkObject instances.
+
+        Pass `linking_objects=True` to the create function to activate.
+        """
+        if create and extracted:
+            linking_objects = LinkObjectFactory.create_batch(2)
+            self.linking_objects.add(*linking_objects)

@@ -142,3 +142,51 @@ def test_eventXML(rf):
     response = views.eventXML(request)
     assert response.status_code == 200
     assert "So you would like XML for the event with identifier" in response.content
+
+
+@pytest.mark.django_db
+def test_find_event_returns_ok(rf):
+    event = factories.EventFactory.create(linking_objects=True)
+    request = rf.get('/')
+    linking_object = event.linking_objects.first()
+    response = views.findEvent(request, linking_object.object_identifier)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_find_event_response_content_type(rf):
+    event = factories.EventFactory.create(linking_objects=True)
+    request = rf.get('/')
+    linking_object = event.linking_objects.first()
+    response = views.findEvent(request, linking_object.object_identifier)
+
+    assert response.get('Content-Type') == 'application/atom+xml'
+
+
+@pytest.mark.django_db
+def test_find_event_returns_not_found(rf):
+    request = rf.get('/')
+    response = views.findEvent(request, 'fake-identifier')
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_find_event_finds_multiple_events(rf):
+    # Create two events.
+    event1 = factories.EventFactory.create(linking_objects=True)
+    event2 = factories.EventFactory.create()
+
+    # Get one of the related LinkObjects from event1 and add it to event2.
+    linking_object = event1.linking_objects.first()
+    event2.linking_objects.add(linking_object)
+    event2.save()
+
+    request = rf.get('/')
+    response = views.findEvent(request, linking_object.object_identifier)
+
+    # Determine which event is the oldest.
+    new_event, old_event = sorted([event1, event2], key=lambda e: e.event_date_time)
+
+    # Check that only the oldest event is present in the xml content.
+    assert old_event.event_identifier in response.content
+    assert new_event.event_identifier not in response.content

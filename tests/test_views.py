@@ -5,7 +5,7 @@ import pytest
 from django.http import Http404
 from django.core.urlresolvers import reverse
 
-from premis_event_service import views
+from premis_event_service import views, models
 from . import factories
 
 
@@ -190,3 +190,168 @@ def test_find_event_finds_multiple_events(rf):
     # Check that only the oldest event is present in the xml content.
     assert old_event.event_identifier in response.content
     assert new_event.event_identifier not in response.content
+
+
+@pytest.mark.django_db
+def test_app_agent_get_without_identifier_returns_ok(rf):
+    request = rf.get('/')
+    response = views.app_agent(request)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_app_agent_get_without_identifier_content_type(rf):
+    request = rf.get('/')
+    response = views.app_agent(request)
+    assert response.get('Content-Type') == 'application/atom+xml'
+
+
+@pytest.mark.xfail(reason='EmptyPage exception is not handled.')
+@pytest.mark.django_db
+def test_app_agent_get_with_invalid_page_without_identifier(rf):
+    request = rf.get('/?page=3')
+    views.app_agent(request)
+
+
+@pytest.fixture
+def app_agent_xml():
+    xml = """<?xml version="1.0"?>
+        <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
+          <premis:agentIdentifier>
+            <premis:agentIdentifierValue>{identifier}</premis:agentIdentifierValue>
+            <premis:agentIdentifierType>PES:Agent</premis:agentIdentifierType>
+          </premis:agentIdentifier>
+          <premis:agentName>asXbNNQgsgbS</premis:agentName>
+          <premis:agentType>Software</premis:agentType>
+        </premis:agent>
+    """
+    identifier = 'EqLVtAeVnHoR'
+    return identifier, xml.format(identifier=identifier)
+
+
+@pytest.mark.django_db
+def test_app_agent_post_without_identifier_returns_created(rf, app_agent_xml):
+    _, xml = app_agent_xml
+    request = rf.post('/', xml, content_type='application/xml')
+    response = views.app_agent(request)
+    assert response.status_code == 201
+
+
+@pytest.mark.django_db
+def test_app_agent_post_without_identifier_content_type(rf, app_agent_xml):
+    _, xml = app_agent_xml
+    request = rf.post('/', xml, content_type='application/xml')
+    response = views.app_agent(request)
+    assert response.get('Content-Type') == 'application/atom+xml'
+
+
+@pytest.mark.django_db
+def test_app_agent_post_without_identifier_content(rf, app_agent_xml):
+    identifier, xml = app_agent_xml
+    request = rf.post('/', xml, content_type='application/xml')
+    response = views.app_agent(request)
+    assert identifier in response.content
+
+
+@pytest.mark.xfail(reason='POST request without body raises uncaught exception.')
+def test_app_agent_post_without_body_without_identifier_is_handled(rf):
+    request = rf.post('/')
+    views.app_agent(request)
+
+
+def test_app_agent_without_identifier_returns_bad_request(rf):
+    request = rf.head('/')
+    response = views.app_agent(request)
+    assert response.status_code == 400
+
+
+def test_app_agent_with_identifier_returns_not_found(rf):
+    request = rf.get('/')
+    response = views.app_agent(request, 'fake-identifier')
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_app_agent_delete_with_identifier_returns_ok(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.delete('/')
+    response = views.app_agent(request, agent.agent_identifier)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_app_agent_delete_with_identifier_removes_agent(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.delete('/')
+    views.app_agent(request, agent.agent_identifier)
+    assert models.Agent.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_app_agent_put_with_identifier_returns_ok(app_agent_xml, rf):
+    identifier, xml = app_agent_xml
+    agent = factories.AgentFactory.create(agent_identifier=identifier)
+
+    request = rf.put('/', xml, content_type='application/xml')
+    response = views.app_agent(request, agent.agent_identifier)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_app_agent_put_with_identifier_content_type(app_agent_xml, rf):
+    identifier, xml = app_agent_xml
+    agent = factories.AgentFactory.create(agent_identifier=identifier)
+
+    request = rf.put('/', xml, content_type='application/xml')
+    response = views.app_agent(request, agent.agent_identifier)
+    assert response.get('Content-Type') == 'application/atom+xml'
+
+
+@pytest.mark.django_db
+def test_app_agent_put_with_identifier_agent_updated(app_agent_xml, rf):
+    identifier, xml = app_agent_xml
+    agent = factories.AgentFactory.create(agent_identifier=identifier)
+
+    request = rf.put('/', xml, content_type='application/xml')
+    views.app_agent(request, agent.agent_identifier)
+
+    updated_agent = models.Agent.objects.get(agent_identifier=identifier)
+    assert updated_agent.agent_name != agent.agent_name
+
+
+@pytest.mark.django_db
+def test_app_agent_put_with_identifier_content(app_agent_xml, rf):
+    identifier, xml = app_agent_xml
+    agent = factories.AgentFactory.create(agent_identifier=identifier)
+
+    request = rf.put('/', xml, content_type='application/xml')
+    response = views.app_agent(request, agent.agent_identifier)
+
+    updated_agent = models.Agent.objects.get(agent_identifier=identifier)
+
+    assert updated_agent.agent_name in response.content
+    assert updated_agent.agent_type in response.content
+
+
+@pytest.mark.django_db
+def test_app_agent_get_with_identifier_returns_ok(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.get('/')
+    response = views.app_agent(request, agent.agent_identifier)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_app_agent_get_with_identifier_content_type(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.get('/')
+    response = views.app_agent(request, agent.agent_identifier)
+    assert response.get('Content-Type') == 'application/atom+xml'
+
+
+@pytest.mark.django_db
+def test_app_agent_get_with_identifier_content(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.get('/')
+    response = views.app_agent(request, agent.agent_identifier)
+    assert agent.agent_identifier in response.content

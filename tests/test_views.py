@@ -10,7 +10,10 @@ from premis_event_service import views, models
 from . import factories
 
 
-pytestmark = pytest.mark.urls('premis_event_service.urls')
+pytestmark = [
+    pytest.mark.urls('premis_event_service.urls'),
+    pytest.mark.django_db,
+]
 
 
 def test_app_returns_ok(rf):
@@ -30,14 +33,12 @@ def test_app_content(rf):
     assert 0
 
 
-@pytest.mark.django_db
 def test_humanEvent_raises_http404(rf):
     request = rf.get('/')
     with pytest.raises(Http404):
         views.humanEvent(request)
 
 
-@pytest.mark.django_db
 def test_humanEvent_returns_ok(rf):
     event = factories.EventFactory.create()
     request = rf.get('/')
@@ -45,7 +46,6 @@ def test_humanEvent_returns_ok(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_json_event_list_returns_ok(rf):
     factories.EventFactory.create_batch(30)
     request = rf.get('/')
@@ -53,7 +53,6 @@ def test_json_event_list_returns_ok(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_json_event_list_context(client):
     num_events = 30
     factories.EventFactory.create_batch(num_events)
@@ -64,14 +63,12 @@ def test_json_event_list_context(client):
     assert context['num_events'] == num_events
 
 
-@pytest.mark.django_db
 def test_json_event_list_with_no_events(rf):
     request = rf.get('/')
     response = views.recent_event_list(request)
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_json_agent_returns_ok(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -80,7 +77,6 @@ def test_json_agent_returns_ok(rf):
     assert response.get('Content-Type') == 'application/json'
 
 
-@pytest.mark.django_db
 def test_json_agent_payload(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -93,7 +89,6 @@ def test_json_agent_payload(rf):
     assert payload['note'] == agent.agent_note
 
 
-@pytest.mark.django_db
 def test_agent_xml_returns_ok(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -101,7 +96,6 @@ def test_agent_xml_returns_ok(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_agent_xml_returns_not_found(rf):
     identifier = 'ark:/00001/dne'
     request = rf.get('/')
@@ -109,7 +103,6 @@ def test_agent_xml_returns_not_found(rf):
     assert response.status_code == 404
 
 
-@pytest.mark.django_db
 def test_agent_xml_content_type(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -117,7 +110,6 @@ def test_agent_xml_content_type(rf):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-@pytest.mark.django_db
 def test_agent_xml_returns_ok_with_premis_identifier(rf):
     # Create an agent and update the identifier to include `.premis`.
     agent = factories.AgentFactory.create()
@@ -130,7 +122,6 @@ def test_agent_xml_returns_ok_with_premis_identifier(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_agent_xml_returns_not_found_with_premis_identifier(rf):
     identifier = 'ark:/00001/coda1n.premis'
     request = rf.get('/.premis')
@@ -145,7 +136,6 @@ def test_eventXML(rf):
     assert "So you would like XML for the event with identifier" in response.content
 
 
-@pytest.mark.django_db
 def test_find_event_returns_ok(rf):
     event = factories.EventFactory.create(linking_objects=True)
     request = rf.get('/')
@@ -154,7 +144,6 @@ def test_find_event_returns_ok(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_find_event_response_content_type(rf):
     event = factories.EventFactory.create(linking_objects=True)
     request = rf.get('/')
@@ -164,14 +153,12 @@ def test_find_event_response_content_type(rf):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-@pytest.mark.django_db
 def test_find_event_returns_not_found(rf):
     request = rf.get('/')
     response = views.findEvent(request, 'fake-identifier')
     assert response.status_code == 404
 
 
-@pytest.mark.django_db
 def test_find_event_finds_multiple_events(rf):
     # Create two events.
     event1 = factories.EventFactory.create(linking_objects=True)
@@ -193,14 +180,12 @@ def test_find_event_finds_multiple_events(rf):
     assert new_event.event_identifier not in response.content
 
 
-@pytest.mark.django_db
 def test_app_agent_get_without_identifier_returns_ok(rf):
     request = rf.get('/')
     response = views.app_agent(request)
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_app_agent_get_without_identifier_content_type(rf):
     request = rf.get('/')
     response = views.app_agent(request)
@@ -208,7 +193,6 @@ def test_app_agent_get_without_identifier_content_type(rf):
 
 
 @pytest.mark.xfail(reason='EmptyPage exception is not handled.')
-@pytest.mark.django_db
 def test_app_agent_get_with_invalid_page_without_identifier(rf):
     request = rf.get('/?page=3')
     views.app_agent(request)
@@ -230,7 +214,6 @@ def app_agent_xml():
     return identifier, xml.format(identifier=identifier)
 
 
-@pytest.mark.django_db
 def test_app_agent_post_without_identifier_returns_created(rf, app_agent_xml):
     _, xml = app_agent_xml
     request = rf.post('/', xml, content_type='application/xml')
@@ -238,7 +221,6 @@ def test_app_agent_post_without_identifier_returns_created(rf, app_agent_xml):
     assert response.status_code == 201
 
 
-@pytest.mark.django_db
 def test_app_agent_post_without_identifier_content_type(rf, app_agent_xml):
     _, xml = app_agent_xml
     request = rf.post('/', xml, content_type='application/xml')
@@ -246,7 +228,6 @@ def test_app_agent_post_without_identifier_content_type(rf, app_agent_xml):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-@pytest.mark.django_db
 def test_app_agent_post_without_identifier_content(rf, app_agent_xml):
     identifier, xml = app_agent_xml
     request = rf.post('/', xml, content_type='application/xml')
@@ -272,7 +253,6 @@ def test_app_agent_with_identifier_returns_not_found(rf):
     assert response.status_code == 404
 
 
-@pytest.mark.django_db
 def test_app_agent_delete_with_identifier_returns_ok(rf):
     agent = factories.AgentFactory.create()
     request = rf.delete('/')
@@ -280,7 +260,6 @@ def test_app_agent_delete_with_identifier_returns_ok(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_app_agent_delete_with_identifier_removes_agent(rf):
     agent = factories.AgentFactory.create()
     request = rf.delete('/')
@@ -288,7 +267,6 @@ def test_app_agent_delete_with_identifier_removes_agent(rf):
     assert models.Agent.objects.count() == 0
 
 
-@pytest.mark.django_db
 def test_app_agent_put_with_identifier_returns_ok(app_agent_xml, rf):
     identifier, xml = app_agent_xml
     agent = factories.AgentFactory.create(agent_identifier=identifier)
@@ -298,7 +276,6 @@ def test_app_agent_put_with_identifier_returns_ok(app_agent_xml, rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_app_agent_put_with_identifier_content_type(app_agent_xml, rf):
     identifier, xml = app_agent_xml
     agent = factories.AgentFactory.create(agent_identifier=identifier)
@@ -308,7 +285,6 @@ def test_app_agent_put_with_identifier_content_type(app_agent_xml, rf):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-@pytest.mark.django_db
 def test_app_agent_put_with_identifier_agent_updated(app_agent_xml, rf):
     identifier, xml = app_agent_xml
     agent = factories.AgentFactory.create(agent_identifier=identifier)
@@ -320,7 +296,6 @@ def test_app_agent_put_with_identifier_agent_updated(app_agent_xml, rf):
     assert updated_agent.agent_name != agent.agent_name
 
 
-@pytest.mark.django_db
 def test_app_agent_put_with_identifier_content(app_agent_xml, rf):
     identifier, xml = app_agent_xml
     agent = factories.AgentFactory.create(agent_identifier=identifier)
@@ -334,7 +309,6 @@ def test_app_agent_put_with_identifier_content(app_agent_xml, rf):
     assert updated_agent.agent_type in response.content
 
 
-@pytest.mark.django_db
 def test_app_agent_get_with_identifier_returns_ok(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -342,7 +316,6 @@ def test_app_agent_get_with_identifier_returns_ok(rf):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_app_agent_get_with_identifier_content_type(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -350,7 +323,6 @@ def test_app_agent_get_with_identifier_content_type(rf):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-@pytest.mark.django_db
 def test_app_agent_get_with_identifier_content(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
@@ -358,7 +330,6 @@ def test_app_agent_get_with_identifier_content(rf):
     assert agent.agent_identifier in response.content
 
 
-@pytest.mark.django_db
 class TestAppEvent:
 
     def test_post_without_identifier(self):

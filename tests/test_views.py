@@ -1,6 +1,7 @@
 import json
 
 import pytest
+from lxml import objectify
 
 from django.http import Http404
 from django.core.urlresolvers import reverse
@@ -355,3 +356,80 @@ def test_app_agent_get_with_identifier_content(rf):
     request = rf.get('/')
     response = views.app_agent(request, agent.agent_identifier)
     assert agent.agent_identifier in response.content
+
+
+@pytest.mark.django_db
+class TestAppEvent:
+
+    def test_post_without_identifier(self):
+        pass
+
+    def test_get_without_identifier_returns_ok(self, rf):
+        factories.EventFactory.create_batch(30)
+        request = rf.get('/')
+        response = views.app_event(request)
+        assert response.status_code == 200
+
+    def test_get_without_identifier_number_of_events(self, rf):
+        factories.EventFactory.create_batch(30)
+        request = rf.get('/')
+        response = views.app_event(request)
+        xml = objectify.fromstring(response.content)
+
+        num_events = 20
+        assert len(xml.entry) == num_events
+
+    def test_get_with_identifier_returns_ok(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.get('/', HTTP_HOST='example.com')
+        response = views.app_event(request, event.event_identifier)
+        assert response.status_code == 200
+
+    def test_get_with_identifier_returns_not_found(self, rf):
+        request = rf.get('/', HTTP_HOST='example.com')
+        response = views.app_event(request, 'ark:/00001/dne')
+        assert response.status_code == 404
+
+    def test_get_with_identifier_content_type(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.get('/', HTTP_HOST='example.com')
+        response = views.app_event(request, event.event_identifier)
+        assert response.get('Content-Type') == 'application/atom+xml'
+
+    def test_get_with_identifier_content(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.get('/', HTTP_HOST='example.com')
+        response = views.app_event(request, event.event_identifier)
+        assert event.event_identifier in response.content
+
+    def test_put_with_identifier(self):
+        pass
+
+    def test_delete_with_identifier_returns_ok(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.delete('/', HTTP_HOST='example.com')
+        response = views.app_event(request, event.event_identifier)
+        assert response.status_code == 200
+
+    def test_delete_with_identifier_returns_not_found(self, rf):
+        request = rf.delete('/', HTTP_HOST='example.com')
+        response = views.app_event(request, 'ark:/00001/dne')
+        assert response.status_code == 404
+
+    def test_delete_with_identifier_content_type(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.delete('/', HTTP_HOST='example.com')
+        response = views.app_event(request, event.event_identifier)
+        assert response.get('Content-Type') == 'application/atom+xml'
+
+    def test_delete_with_identifier_content(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.delete('/', HTTP_HOST='example.com')
+        response = views.app_event(request, event.event_identifier)
+        assert event.event_identifier in response.content
+
+    def test_delete_with_identifier_removes_event(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.delete('/', HTTP_HOST='example.com')
+        views.app_event(request, event.event_identifier)
+        assert models.Agent.objects.count() == 0

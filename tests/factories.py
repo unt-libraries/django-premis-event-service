@@ -68,11 +68,11 @@ class EventFactory(factory.django.DjangoModelFactory):
     linking_agent_role = ''
 
     @factory.post_generation
-    def linking_objects(self, create, extracted, **kwargs):
+    def linking_objects(self, create, extracted, linking_objects_count=1, **kwargs):
         """Post generation hook to add related LinkObject instances.
 
         Pass `linking_objects=True` to the create function to activate.
         """
         if create and extracted:
-            linking_objects = LinkObjectFactory.create_batch(2)
+            linking_objects = LinkObjectFactory.create_batch(linking_objects_count)
             self.linking_objects.add(*linking_objects)

@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 
 from premis_event_service import views, models
-from . import factories
+from . import factories, AppEventTestXml
 
 
 pytestmark = [
@@ -320,8 +320,37 @@ class TestAppAgent:
 
 class TestAppEvent:
 
-    def test_post_without_identifier(self):
-        pass
+    @pytest.fixture
+    def app_event_xml(self):
+        with AppEventTestXml() as f:
+            xml = f.read()
+        identifier = '6939fb9e-2bf1-4bff-a06a-71c0fc41a9aa'
+        return identifier, xml.format(identifier=identifier)
+
+    def test_post_returns_created(self, app_event_xml, rf):
+        _, xml = app_event_xml
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        response = views.app_event(request)
+        assert response.status_code == 201
+
+    def test_post_response_content_type(self, app_event_xml, rf):
+        _, xml = app_event_xml
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        response = views.app_event(request)
+        assert response.get('Content-Type') == 'application/atom+xml'
+
+    def test_post_response_content(self, app_event_xml, rf):
+        identifier, xml = app_event_xml
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        response = views.app_event(request)
+        assert identifier in response.content
+
+    def test_post_creates_event(self, app_event_xml, rf):
+        assert models.Event.objects.count() == 0
+        _, xml = app_event_xml
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        views.app_event(request)
+        assert models.Event.objects.count() == 1
 
     def test_list_returns_ok(self, rf):
         factories.EventFactory.create_batch(30)

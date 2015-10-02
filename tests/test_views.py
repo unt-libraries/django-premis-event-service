@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 
 import pytest
@@ -182,18 +183,18 @@ def test_find_event_finds_multiple_events(rf):
 
 class TestAppAgent:
 
-    def test_get_without_identifier_returns_ok(self, rf):
+    def test_list_returns_ok(self, rf):
         request = rf.get('/')
         response = views.app_agent(request)
         assert response.status_code == 200
 
-    def test_get_without_identifier_content_type(self, rf):
+    def test_list_content_type(self, rf):
         request = rf.get('/')
         response = views.app_agent(request)
         assert response.get('Content-Type') == 'application/atom+xml'
 
     @pytest.mark.xfail(reason='EmptyPage exception is not handled.')
-    def test_get_with_invalid_page_without_identifier(self, rf):
+    def test_list_with_invalid_page(self, rf):
         request = rf.get('/?page=3')
         views.app_agent(request)
 
@@ -316,16 +317,16 @@ class TestAppAgent:
 
 class TestAppEvent:
 
-    def test_post_without_identifier(self):
+    def test_list_without_identifier(self):
         pass
 
-    def test_get_without_identifier_returns_ok(self, rf):
+    def test_list_returns_ok(self, rf):
         factories.EventFactory.create_batch(30)
         request = rf.get('/')
         response = views.app_event(request)
         assert response.status_code == 200
 
-    def test_get_without_identifier_number_of_events(self, rf):
+    def test_list_number_of_events(self, rf):
         factories.EventFactory.create_batch(30)
         request = rf.get('/')
         response = views.app_event(request)
@@ -333,6 +334,77 @@ class TestAppEvent:
 
         num_events = 20
         assert len(xml.entry) == num_events
+
+    @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
+    def test_list_filtering_by_start_date(self, rf):
+        factories.EventFactory.create_batch(30, event_date_time=datetime(2015, 1, 1))
+        event = factories.EventFactory.create(event_date_time=datetime.now())
+        request = rf.get('/?start_date=01/31/2015')
+        response = views.app_event(request)
+
+        xml = objectify.fromstring(response.content)
+        num_events = 1
+
+        assert len(xml.entry) == num_events
+        assert event.event_identifier in response.content
+
+    @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
+    def test_list_filtering_by_end_date(self, rf):
+        factories.EventFactory.create_batch(30, event_date_time=datetime.now())
+        event = factories.EventFactory.create(event_date_time=datetime(2015, 1, 1))
+        request = rf.get('/?end_date=01/31/2015')
+        response = views.app_event(request)
+
+        xml = objectify.fromstring(response.content)
+        num_events = 1
+
+        assert len(xml.entry) == num_events
+        assert event.event_identifier in response.content
+
+    def test_list_filtering_by_linking_object_id(self, rf):
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(linking_objects=True)
+        linking_object = event.linking_objects.first()
+
+        url = '/?link_object_id={0}'.format(linking_object.object_identifier)
+        request = rf.get(url)
+        response = views.app_event(request)
+
+        xml = objectify.fromstring(response.content)
+        num_events = 1
+
+        assert len(xml.entry) == num_events
+        assert event.event_identifier in response.content
+
+    def test_list_filtering_by_event_outcome(self, rf):
+        factories.EventFactory.create_batch(30)
+
+        event_outcome = 'success'
+        event = factories.EventFactory.create(event_outcome=event_outcome)
+
+        request = rf.get('?outcome={0}'.format(event_outcome))
+        response = views.app_event(request)
+
+        xml = objectify.fromstring(response.content)
+        num_events = 1
+
+        assert len(xml.entry) == num_events
+        assert event.event_identifier in response.content
+
+    def test_list_filtering_by_event_type(self, rf):
+        factories.EventFactory.create_batch(30)
+
+        event_type = 'Test Type'
+        event = factories.EventFactory.create(event_type=event_type)
+
+        request = rf.get('?type={0}'.format(event_type))
+        response = views.app_event(request)
+
+        xml = objectify.fromstring(response.content)
+        num_events = 1
+
+        assert len(xml.entry) == num_events
+        assert event.event_identifier in response.content
 
     def test_get_with_identifier_returns_ok(self, rf):
         event = factories.EventFactory.create()

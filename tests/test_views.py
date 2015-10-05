@@ -513,3 +513,78 @@ class TestAppEvent:
         request = rf.delete('/', HTTP_HOST='example.com')
         views.app_event(request, event.event_identifier)
         assert models.Agent.objects.count() == 0
+
+
+class TestEventSearch:
+
+    def response_has_event(self, response, event):
+        paginated_entries = response.context[-1]['entries']
+        filtered_entry = paginated_entries.object_list[0]
+
+        if not len(paginated_entries.object_list) == 1:
+            return False
+
+        if not filtered_entry.event_identifier == event.event_identifier:
+            return False
+        return True
+
+    def test_returns_ok(self, rf):
+        request = rf.get('/')
+        response = views.event_search(request)
+        assert response.status_code == 200
+
+    def test_filter_by_start_date(self, client):
+        datetime_obj = timezone.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
+        event = factories.EventFactory.create(event_date_time=timezone.now())
+
+        query_string = '?start_date=01/31/2015'
+        url = reverse('premis_event_service.views.event_search')
+        response = client.get(url + query_string)
+
+        assert self.response_has_event(response, event)
+
+    def test_filter_by_end_date(self, client):
+        datetime_obj = timezone.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=timezone.now())
+        event = factories.EventFactory.create(event_date_time=datetime_obj)
+
+        query_string = '?end_date=01/31/2015'
+        url = reverse('premis_event_service.views.event_search')
+        response = client.get(url + query_string)
+
+        assert self.response_has_event(response, event)
+
+    @pytest.mark.xfail
+    def test_filter_by_linked_object_id(self, client):
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(linking_objects=True)
+        linking_object = event.linking_objects.first()
+
+        query_string = '?linked_object_id={0}'.format(linking_object.object_identifier)
+        url = reverse('premis_event_service.views.event_search')
+        response = client.get(url + query_string)
+
+        assert self.response_has_event(response, event)
+
+    def test_filter_by_outcome(self, client):
+        event_outcome = 'Test outcome'
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(event_outcome=event_outcome)
+
+        query_string = '?outcome={0}'.format(event_outcome)
+        url = reverse('premis_event_service.views.event_search')
+        response = client.get(url + query_string)
+
+        assert self.response_has_event(response, event)
+
+    def test_filter_by_event_type(self, client):
+        event_type = 'Test Event Type'
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(event_type=event_type)
+
+        query_string = '?event_type={0}'.format(event_type)
+        url = reverse('premis_event_service.views.event_search')
+        response = client.get(url + query_string)
+
+        assert self.response_has_event(response, event)

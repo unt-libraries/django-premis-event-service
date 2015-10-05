@@ -588,3 +588,74 @@ class TestEventSearch:
         response = client.get(url + query_string)
 
         assert self.response_has_event(response, event)
+
+
+class TestJsonEventSearch:
+
+    def response_has_entry(self, response, event):
+        data = json.loads(response.content)
+        entries = data['feed']['entry']
+        filtered_entry = entries[0]
+
+        if len(entries) != 1:
+            return False
+        if filtered_entry['identifier'] != event.event_identifier:
+            return False
+        return True
+
+    def test_no_results(self, rf):
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+        assert len(data) == 0
+
+    def test_results_per_page(self, rf):
+        factories.EventFactory.create_batch(30)
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+        assert len(data['feed']['entry']) == 20
+
+    def test_filter_by_start_date(self, rf):
+        datetime_obj = timezone.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
+        event = factories.EventFactory.create(event_date_time=timezone.now())
+
+        request = rf.get('/?start_date=01/31/2015')
+        response = views.json_event_search(request)
+
+        assert self.response_has_entry(response, event)
+
+    def test_filter_by_end_date(self, rf):
+        datetime_obj = timezone.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=timezone.now())
+        event = factories.EventFactory.create(event_date_time=datetime_obj)
+
+        request = rf.get('/?end_date=01/31/2015')
+        response = views.json_event_search(request)
+
+        assert self.response_has_entry(response, event)
+
+    @pytest.mark.xfail
+    def test_filter_by_linking_object_id(self, rf):
+        pass
+
+    def test_filter_by_outcome(self, rf):
+        event_outcome = 'Test outcome'
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(event_outcome=event_outcome)
+
+        request = rf.get('/?outcome={0}'.format(event_outcome))
+        response = views.json_event_search(request)
+
+        assert self.response_has_entry(response, event)
+
+    def test_filter_by_event_type(self, rf):
+        event_type = 'Test Event Type'
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(event_type=event_type)
+
+        request = rf.get('/?type={0}'.format(event_type))
+        response = views.json_event_search(request)
+
+        assert self.response_has_entry(response, event)

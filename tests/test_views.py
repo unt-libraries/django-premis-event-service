@@ -329,28 +329,48 @@ class TestAppEvent:
 
     def test_post_returns_created(self, app_event_xml, rf):
         _, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         response = views.app_event(request)
         assert response.status_code == 201
 
     def test_post_response_content_type(self, app_event_xml, rf):
         _, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         response = views.app_event(request)
         assert response.get('Content-Type') == 'application/atom+xml'
 
     def test_post_response_content(self, app_event_xml, rf):
         identifier, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         response = views.app_event(request)
         assert identifier in response.content
 
     def test_post_creates_event(self, app_event_xml, rf):
         assert models.Event.objects.count() == 0
         _, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='')
+        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         views.app_event(request)
         assert models.Event.objects.count() == 1
+
+    @pytest.mark.xfail(reason='Call to updateObjectFromXML fails unexpectedly.')
+    def test_put_returns_ok(self, app_event_xml, rf):
+        identifier, xml = app_event_xml
+        factories.EventFactory.create(event_identifier=identifier)
+
+        request = rf.put('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+        response = views.app_event(request, identifier)
+
+        assert response.status_code == 200
+
+    @pytest.mark.xfail(reason='Call to updateObjectFromXML fails unexpectedly.')
+    def test_put_response_content_type(self, app_event_xml, rf):
+        identifier, xml = app_event_xml
+        factories.EventFactory.create(event_identifier=identifier)
+
+        request = rf.put('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+        response = views.app_event(request, identifier)
+
+        assert response.get('Content-Type') == 'application/atom+xml'
 
     def test_list_returns_ok(self, rf):
         factories.EventFactory.create_batch(30)
@@ -464,9 +484,6 @@ class TestAppEvent:
         request = rf.get('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
         assert event.event_identifier in response.content
-
-    def test_put_with_identifier(self):
-        pass
 
     def test_delete_with_identifier_returns_ok(self, rf):
         event = factories.EventFactory.create()

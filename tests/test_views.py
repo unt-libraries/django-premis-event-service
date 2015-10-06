@@ -616,6 +616,64 @@ class TestJsonEventSearch:
         data = json.loads(response.content)
         assert len(data['feed']['entry']) == 20
 
+    def test_pagination_with_more_than_2_pages(self):
+        pass
+
+    def test_opensearch_query(self, rf):
+        factories.EventFactory.create_batch(10)
+        request = rf.get('/fakefield=true')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+
+        assert data['feed']['opensearch:Query'] == request.GET
+
+    def test_opensearch_itemsPerPage(self, rf):
+        factories.EventFactory.create_batch(10)
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+
+        assert data['feed']['opensearch:itemsPerPage'] == 20
+
+    def test_opensearch_startIndex(self, rf):
+        factories.EventFactory.create_batch(10)
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+
+        assert data['feed']['opensearch:startIndex'] == '1'
+
+    def test_opensearch_totalResults(self, rf):
+        num_events = 100
+        factories.EventFactory.create_batch(num_events)
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+
+        assert data['feed']['opensearch:totalResults'] == num_events
+
+    def test_pagination(self, rf):
+        # With 20 events per page, 50 events will give us 3 pages to paginate
+        # through.
+        factories.EventFactory.create_batch(50)
+        request = rf.get('/?page=2')
+        response = views.json_event_search(request)
+        data = json.loads(response.content)
+
+        assert len(data['feed']['link']) == 5
+
+        for link in data['feed']['link']:
+            if link['rel'] == 'self':
+                assert 'page=2' in link['href']
+            elif link['rel'] == 'previous':
+                assert 'page=1' in link['href']
+            elif link['rel'] == 'first':
+                assert 'page=1' in link['href']
+            elif link['rel'] == 'next':
+                assert 'page=3' in link['href']
+            elif link['rel'] == 'last':
+                assert 'page=3' in link['href']
+
     def test_filter_by_start_date(self, rf):
         datetime_obj = timezone.now().replace(2015, 1, 1)
         factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
@@ -638,7 +696,7 @@ class TestJsonEventSearch:
 
     @pytest.mark.xfail
     def test_filter_by_linking_object_id(self, rf):
-        pass
+        assert 0
 
     def test_filter_by_outcome(self, rf):
         event_outcome = 'Test outcome'

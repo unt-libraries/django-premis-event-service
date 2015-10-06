@@ -29,11 +29,6 @@ def test_app_content_type(rf):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-@pytest.mark.xfail
-def test_app_content(rf):
-    assert 0
-
-
 def test_humanEvent_raises_http404(rf):
     request = rf.get('/')
     with pytest.raises(Http404):
@@ -90,28 +85,28 @@ def test_json_agent_payload(rf):
     assert payload['note'] == agent.agent_note
 
 
-def test_agent_xml_returns_ok(rf):
+def test_agentXML_returns_ok(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.agentXML(request, agent.agent_identifier)
     assert response.status_code == 200
 
 
-def test_agent_xml_returns_not_found(rf):
+def test_agentXML_returns_not_found(rf):
     identifier = 'ark:/00001/dne'
     request = rf.get('/')
     response = views.agentXML(request, identifier)
     assert response.status_code == 404
 
 
-def test_agent_xml_content_type(rf):
+def test_agentXML_content_type(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.agentXML(request, agent.agent_identifier)
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-def test_agent_xml_returns_ok_with_premis_identifier(rf):
+def test_agentXML_returns_ok_with_premis_identifier(rf):
     # Create an agent and update the identifier to include `.premis`.
     agent = factories.AgentFactory.create()
     agent.identifier = 'ark:/00001/coda1n.premis'
@@ -123,7 +118,7 @@ def test_agent_xml_returns_ok_with_premis_identifier(rf):
     assert response.status_code == 200
 
 
-def test_agent_xml_returns_not_found_with_premis_identifier(rf):
+def test_agentXML_returns_not_found_with_premis_identifier(rf):
     identifier = 'ark:/00001/coda1n.premis'
     request = rf.get('/.premis')
     response = views.agentXML(request, identifier)
@@ -137,7 +132,7 @@ def test_eventXML(rf):
     assert "So you would like XML for the event with identifier" in response.content
 
 
-def test_find_event_returns_ok(rf):
+def test_findEvent_returns_ok(rf):
     event = factories.EventFactory.create(linking_objects=True)
     request = rf.get('/')
     linking_object = event.linking_objects.first()
@@ -145,7 +140,7 @@ def test_find_event_returns_ok(rf):
     assert response.status_code == 200
 
 
-def test_find_event_response_content_type(rf):
+def test_findEvent_response_content_type(rf):
     event = factories.EventFactory.create(linking_objects=True)
     request = rf.get('/')
     linking_object = event.linking_objects.first()
@@ -154,13 +149,13 @@ def test_find_event_response_content_type(rf):
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
-def test_find_event_returns_not_found(rf):
+def test_findEvent_returns_not_found(rf):
     request = rf.get('/')
     response = views.findEvent(request, 'fake-identifier')
     assert response.status_code == 404
 
 
-def test_find_event_finds_multiple_events(rf):
+def test_findEvent_finds_multiple_events(rf):
     # Create two events. Specify a datetime for the second event to assert
     # that the two events will not end up with the same event_date_time. We
     # will use that attribute to sort them later.
@@ -541,7 +536,7 @@ class TestEventSearch:
 
         assert self.response_has_event(response, event)
 
-    @pytest.mark.xfail
+    @pytest.mark.xfail(reason='Magic strings prevent block from executing.')
     def test_filter_by_linked_object_id(self, client):
         factories.EventFactory.create_batch(30)
         event = factories.EventFactory.create(linking_objects=True)
@@ -693,9 +688,17 @@ class TestJsonEventSearch:
 
         assert self.response_has_entry(response, event)
 
-    @pytest.mark.xfail
+    @pytest.mark.xfail(reason='Magic strings prevent block from executing.')
     def test_filter_by_linking_object_id(self, rf):
-        assert 0
+        factories.EventFactory.create_batch(30)
+        event = factories.EventFactory.create(linking_objects=True)
+        linking_object = event.linking_objects.first()
+
+        url = '/?linked_object_id={0}'.format(linking_object.object_identifier)
+        request = rf.get(url)
+        response = views.json_event_search(request)
+
+        assert self.response_has_entry(response, event)
 
     def test_filter_by_outcome(self, rf):
         event_outcome = 'Test outcome'

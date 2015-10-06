@@ -185,6 +185,7 @@ def test_find_event_finds_multiple_events(rf):
 
 
 class TestAppAgent:
+    CONTENT_TYPE = 'application/atom+xml'
 
     def test_list_returns_ok(self, rf):
         request = rf.get('/')
@@ -194,7 +195,7 @@ class TestAppAgent:
     def test_list_content_type(self, rf):
         request = rf.get('/')
         response = views.app_agent(request)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     @pytest.mark.xfail(reason='EmptyPage exception is not handled.')
     def test_list_with_invalid_page(self, rf):
@@ -226,7 +227,7 @@ class TestAppAgent:
         _, xml = app_agent_xml
         request = rf.post('/', xml, content_type='application/xml')
         response = views.app_agent(request)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_post_without_identifier_content(self, rf, app_agent_xml):
         identifier, xml = app_agent_xml
@@ -275,7 +276,7 @@ class TestAppAgent:
 
         request = rf.put('/', xml, content_type='application/xml')
         response = views.app_agent(request, agent.agent_identifier)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_put_with_identifier_agent_updated(self, app_agent_xml, rf):
         identifier, xml = app_agent_xml
@@ -309,7 +310,7 @@ class TestAppAgent:
         agent = factories.AgentFactory.create()
         request = rf.get('/')
         response = views.app_agent(request, agent.agent_identifier)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_get_with_identifier_content(self, rf):
         agent = factories.AgentFactory.create()
@@ -319,6 +320,16 @@ class TestAppAgent:
 
 
 class TestAppEvent:
+    CONTENT_TYPE = 'application/atom+xml'
+    RESULTS_PER_PAGE = 20
+
+    def event_in_filtered_results(self, response, event):
+        xml = objectify.fromstring(response.content)
+        if len(xml.entry) != 1:
+            return False
+        if event.event_identifier not in response.content:
+            return False
+        return True
 
     @pytest.fixture
     def app_event_xml(self):
@@ -337,7 +348,7 @@ class TestAppEvent:
         _, xml = app_event_xml
         request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         response = views.app_event(request)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_post_response_content(self, app_event_xml, rf):
         identifier, xml = app_event_xml
@@ -370,7 +381,7 @@ class TestAppEvent:
         request = rf.put('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         response = views.app_event(request, identifier)
 
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_list_returns_ok(self, rf):
         factories.EventFactory.create_batch(30)
@@ -379,13 +390,12 @@ class TestAppEvent:
         assert response.status_code == 200
 
     def test_list_number_of_events(self, rf):
-        factories.EventFactory.create_batch(30)
+        factories.EventFactory.create_batch(self.RESULTS_PER_PAGE * 2)
         request = rf.get('/')
         response = views.app_event(request)
         xml = objectify.fromstring(response.content)
 
-        num_events = 20
-        assert len(xml.entry) == num_events
+        assert len(xml.entry) == self.RESULTS_PER_PAGE
 
     @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
     def test_list_filtering_by_start_date(self, rf):
@@ -395,12 +405,7 @@ class TestAppEvent:
 
         request = rf.get('/?start_date=01/31/2015')
         response = views.app_event(request)
-
-        xml = objectify.fromstring(response.content)
-        num_events = 1
-
-        assert len(xml.entry) == num_events
-        assert event.event_identifier in response.content
+        assert self.event_in_filtered_results(response, event)
 
     @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
     def test_list_filtering_by_end_date(self, rf):
@@ -410,12 +415,7 @@ class TestAppEvent:
 
         request = rf.get('/?end_date=01/31/2015')
         response = views.app_event(request)
-
-        xml = objectify.fromstring(response.content)
-        num_events = 1
-
-        assert len(xml.entry) == num_events
-        assert event.event_identifier in response.content
+        assert self.event_in_filtered_results(response, event)
 
     def test_list_filtering_by_linking_object_id(self, rf):
         factories.EventFactory.create_batch(30)
@@ -426,11 +426,7 @@ class TestAppEvent:
         request = rf.get(url)
         response = views.app_event(request)
 
-        xml = objectify.fromstring(response.content)
-        num_events = 1
-
-        assert len(xml.entry) == num_events
-        assert event.event_identifier in response.content
+        assert self.event_in_filtered_results(response, event)
 
     def test_list_filtering_by_event_outcome(self, rf):
         factories.EventFactory.create_batch(30)
@@ -440,12 +436,7 @@ class TestAppEvent:
 
         request = rf.get('?outcome={0}'.format(event_outcome))
         response = views.app_event(request)
-
-        xml = objectify.fromstring(response.content)
-        num_events = 1
-
-        assert len(xml.entry) == num_events
-        assert event.event_identifier in response.content
+        assert self.event_in_filtered_results(response, event)
 
     def test_list_filtering_by_event_type(self, rf):
         factories.EventFactory.create_batch(30)
@@ -455,12 +446,7 @@ class TestAppEvent:
 
         request = rf.get('?type={0}'.format(event_type))
         response = views.app_event(request)
-
-        xml = objectify.fromstring(response.content)
-        num_events = 1
-
-        assert len(xml.entry) == num_events
-        assert event.event_identifier in response.content
+        assert self.event_in_filtered_results(response, event)
 
     def test_get_with_identifier_returns_ok(self, rf):
         event = factories.EventFactory.create()
@@ -477,7 +463,7 @@ class TestAppEvent:
         event = factories.EventFactory.create()
         request = rf.get('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_get_with_identifier_content(self, rf):
         event = factories.EventFactory.create()
@@ -500,7 +486,7 @@ class TestAppEvent:
         event = factories.EventFactory.create()
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
-        assert response.get('Content-Type') == 'application/atom+xml'
+        assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_delete_with_identifier_content(self, rf):
         event = factories.EventFactory.create()
@@ -591,6 +577,13 @@ class TestEventSearch:
 
 
 class TestJsonEventSearch:
+    RESULTS_PER_PAGE = 20
+    CONTENT_TYPE = 'application/json'
+    REL_SELF = 'self'
+    REL_FIRST = 'first'
+    REL_LAST = 'last'
+    REL_NEXT = 'next'
+    REL_PREVIOUS = 'previous'
 
     def response_has_entry(self, response, event):
         data = json.loads(response.content)
@@ -603,6 +596,16 @@ class TestJsonEventSearch:
             return False
         return True
 
+    def test_returns_ok(self, rf):
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        assert response.status_code == 200
+
+    def test_response_content_type(self, rf):
+        request = rf.get('/')
+        response = views.json_event_search(request)
+        assert response.get('Content-Type') == self.CONTENT_TYPE
+
     def test_no_results(self, rf):
         request = rf.get('/')
         response = views.json_event_search(request)
@@ -614,10 +617,7 @@ class TestJsonEventSearch:
         request = rf.get('/')
         response = views.json_event_search(request)
         data = json.loads(response.content)
-        assert len(data['feed']['entry']) == 20
-
-    def test_pagination_with_more_than_2_pages(self):
-        pass
+        assert len(data['feed']['entry']) == self.RESULTS_PER_PAGE
 
     def test_opensearch_query(self, rf):
         factories.EventFactory.create_batch(10)
@@ -633,7 +633,7 @@ class TestJsonEventSearch:
         response = views.json_event_search(request)
         data = json.loads(response.content)
 
-        assert data['feed']['opensearch:itemsPerPage'] == 20
+        assert data['feed']['opensearch:itemsPerPage'] == self.RESULTS_PER_PAGE
 
     def test_opensearch_startIndex(self, rf):
         factories.EventFactory.create_batch(10)
@@ -653,9 +653,8 @@ class TestJsonEventSearch:
         assert data['feed']['opensearch:totalResults'] == num_events
 
     def test_pagination(self, rf):
-        # With 20 events per page, 50 events will give us 3 pages to paginate
-        # through.
-        factories.EventFactory.create_batch(50)
+        num_events = self.RESULTS_PER_PAGE * 3
+        factories.EventFactory.create_batch(num_events)
         request = rf.get('/?page=2')
         response = views.json_event_search(request)
         data = json.loads(response.content)
@@ -663,15 +662,15 @@ class TestJsonEventSearch:
         assert len(data['feed']['link']) == 5
 
         for link in data['feed']['link']:
-            if link['rel'] == 'self':
+            if link['rel'] == self.REL_SELF:
                 assert 'page=2' in link['href']
-            elif link['rel'] == 'previous':
+            elif link['rel'] == self.REL_PREVIOUS:
                 assert 'page=1' in link['href']
-            elif link['rel'] == 'first':
+            elif link['rel'] == self.REL_FIRST:
                 assert 'page=1' in link['href']
-            elif link['rel'] == 'next':
+            elif link['rel'] == self.REL_NEXT:
                 assert 'page=3' in link['href']
-            elif link['rel'] == 'last':
+            elif link['rel'] == self.REL_LAST:
                 assert 'page=3' in link['href']
 
     def test_filter_by_start_date(self, rf):

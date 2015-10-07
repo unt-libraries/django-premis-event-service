@@ -1,11 +1,11 @@
 import json
 
-import pytest
 from lxml import objectify
+import pytest
 
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.utils import timezone
-from django.core.urlresolvers import reverse
 
 from premis_event_service import views, models
 from . import factories, AppEventTestXml

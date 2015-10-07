@@ -10,7 +10,7 @@ from premis_event_service import models
 
 UUID_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID'
 
-URL_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID'
+URL_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL'
 
 EVENT_TYPES = [
     'http://purl.org/net/untl/vocabularies/preservationEvents/#replication',

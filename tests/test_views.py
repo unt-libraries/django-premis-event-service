@@ -217,7 +217,7 @@ class TestAppAgent:
         views.app_agent(request)
 
     @pytest.fixture
-    def app_agent_xml(self, ):
+    def app_agent_xml(self):
         xml = """<?xml version="1.0"?>
             <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
               <premis:agentIdentifier>

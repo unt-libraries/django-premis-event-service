@@ -23,13 +23,16 @@ def test_app_returns_ok(rf):
     assert response.status_code == 200
 
 
-def test_app_content_type(rf):
+def test_app_response_content_type(rf):
     request = rf.get('/')
     response = views.app(request)
     assert response.get('Content-Type') == 'application/atom+xml'
 
 
 def test_humanEvent_raises_http404(rf):
+    """An Http404 should be raised when the view is unable to locate
+    an Event.
+    """
     request = rf.get('/')
     with pytest.raises(Http404):
         views.humanEvent(request)
@@ -50,6 +53,7 @@ def test_json_event_list_returns_ok(rf):
 
 
 def test_json_event_list_context(client):
+    """Test the Events in the response context."""
     num_events = 30
     factories.EventFactory.create_batch(num_events)
     response = client.get(reverse('premis_event_service.views.recent_event_list'))
@@ -60,6 +64,9 @@ def test_json_event_list_context(client):
 
 
 def test_json_event_list_with_no_events(rf):
+    """Test that the response has a status code 200 when there are no
+    Events in the database.
+    """
     request = rf.get('/')
     response = views.recent_event_list(request)
     assert response.status_code == 200
@@ -74,6 +81,7 @@ def test_json_agent_returns_ok(rf):
 
 
 def test_json_agent_payload(rf):
+    """Verify that the json output has matches the Agent attributes."""
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.json_agent(request, agent.agent_identifier)
@@ -93,13 +101,14 @@ def test_agentXML_returns_ok(rf):
 
 
 def test_agentXML_returns_not_found(rf):
+    # ark:/00001/dne is a non-existent identifier.
     identifier = 'ark:/00001/dne'
     request = rf.get('/')
     response = views.agentXML(request, identifier)
     assert response.status_code == 404
 
 
-def test_agentXML_content_type(rf):
+def test_agentXML_response_content_type(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.agentXML(request, agent.agent_identifier)
@@ -156,6 +165,9 @@ def test_findEvent_returns_not_found(rf):
 
 
 def test_findEvent_finds_multiple_events(rf):
+    """Check that findEvent returns the newest event if a LinkObject is
+    associated with multiple Events.
+    """
     # Create two events. Specify a datetime for the second event to assert
     # that the two events will not end up with the same event_date_time. We
     # will use that attribute to sort them later.
@@ -180,6 +192,7 @@ def test_findEvent_finds_multiple_events(rf):
 
 
 class TestAppAgent:
+    """Tests for views.app_agent."""
     CONTENT_TYPE = 'application/atom+xml'
 
     def test_list_returns_ok(self, rf):
@@ -187,7 +200,7 @@ class TestAppAgent:
         response = views.app_agent(request)
         assert response.status_code == 200
 
-    def test_list_content_type(self, rf):
+    def test_list_response_content_type(self, rf):
         request = rf.get('/')
         response = views.app_agent(request)
         assert response.get('Content-Type') == self.CONTENT_TYPE
@@ -212,52 +225,58 @@ class TestAppAgent:
         identifier = 'EqLVtAeVnHoR'
         return identifier, xml.format(identifier=identifier)
 
-    def test_post_without_identifier_returns_created(self, rf, app_agent_xml):
+    def test_post_returns_created(self, rf, app_agent_xml):
         _, xml = app_agent_xml
         request = rf.post('/', xml, content_type='application/xml')
         response = views.app_agent(request)
         assert response.status_code == 201
 
-    def test_post_without_identifier_content_type(self, rf, app_agent_xml):
+    def test_post_response_content_type(self, rf, app_agent_xml):
         _, xml = app_agent_xml
         request = rf.post('/', xml, content_type='application/xml')
         response = views.app_agent(request)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_post_without_identifier_content(self, rf, app_agent_xml):
+    def test_post_response_content(self, rf, app_agent_xml):
         identifier, xml = app_agent_xml
         request = rf.post('/', xml, content_type='application/xml')
         response = views.app_agent(request)
         assert identifier in response.content
 
     @pytest.mark.xfail(reason='POST request without body raises uncaught exception.')
-    def test_post_without_body_without_identifier_is_handled(self, rf):
+    def test_post_without_body_is_handled(self, rf):
         request = rf.post('/')
         views.app_agent(request)
 
     def test_returns_bad_request(self, rf):
+        """Check that a request that is not GET, POST, PUT, or DELETE will
+        result in a response with status code 400.
+        """
         request = rf.head('/')
         response = views.app_agent(request)
         assert response.status_code == 400
 
     def test_get_with_invalid_identifier_returns_not_found(self, rf):
+        """Test that a nonexistent Agent identifier results in a
+        404 Not Found.
+        """
         request = rf.get('/')
         response = views.app_agent(request, 'fake-identifier')
         assert response.status_code == 404
 
-    def test_delete_with_identifier_returns_ok(self, rf):
+    def test_delete_returns_ok(self, rf):
         agent = factories.AgentFactory.create()
         request = rf.delete('/')
         response = views.app_agent(request, agent.agent_identifier)
         assert response.status_code == 200
 
-    def test_delete_with_identifier_removes_agent(self, rf):
+    def test_delete_removes_agent(self, rf):
         agent = factories.AgentFactory.create()
         request = rf.delete('/')
         views.app_agent(request, agent.agent_identifier)
         assert models.Agent.objects.count() == 0
 
-    def test_put_with_identifier_returns_ok(self, app_agent_xml, rf):
+    def test_put_returns_ok(self, app_agent_xml, rf):
         identifier, xml = app_agent_xml
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
@@ -265,7 +284,7 @@ class TestAppAgent:
         response = views.app_agent(request, agent.agent_identifier)
         assert response.status_code == 200
 
-    def test_put_with_identifier_content_type(self, app_agent_xml, rf):
+    def test_put_response_content_type(self, app_agent_xml, rf):
         identifier, xml = app_agent_xml
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
@@ -273,7 +292,7 @@ class TestAppAgent:
         response = views.app_agent(request, agent.agent_identifier)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_put_with_identifier_agent_updated(self, app_agent_xml, rf):
+    def test_put_agent_updated(self, app_agent_xml, rf):
         identifier, xml = app_agent_xml
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
@@ -283,7 +302,7 @@ class TestAppAgent:
         updated_agent = models.Agent.objects.get(agent_identifier=identifier)
         assert updated_agent.agent_name != agent.agent_name
 
-    def test_put_with_identifier_content(self, app_agent_xml, rf):
+    def test_put_response_content(self, app_agent_xml, rf):
         identifier, xml = app_agent_xml
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
@@ -301,13 +320,13 @@ class TestAppAgent:
         response = views.app_agent(request, agent.agent_identifier)
         assert response.status_code == 200
 
-    def test_get_with_identifier_content_type(self, rf):
+    def test_get_with_identifier_response_content_type(self, rf):
         agent = factories.AgentFactory.create()
         request = rf.get('/')
         response = views.app_agent(request, agent.agent_identifier)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_get_with_identifier_content(self, rf):
+    def test_get_with_identifier_response_content(self, rf):
         agent = factories.AgentFactory.create()
         request = rf.get('/')
         response = views.app_agent(request, agent.agent_identifier)
@@ -315,10 +334,12 @@ class TestAppAgent:
 
 
 class TestAppEvent:
+    """Tests for views.app_event."""
     CONTENT_TYPE = 'application/atom+xml'
     RESULTS_PER_PAGE = 20
 
     def event_in_filtered_results(self, response, event):
+        """True if the event is the only event in the response content."""
         xml = objectify.fromstring(response.content)
         if len(xml.entry) != 1:
             return False
@@ -454,7 +475,7 @@ class TestAppEvent:
         response = views.app_event(request, 'ark:/00001/dne')
         assert response.status_code == 404
 
-    def test_get_with_identifier_content_type(self, rf):
+    def test_get_with_identifier_response_content_type(self, rf):
         event = factories.EventFactory.create()
         request = rf.get('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
@@ -466,30 +487,30 @@ class TestAppEvent:
         response = views.app_event(request, event.event_identifier)
         assert event.event_identifier in response.content
 
-    def test_delete_with_identifier_returns_ok(self, rf):
+    def test_delete_returns_ok(self, rf):
         event = factories.EventFactory.create()
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
         assert response.status_code == 200
 
-    def test_delete_with_identifier_returns_not_found(self, rf):
+    def test_delete_returns_not_found(self, rf):
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, 'ark:/00001/dne')
         assert response.status_code == 404
 
-    def test_delete_with_identifier_content_type(self, rf):
+    def test_delete_response_content_type(self, rf):
         event = factories.EventFactory.create()
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_delete_with_identifier_content(self, rf):
+    def test_delete_response_content(self, rf):
         event = factories.EventFactory.create()
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
         assert event.event_identifier in response.content
 
-    def test_delete_with_identifier_removes_event(self, rf):
+    def test_delete_removes_event(self, rf):
         event = factories.EventFactory.create()
         request = rf.delete('/', HTTP_HOST='example.com')
         views.app_event(request, event.event_identifier)
@@ -497,8 +518,10 @@ class TestAppEvent:
 
 
 class TestEventSearch:
+    """Tests for views.event_search."""
 
     def response_has_event(self, response, event):
+        """True event is the only Event in the response context."""
         paginated_entries = response.context[-1]['entries']
         filtered_entry = paginated_entries.object_list[0]
 
@@ -572,6 +595,7 @@ class TestEventSearch:
 
 
 class TestJsonEventSearch:
+    """Tests for views.json_event_search."""
     RESULTS_PER_PAGE = 20
     CONTENT_TYPE = 'application/json'
     REL_SELF = 'self'
@@ -581,6 +605,7 @@ class TestJsonEventSearch:
     REL_PREVIOUS = 'previous'
 
     def response_has_entry(self, response, event):
+        """True event is the only Event in the response content."""
         data = json.loads(response.content)
         entries = data['feed']['entry']
         filtered_entry = entries[0]
@@ -602,10 +627,14 @@ class TestJsonEventSearch:
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_no_results(self, rf):
+        """Check that response content when there are no Events
+        in the database.
+        """
         request = rf.get('/')
         response = views.json_event_search(request)
         data = json.loads(response.content)
         assert len(data) == 0
+        assert response.status_code == 200
 
     def test_results_per_page(self, rf):
         factories.EventFactory.create_batch(30)
@@ -647,7 +676,7 @@ class TestJsonEventSearch:
 
         assert data['feed']['opensearch:totalResults'] == num_events
 
-    def test_pagination(self, rf):
+    def test_pagination_links(self, rf):
         num_events = self.RESULTS_PER_PAGE * 3
         factories.EventFactory.create_batch(num_events)
         request = rf.get('/?page=2')

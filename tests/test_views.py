@@ -262,7 +262,7 @@ class TestAppAgent:
         response = views.app_agent(request)
         assert response.status_code == 400
 
-    def test_get_with_invalid_identifier_returns_not_found(self, rf):
+    def test_invalid_identifier_returns_not_found(self, rf):
         """Test that a nonexistent Agent identifier results in a
         404 Not Found.
         """

@@ -45,14 +45,14 @@ def test_humanEvent_returns_ok(rf):
     assert response.status_code == 200
 
 
-def test_json_event_list_returns_ok(rf):
+def test_recent_event_list_returns_ok(rf):
     factories.EventFactory.create_batch(30)
     request = rf.get('/')
     response = views.recent_event_list(request)
     assert response.status_code == 200
 
 
-def test_json_event_list_context(client):
+def test_recent_event_list_context(client):
     """Test the Events in the response context."""
     num_events = 30
     factories.EventFactory.create_batch(num_events)
@@ -63,7 +63,7 @@ def test_json_event_list_context(client):
     assert context['num_events'] == num_events
 
 
-def test_json_event_list_with_no_events(rf):
+def test_recent_event_list_with_no_events(rf):
     """Test that the response has a status code 200 when there are no
     Events in the database.
     """

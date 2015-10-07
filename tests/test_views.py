@@ -77,6 +77,12 @@ def test_json_agent_returns_ok(rf):
     request = rf.get('/')
     response = views.json_agent(request, agent.agent_identifier)
     assert response.status_code == 200
+
+
+def test_json_agent_response_content_type(rf):
+    agent = factories.AgentFactory.create()
+    request = rf.get('/')
+    response = views.json_agent(request, agent.agent_identifier)
     assert response.get('Content-Type') == 'application/json'
 
 

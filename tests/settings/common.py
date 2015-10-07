@@ -13,7 +13,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'premis_event_service',
-    'tests',
 )
 
 MIDDLEWARE_CLASSES = (

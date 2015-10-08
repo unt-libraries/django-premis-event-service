@@ -505,7 +505,7 @@ class TestAppEvent:
         response = views.app_event(request, event.event_identifier)
         assert response.status_code == 200
 
-    def test_get_with_identifier_returns_not_found(self, rf):
+    def test_get_with_invalid_identifier_returns_not_found(self, rf):
         request = rf.get('/', HTTP_HOST='example.com')
         response = views.app_event(request, 'ark:/00001/dne')
         assert response.status_code == 404
@@ -528,7 +528,7 @@ class TestAppEvent:
         response = views.app_event(request, event.event_identifier)
         assert response.status_code == 200
 
-    def test_delete_returns_not_found(self, rf):
+    def test_delete_with_invalid_identifier_returns_not_found(self, rf):
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, 'ark:/00001/dne')
         assert response.status_code == 404

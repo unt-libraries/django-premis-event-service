@@ -108,6 +108,12 @@ def test_json_agent_returns_ok(rf):
     assert response.status_code == 200
 
 
+def test_json_agent_raises_Http404(rf):
+    request = rf.get('/')
+    with pytest.raises(Http404):
+        views.json_agent(request, 'test-identifier')
+
+
 def test_json_agent_response_content_type(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')

@@ -45,6 +45,35 @@ def test_humanEvent_returns_ok(rf):
     assert response.status_code == 200
 
 
+def test_humanAgent_returns_ok(rf):
+    event = factories.EventFactory.create()
+    request = rf.get('/')
+    response = views.humanEvent(request, event.event_identifier)
+    assert response.status_code == 200
+
+
+def test_humanAgent_with_invalid_identifier(rf):
+    request = rf.get('/')
+    response = views.humanAgent(request, 'test-identifier')
+    assert response.status_code == 200
+
+
+def test_humanAgent_returns_all_agents(client):
+    factories.AgentFactory.create_batch(30)
+    response = client.get(
+            reverse('premis_event_service.views.humanAgent'))
+    view_context = response.context[-1]
+    assert len(view_context['agents']) == models.Agent.objects.count()
+
+
+def test_humanAgent_with_identifier(client):
+    agent = factories.AgentFactory.create()
+    response = client.get(
+            reverse('premis_event_service.views.humanAgent', args=[agent.agent_identifier]))
+    context_agent = response.context[-1]['agents'][0]
+    assert agent.agent_identifier == context_agent['agent_identifier']
+
+
 def test_recent_event_list_returns_ok(rf):
     factories.EventFactory.create_batch(30)
     request = rf.get('/')

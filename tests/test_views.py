@@ -122,7 +122,7 @@ def test_json_agent_response_content_type(rf):
 
 
 def test_json_agent_payload(rf):
-    """Verify that the json output has matches the Agent attributes."""
+    """Verify that the json output matches the Agent attributes."""
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.json_agent(request, agent.agent_identifier)

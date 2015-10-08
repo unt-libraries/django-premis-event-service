@@ -46,9 +46,9 @@ def test_humanEvent_returns_ok(rf):
 
 
 def test_humanAgent_returns_ok(rf):
-    event = factories.EventFactory.create()
+    agent = factories.AgentFactory.create()
     request = rf.get('/')
-    response = views.humanEvent(request, event.event_identifier)
+    response = views.humanAgent(request, agent.agent_identifier)
     assert response.status_code == 200
 
 

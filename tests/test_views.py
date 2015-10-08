@@ -525,6 +525,7 @@ class TestAppEvent:
 
 class TestEventSearch:
     """Tests for views.event_search."""
+    RESULTS_PER_PAGE = 20
 
     def response_has_event(self, response, event):
         """True event is the only Event in the response context."""
@@ -542,6 +543,15 @@ class TestEventSearch:
         request = rf.get('/')
         response = views.event_search(request)
         assert response.status_code == 200
+
+    def test_results_per_page(self, client):
+        factories.EventFactory.create_batch(self.RESULTS_PER_PAGE * 3)
+
+        url = reverse('premis_event_service.views.event_search')
+        response = client.get(url)
+
+        context = response.context[-1]
+        assert len(context['entries']) == self.RESULTS_PER_PAGE
 
     def test_filter_by_start_date(self, client):
         datetime_obj = timezone.now().replace(2015, 1, 1)

@@ -289,11 +289,13 @@ class TestAppAgent:
         request = rf.post('/')
         views.app_agent(request)
 
-    def test_returns_bad_request(self, rf):
-        """Check that a request that is not GET, POST, PUT, or DELETE will
-        result in a response with status code 400.
-        """
-        request = rf.head('/')
+    def test_put_without_identifier_returns_bad_request(self, rf):
+        request = rf.put('/')
+        response = views.app_agent(request)
+        assert response.status_code == 400
+
+    def test_delete_without_identifier_returns_bad_request(self, rf):
+        request = rf.delete('/')
         response = views.app_agent(request)
         assert response.status_code == 400
 

@@ -507,6 +507,43 @@ class TestAppEvent:
         response = views.app_event(request)
         assert self.response_has_event(response, event)
 
+    def test_list_ordering_ascending(self, rf):
+        events = factories.EventFactory.create_batch(3)
+        events.sort(key=lambda e: e.event_identifier)
+
+        # Order by the Event identifier because the values are globally unique.
+        # Pure Python vs the Django ORM sort items with matching keys differently
+        request = rf.get('?orderby=event_identifier')
+        response = views.app_event(request)
+
+        list_events = objectify.fromstring(response.content).entry
+        ordered_event_ids = [f.title for f in list_events]
+        event_ids = [f.event_identifier for f in events]
+
+        assert ordered_event_ids == event_ids
+
+    def test_list_ordering_descending(self, rf):
+        events = factories.EventFactory.create_batch(3)
+        events.sort(key=lambda e: e.event_identifier, reverse=True)
+
+        # Order by the Event identifier because the values are globally unique.
+        # Pure Python vs the Django ORM sort items with matching keys differently
+        request = rf.get('?orderby=event_identifier&orderdir=descending')
+        response = views.app_event(request)
+
+        list_events = objectify.fromstring(response.content).entry
+        ordered_event_ids = [f.title for f in list_events]
+        event_ids = [f.event_identifier for f in events]
+
+        assert ordered_event_ids == event_ids
+
+    @pytest.mark.xfail(reason="The attribute name is not checked before sorting.")
+    def test_list_ordering_with_unknown_attribute_returns_ok(self, rf):
+        factories.EventFactory.create_batch(3)
+        request = rf.get('?orderby=fake_attribute')
+        response = views.app_event(request)
+        assert response.status_code == 200
+
     def test_get_with_identifier_returns_ok(self, rf):
         event = factories.EventFactory.create()
         request = rf.get('/', HTTP_HOST='example.com')

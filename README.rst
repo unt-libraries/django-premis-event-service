@@ -95,23 +95,23 @@ Start the app and run the migrations.
   $ docker-compose up -d
 
   # optional: add a superuser in order to login to the admin interface
-  $ docker-compose run --rm web ./manage.py createsuperuser
+  $ docker-compose run --rm app ./manage.py createsuperuser
 
 
-The code is in a volume that is shared between your workstation and the web container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
+The code is in a volume that is shared between your workstation and the app container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
 
-However, if the requirements files change, it is important that you rebuild the web container for those packages to be installed. This is something that could happen when switching between feature branches, or when pulling updates from the remote.
+However, if the requirements files change, it is important that you rebuild the app container for those packages to be installed. This is something that could happen when switching between feature branches, or when pulling updates from the remote.
 
 .. code-block :: sh
 
   # stop the app
   $ docker-compose stop
 
-  # remove the web container
-  $ docker-compose rm web
+  # remove the app container
+  $ docker-compose rm app
 
-  # rebuild the web container
-  $ docker-compose build web
+  # rebuild the app container
+  $ docker-compose build app
 
   # start the app
   $ docker-compose up -d
@@ -123,12 +123,12 @@ To run the tests via Tox, use this command.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm web tox
+  $ docker-compose run --rm app tox
 
 
 To run the tests only with the development environment.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm web py.test
+  $ docker-compose run --rm app py.test
 

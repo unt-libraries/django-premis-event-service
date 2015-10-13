@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<entry xmlns="http://www.w3.org/2005/Atom">
+  <title>{identifier}</title>
+  <id>http://example.com/APP/event/{identifier}/</id>
+  <updated>2015-10-02T19:59:22Z</updated>
+  <content type="application/xml">
+    <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
+      <premis:eventDetail>XeeGtJpGxkDD</premis:eventDetail>
+      <premis:eventOutcomeInformation>
+        <premis:eventOutcomeDetail>NBFmyLCRkhvE</premis:eventOutcomeDetail>
+        <premis:eventOutcome>http://purl.org/net/untl/vocabularies/eventOutcomes/#failure</premis:eventOutcome>
+      </premis:eventOutcomeInformation>
+      <premis:eventType>http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck</premis:eventType>
+      <premis:linkingAgentIdentifier>
+        <premis:linkingAgentIdentifierValue>http://example.com/agent/codavalidation</premis:linkingAgentIdentifierValue>
+        <premis:linkingAgentIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID</premis:linkingAgentIdentifierType>
+      </premis:linkingAgentIdentifier>
+      <premis:eventIdentifier>
+          <premis:eventIdentifierValue>{identifier}</premis:eventIdentifierValue>
+        <premis:eventIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID</premis:eventIdentifierType>
+      </premis:eventIdentifier>
+      <premis:eventDateTime>2015-10-02 19:59:21</premis:eventDateTime>
+    </premis:event>
+  </content>
+</entry>

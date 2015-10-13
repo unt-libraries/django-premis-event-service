@@ -379,7 +379,7 @@ class TestAppEvent:
     CONTENT_TYPE = 'application/atom+xml'
     RESULTS_PER_PAGE = 20
 
-    def event_in_filtered_results(self, response, event):
+    def response_has_event(self, response, event):
         """True if the event is the only event in the response content."""
         xml = objectify.fromstring(response.content)
         if len(xml.entry) != 1:
@@ -462,7 +462,7 @@ class TestAppEvent:
 
         request = rf.get('/?start_date=01/31/2015')
         response = views.app_event(request)
-        assert self.event_in_filtered_results(response, event)
+        assert self.response_has_event(response, event)
 
     @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
     def test_list_filtering_by_end_date(self, rf):
@@ -472,7 +472,7 @@ class TestAppEvent:
 
         request = rf.get('/?end_date=01/31/2015')
         response = views.app_event(request)
-        assert self.event_in_filtered_results(response, event)
+        assert self.response_has_event(response, event)
 
     def test_list_filtering_by_linking_object_id(self, rf):
         factories.EventFactory.create_batch(30)
@@ -483,7 +483,7 @@ class TestAppEvent:
         request = rf.get(url)
         response = views.app_event(request)
 
-        assert self.event_in_filtered_results(response, event)
+        assert self.response_has_event(response, event)
 
     def test_list_filtering_by_event_outcome(self, rf):
         factories.EventFactory.create_batch(30)
@@ -493,7 +493,7 @@ class TestAppEvent:
 
         request = rf.get('?outcome={0}'.format(event_outcome))
         response = views.app_event(request)
-        assert self.event_in_filtered_results(response, event)
+        assert self.response_has_event(response, event)
 
     def test_list_filtering_by_event_type(self, rf):
         factories.EventFactory.create_batch(30)
@@ -503,7 +503,7 @@ class TestAppEvent:
 
         request = rf.get('?type={0}'.format(event_type))
         response = views.app_event(request)
-        assert self.event_in_filtered_results(response, event)
+        assert self.response_has_event(response, event)
 
     def test_get_with_identifier_returns_ok(self, rf):
         event = factories.EventFactory.create()
@@ -563,7 +563,7 @@ class TestEventSearch:
     RESULTS_PER_PAGE = 20
 
     def response_has_event(self, response, event):
-        """True event is the only Event in the response context."""
+        """True if the event is the only Event in the response context."""
         paginated_entries = response.context[-1]['entries']
         filtered_entry = paginated_entries.object_list[0]
 
@@ -656,7 +656,7 @@ class TestJsonEventSearch:
     REL_PREVIOUS = 'previous'
 
     def response_has_entry(self, response, event):
-        """True event is the only Event in the response content."""
+        """True if the event is the only Event in the response content."""
         data = json.loads(response.content)
         entries = data['feed']['entry']
         filtered_entry = entries[0]

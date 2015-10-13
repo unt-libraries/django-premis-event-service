@@ -512,7 +512,7 @@ class TestAppEvent:
         events.sort(key=lambda e: e.event_identifier)
 
         # Order by the Event identifier because the values are globally unique.
-        # Pure Python vs the Django ORM sort items with matching keys differently
+        # Pure Python vs the Django ORM sort items with matching keys differently.
         request = rf.get('?orderby=event_identifier')
         response = views.app_event(request)
 
@@ -527,7 +527,7 @@ class TestAppEvent:
         events.sort(key=lambda e: e.event_identifier, reverse=True)
 
         # Order by the Event identifier because the values are globally unique.
-        # Pure Python vs the Django ORM sort items with matching keys differently
+        # Pure Python vs the Django ORM sort items with matching keys differently.
         request = rf.get('?orderby=event_identifier&orderdir=descending')
         response = views.app_event(request)
 

@@ -20,10 +20,12 @@ def event_xml():
 
 
 def etree_to_objectify(tree):
+    """Test helper to convert an etree object to an objectify object."""
     return objectify.fromstring(etree.tostring(tree))
 
 
 def objectify_to_etree(obj):
+    """Test helper to convert an objectify object to an etree object."""
     return etree.fromstring(etree.tostring(obj))
 
 
@@ -132,8 +134,8 @@ class TestPremisEventXMLToObject:
         assert linking_object_id == linking_object.object_identifier
         assert linking_object_type == linking_object.object_type
 
-    @pytest.mark.xfail
-    def test_existing_event_identifier_results_int_HttpResponse(self, event_xml):
+    @pytest.mark.xfail(reason='Try block always catches a NameError before able to return.')
+    def test_existing_event_identifier_results_in_HttpResponse(self, event_xml):
         identifier, xml = event_xml
         tree = etree.fromstring(xml)
 
@@ -173,7 +175,10 @@ class TestPremisEventXMLToObject:
         assert 'Unable to parse' in str(e)
         assert 'into datetime object' in str(e)
 
-    def test_datetime_has_fractional_seconds(self, event_xml):
+    def test_datetime_that_has_decimal_seconds(self, event_xml):
+        """Test that a datetime string that contains a decimal second is properly
+        converted to a datetime object.
+        """
         _, xml = event_xml
 
         date_string = '1997-07-16T19:20:30.45+01:00'

@@ -1,6 +1,7 @@
 from datetime import datetime
 import uuid
 
+from mock import patch
 from lxml import etree, objectify
 import pytest
 
@@ -197,3 +198,113 @@ class TestPremisEventXMLToObject:
         event = presentation.premisEventXMLToObject(tree)
 
         assert isinstance(event.event_date_time, datetime)
+
+
+@pytest.mark.django_db
+class TestPremisAgentXMLToObject:
+    identifier = 'EqLVtAeVnHoR'
+
+    @pytest.fixture
+    def agent_xml(self):
+        def xml_template(identifier):
+            xml = """<?xml version="1.0"?>
+                <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
+                  <premis:agentIdentifier>
+                    <premis:agentIdentifierValue>{identifier}</premis:agentIdentifierValue>
+                    <premis:agentIdentifierType>PES:Agent</premis:agentIdentifierType>
+                  </premis:agentIdentifier>
+                  <premis:agentName>asXbNNQgsgbS</premis:agentName>
+                  <premis:agentType>Software</premis:agentType>
+                  <premis:agentNote>This is a test Agent</premis:agentNote>
+                </premis:agent>
+            """
+            return xml.format(identifier=identifier)
+        return xml_template
+
+    def test_returns_agent(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        agent = presentation.premisAgentXMLToObject(xml)
+        assert isinstance(agent, models.Agent)
+
+    @patch('premis_event_service.presentation.premisAgentXMLgetObject')
+    @patch('premis_event_service.presentation.Agent')
+    def test_creates_new_agent(self, agent_mock, get_object_mock, agent_xml):
+        xml = agent_xml(self.identifier)
+        get_object_mock.side_effect = Exception
+        presentation.premisAgentXMLToObject(xml)
+
+        assert get_object_mock.called
+        assert agent_mock.called
+
+    @patch('premis_event_service.presentation.premisAgentXMLgetObject')
+    @patch('premis_event_service.presentation.Agent')
+    def test_gets_existing_agent(self, agent_mock, get_object_mock, agent_xml):
+        xml = agent_xml(self.identifier)
+        presentation.premisAgentXMLToObject(xml)
+
+        assert get_object_mock.called
+        assert not agent_mock.called
+
+    def test_set_agent_identifier(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        presentation.premisAgentXMLToObject(xml)
+        agent = presentation.premisAgentXMLToObject(xml)
+        xml_obj = objectify.fromstring(xml)
+        assert agent.agent_identifier == xml_obj.agentIdentifier.agentIdentifierValue
+
+    def test_raises_exception_when_agent_identifier_is_missing(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        xml_obj = objectify.fromstring(xml)
+        del xml_obj.agentIdentifier
+
+        with pytest.raises(Exception) as e:
+            presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
+
+        expected_message = "Unable to set 'agent_identifier'"
+        assert expected_message in str(e), 'The exception messages matches'
+
+    def test_sets_agent_type(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        agent = presentation.premisAgentXMLToObject(xml)
+        xml_obj = objectify.fromstring(xml)
+        assert agent.agent_type == xml_obj.agentType
+
+    def test_raises_exception_when_agent_type_is_missing(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        xml_obj = objectify.fromstring(xml)
+        del xml_obj.agentType
+
+        with pytest.raises(Exception) as e:
+            presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
+
+        expected_message = "Unable to set 'agent_type'"
+        assert expected_message in str(e), 'The exception messages matches'
+
+    def test_sets_agent_name(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        agent = presentation.premisAgentXMLToObject(xml)
+        xml_obj = objectify.fromstring(xml)
+        assert agent.agent_name == xml_obj.agentName
+
+    def test_raises_exception_when_agent_name_is_missing(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        xml_obj = objectify.fromstring(xml)
+        del xml_obj.agentName
+
+        with pytest.raises(Exception) as e:
+            presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
+
+        expected_message = "Unable to set 'agent_name'"
+        assert expected_message in str(e), 'The exception messages matches'
+
+    def test_sets_agent_note(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        agent = presentation.premisAgentXMLToObject(xml)
+        xml_obj = objectify.fromstring(xml)
+        assert agent.agent_note == xml_obj.agentNote
+
+    def test_exception_not_raised_when_agent_note_is_missing(self, agent_xml):
+        xml = agent_xml(self.identifier)
+        xml_obj = objectify.fromstring(xml)
+        del xml_obj.agentNote
+        presentation.premisAgentXMLToObject(etree.tostring(xml_obj))

@@ -187,7 +187,7 @@ class TestPremisEventXMLToObject:
         """
         _, xml = event_xml
 
-        # Replace the datetime string with a valid datetimestring that
+        # Replace the datetime string with a valid datetime string that
         # contains a decimal second field.
         date_string = '1997-07-16T19:20:30.45+01:00'
         xml_obj = objectify.fromstring(xml)

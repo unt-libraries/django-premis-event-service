@@ -206,6 +206,11 @@ class TestPremisAgentXMLToObject:
 
     @pytest.fixture
     def agent_xml(self):
+        """Agent XML Fixture.
+
+        Returns a callable that takes the Agent identifier as an argument.
+        The callable then returns the Agent XML with the given identifier.
+        """
         def xml_template(identifier):
             xml = """<?xml version="1.0"?>
                 <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
@@ -229,10 +234,20 @@ class TestPremisAgentXMLToObject:
     @patch('premis_event_service.presentation.premisAgentXMLgetObject')
     @patch('premis_event_service.presentation.Agent')
     def test_creates_new_agent(self, agent_mock, get_object_mock, agent_xml):
+        """Check that a new Agent object is created if an existing object
+        cannot be retrieved.
+        """
         xml = agent_xml(self.identifier)
+
+        # get_object_mock is the mock that is patched of premisAgentXMLgetObject.
+        # The name has changed for brevity.
         get_object_mock.side_effect = Exception
         presentation.premisAgentXMLToObject(xml)
 
+        # Agent will be called only if the premisAgentXMLgetObject raises an
+        # exception. We will verify that both mocks have been called to assert
+        # that premisAgentXMLgetObject raised and exception and a new Agent
+        # was created.
         assert get_object_mock.called
         assert agent_mock.called
 
@@ -243,9 +258,11 @@ class TestPremisAgentXMLToObject:
         presentation.premisAgentXMLToObject(xml)
 
         assert get_object_mock.called
+        # If agent_mock was not called, we know that an existing Agent was
+        # retrieved.
         assert not agent_mock.called
 
-    def test_set_agent_identifier(self, agent_xml):
+    def test_sets_agent_identifier(self, agent_xml):
         xml = agent_xml(self.identifier)
         presentation.premisAgentXMLToObject(xml)
         agent = presentation.premisAgentXMLToObject(xml)
@@ -308,3 +325,5 @@ class TestPremisAgentXMLToObject:
         xml_obj = objectify.fromstring(xml)
         del xml_obj.agentNote
         presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
+        # No assertions here. We only want to make sure that no exceptions
+        # were raised.

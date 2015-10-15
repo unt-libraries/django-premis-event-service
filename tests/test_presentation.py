@@ -41,17 +41,16 @@ class TestPremisEventXMLToObject:
     def test_sets_event_type(self, event_xml):
         identifier, xml = event_xml
         tree = etree.fromstring(xml)
-
         event = presentation.premisEventXMLToObject(tree)
-        xml_obj = etree_to_objectify(tree)
 
+        xml_obj = etree_to_objectify(tree)
         assert event.event_type == xml_obj.eventType
 
     def test_sets_identifier_type(self, event_xml):
         identifier, xml = event_xml
         tree = etree.fromstring(xml)
-
         event = presentation.premisEventXMLToObject(tree)
+
         xml_obj = etree_to_objectify(tree)
         assert event.event_identifier_type == xml_obj.eventIdentifier.eventIdentifierType
 

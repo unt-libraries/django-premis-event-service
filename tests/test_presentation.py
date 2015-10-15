@@ -234,20 +234,20 @@ class TestPremisAgentXMLToObject:
     @patch('premis_event_service.presentation.premisAgentXMLgetObject')
     @patch('premis_event_service.presentation.Agent')
     def test_creates_new_agent(self, agent_mock, get_object_mock, agent_xml):
-        """Check that a new Agent object is created if an existing object
+        """Check that a new Agent object is created if an existing Agent
         cannot be retrieved.
         """
         xml = agent_xml(self.identifier)
 
-        # get_object_mock is the mock that is patched of premisAgentXMLgetObject.
-        # The name has changed for brevity.
+        # get_object_mock is the mock that is patched over premisAgentXMLgetObject.
+        # The name change is for brevity.
         get_object_mock.side_effect = Exception
         presentation.premisAgentXMLToObject(xml)
 
-        # Agent will be called only if the premisAgentXMLgetObject raises an
-        # exception. We will verify that both mocks have been called to assert
-        # that premisAgentXMLgetObject raised and exception and a new Agent
-        # was created.
+        # Agent will be called only if the call to premisAgentXMLgetObject
+        # raises an exception. We will verify that both mocks have been
+        # called to assert that premisAgentXMLgetObject raised and exception
+        # and a new Agent was created.
         assert get_object_mock.called
         assert agent_mock.called
 

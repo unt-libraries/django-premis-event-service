@@ -178,7 +178,7 @@ class TestPremisEventXMLToObject:
 
         # Since the base Exception is raised from the function, we want to make
         # sure it is the correct Exception, so now check the error message and
-        # if it matches.
+        # see if it matches the expected message.
         assert 'Unable to parse' in str(e)
         assert 'into datetime object' in str(e)
 

@@ -124,15 +124,15 @@ class TestPremisEventXMLToObject:
         event = presentation.premisEventXMLToObject(tree)
 
         xml_obj = etree_to_objectify(tree)
-        linking_object_id = xml_obj.linkingObjectIdentifier.linkingObjectIdentifierValue.text
-        linking_object_type = xml_obj.linkingObjectIdentifier.linkingObjectIdentifierType.text
+        xml_linking_object_id = xml_obj.linkingObjectIdentifier.linkingObjectIdentifierValue.text
+        xml_linking_object_type = xml_obj.linkingObjectIdentifier.linkingObjectIdentifierType.text
 
         # Get the newly created LinkObject from the database.
-        linking_object = event.linking_objects.get(object_identifier=linking_object_id)
+        linking_object = event.linking_objects.get(object_identifier=xml_linking_object_id)
 
         # Assert that the database version matches the values defined in the XML.
-        assert linking_object_id == linking_object.object_identifier
-        assert linking_object_type == linking_object.object_type
+        assert xml_linking_object_id == linking_object.object_identifier
+        assert xml_linking_object_type == linking_object.object_type
 
     @pytest.mark.xfail(reason='Try block always catches a NameError before able to return.')
     def test_existing_event_identifier_results_in_HttpResponse(self, event_xml):

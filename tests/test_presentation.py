@@ -260,7 +260,6 @@ class TestPremisAgentXMLToObject:
 
     def test_sets_agent_identifier(self):
         xml = self.agent_xml(self.identifier)
-        presentation.premisAgentXMLToObject(xml)
         agent = presentation.premisAgentXMLToObject(xml)
         xml_obj = objectify.fromstring(xml)
         assert agent.agent_identifier == xml_obj.agentIdentifier.agentIdentifierValue

@@ -273,7 +273,7 @@ class TestPremisAgentXMLToObject:
             presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
 
         expected_message = "Unable to set 'agent_identifier'"
-        assert expected_message in str(e), 'The exception messages matches'
+        assert expected_message in str(e), 'The exception message matches'
 
     def test_sets_agent_type(self):
         xml = self.agent_xml(self.identifier)
@@ -290,7 +290,7 @@ class TestPremisAgentXMLToObject:
             presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
 
         expected_message = "Unable to set 'agent_type'"
-        assert expected_message in str(e), 'The exception messages matches'
+        assert expected_message in str(e), 'The exception message matches'
 
     def test_sets_agent_name(self):
         xml = self.agent_xml(self.identifier)
@@ -307,7 +307,7 @@ class TestPremisAgentXMLToObject:
             presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
 
         expected_message = "Unable to set 'agent_name'"
-        assert expected_message in str(e), 'The exception messages matches'
+        assert expected_message in str(e), 'The exception message matches'
 
     def test_sets_agent_note(self):
         xml = self.agent_xml(self.identifier)

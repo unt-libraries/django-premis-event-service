@@ -15,7 +15,7 @@ class EventTestXML(object):
         xml = """<?xml version="1.0"?>
             <entry xmlns="http://www.w3.org/2005/Atom">
               <title>{event_identifier}</title>
-              <id>http://example.com/APP/event/{event_identifier}/</id>
+              <id>{event_identifier}</id>
               <updated>2015-10-02T19:59:22Z</updated>
               <content type="application/xml">
                 <premis:event xmlns:premis="info:lc/xmlns/premis-v2">

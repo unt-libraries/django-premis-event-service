@@ -161,13 +161,28 @@ class TestPremisEventXMLToObject:
         assert 'Unable to parse' in str(e)
         assert 'into datetime object' in str(e)
 
-    def test_datetime_that_has_decimal_seconds(self, event_xml):
-        """Test that a datetime string that contains a decimal second is properly
+    def test_datetime_that_has_milliseconds(self, event_xml):
+        """Test that a datetime string that contains milliseconds is properly
         converted to a datetime object.
         """
         # Replace the datetime string with a valid datetime string that
-        # contains a decimal second field.
+        # contains milliseconds.
         date_string = '1997-07-16T19:20:30.45+01:00'
+        xml_obj = objectify.fromstring(event_xml.obj_xml)
+        xml_obj.eventDateTime = date_string
+
+        tree = objectify_to_etree(xml_obj)
+        event = presentation.premisEventXMLToObject(tree)
+
+        assert isinstance(event.event_date_time, datetime)
+
+    def test_datetime_without_milliseconds(self, event_xml):
+        """Test that a datetime string that does not contains milliseconds
+        is properly converted to a datetime object.
+        """
+        # Replace the datetime string with a valid datetime string that
+        # does not contain milliseconds.
+        date_string = '1997-07-16T19:20:30'
         xml_obj = objectify.fromstring(event_xml.obj_xml)
         xml_obj.eventDateTime = date_string
 

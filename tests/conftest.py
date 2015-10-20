@@ -103,9 +103,30 @@ class AgentTestXML(object):
 
 @pytest.fixture
 def event_xml():
+    """Provides XML representing an Event object.
+
+    The XML is created using factories.EventFactory. Every instantiation
+    provides random data using the EventFactory.attributes() method.
+
+    The object provides three public properties.
+
+    identifer: The identifier of the Event object the XML represents.
+    obj_xml: The object xml.
+    entry_xml: The object xml wrapped in an AtomPub entry.
+    """
     return EventTestXML()
 
 
 @pytest.fixture
 def agent_xml():
+    """Provides XML representing an Agent object.
+
+    The XML is created using factories.AgentFactory. Every instantiation
+    provides random data using the AgentFactory.attributes() method.
+
+    The object provides two public properties.
+
+    identifer: The identifier of the Agent object the XML represents.
+    obj_xml: The object xml.
+    """
     return AgentTestXML()

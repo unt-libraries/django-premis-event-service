@@ -8,7 +8,7 @@ from django.http import Http404
 from django.utils import timezone
 
 from premis_event_service import views, models
-from . import factories, AppEventTestXml
+from . import factories
 
 
 pytestmark = [
@@ -251,37 +251,21 @@ class TestAppAgent:
         request = rf.get('/?page=3')
         views.app_agent(request)
 
-    @pytest.fixture
-    def app_agent_xml(self):
-        xml = """<?xml version="1.0"?>
-            <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
-              <premis:agentIdentifier>
-                <premis:agentIdentifierValue>{identifier}</premis:agentIdentifierValue>
-                <premis:agentIdentifierType>PES:Agent</premis:agentIdentifierType>
-              </premis:agentIdentifier>
-              <premis:agentName>asXbNNQgsgbS</premis:agentName>
-              <premis:agentType>Software</premis:agentType>
-            </premis:agent>
-        """
-        identifier = 'EqLVtAeVnHoR'
-        return identifier, xml.format(identifier=identifier)
-
-    def test_post_returns_created(self, rf, app_agent_xml):
-        _, xml = app_agent_xml
-        request = rf.post('/', xml, content_type='application/xml')
+    def test_post_returns_created(self, rf, agent_xml):
+        request = rf.post('/', agent_xml.obj_xml, content_type='application/xml')
         response = views.app_agent(request)
         assert response.status_code == 201
 
-    def test_post_response_content_type(self, rf, app_agent_xml):
-        _, xml = app_agent_xml
-        request = rf.post('/', xml, content_type='application/xml')
+    def test_post_response_content_type(self, rf, agent_xml):
+        request = rf.post('/', agent_xml.obj_xml, content_type='application/xml')
         response = views.app_agent(request)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_post_response_content(self, rf, app_agent_xml):
-        identifier, xml = app_agent_xml
-        request = rf.post('/', xml, content_type='application/xml')
+    def test_post_response_content(self, rf, agent_xml):
+        request = rf.post('/', agent_xml.obj_xml, content_type='application/xml')
         response = views.app_agent(request)
+
+        identifier = agent_xml.identifier
         assert identifier in response.content
 
     @pytest.mark.xfail(reason='POST request without body raises uncaught exception.')
@@ -319,37 +303,37 @@ class TestAppAgent:
         views.app_agent(request, agent.agent_identifier)
         assert models.Agent.objects.count() == 0
 
-    def test_put_returns_ok(self, app_agent_xml, rf):
-        identifier, xml = app_agent_xml
+    def test_put_returns_ok(self, agent_xml, rf):
+        identifier = agent_xml.identifier
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
-        request = rf.put('/', xml, content_type='application/xml')
+        request = rf.put('/', agent_xml.obj_xml, content_type='application/xml')
         response = views.app_agent(request, agent.agent_identifier)
         assert response.status_code == 200
 
-    def test_put_response_content_type(self, app_agent_xml, rf):
-        identifier, xml = app_agent_xml
+    def test_put_response_content_type(self, agent_xml, rf):
+        identifier = agent_xml.identifier
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
-        request = rf.put('/', xml, content_type='application/xml')
+        request = rf.put('/', agent_xml.obj_xml, content_type='application/xml')
         response = views.app_agent(request, agent.agent_identifier)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_put_agent_updated(self, app_agent_xml, rf):
-        identifier, xml = app_agent_xml
+    def test_put_agent_updated(self, agent_xml, rf):
+        identifier = agent_xml.identifier
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
-        request = rf.put('/', xml, content_type='application/xml')
+        request = rf.put('/', agent_xml.obj_xml, content_type='application/xml')
         views.app_agent(request, agent.agent_identifier)
 
         updated_agent = models.Agent.objects.get(agent_identifier=identifier)
         assert updated_agent.agent_name != agent.agent_name
 
-    def test_put_response_content(self, app_agent_xml, rf):
-        identifier, xml = app_agent_xml
+    def test_put_response_content(self, agent_xml, rf):
+        identifier = agent_xml.identifier
         agent = factories.AgentFactory.create(agent_identifier=identifier)
 
-        request = rf.put('/', xml, content_type='application/xml')
+        request = rf.put('/', agent_xml.obj_xml, content_type='application/xml')
         response = views.app_agent(request, agent.agent_identifier)
 
         updated_agent = models.Agent.objects.get(agent_identifier=identifier)
@@ -390,54 +374,74 @@ class TestAppEvent:
             return False
         return True
 
-    @pytest.fixture
-    def app_event_xml(self):
-        with AppEventTestXml() as f:
-            xml = f.read()
-        identifier = '6939fb9e-2bf1-4bff-a06a-71c0fc41a9aa'
-        return identifier, xml.format(identifier=identifier)
+    def test_post_returns_created(self, event_xml, rf):
+        request = rf.post(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
 
-    def test_post_returns_created(self, app_event_xml, rf):
-        _, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
         response = views.app_event(request)
         assert response.status_code == 201
 
-    def test_post_response_content_type(self, app_event_xml, rf):
-        _, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+    def test_post_response_content_type(self, event_xml, rf):
+        request = rf.post(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
         response = views.app_event(request)
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
-    def test_post_response_content(self, app_event_xml, rf):
-        identifier, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+    def test_post_response_content(self, event_xml, rf):
+        request = rf.post(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
         response = views.app_event(request)
+        identifier = event_xml.identifier
         assert identifier in response.content
 
-    def test_post_creates_event(self, app_event_xml, rf):
+    def test_post_creates_event(self, event_xml, rf):
         assert models.Event.objects.count() == 0
-        _, xml = app_event_xml
-        request = rf.post('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+        request = rf.post(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
         views.app_event(request)
         assert models.Event.objects.count() == 1
 
     @pytest.mark.xfail(reason='Call to updateObjectFromXML fails unexpectedly.')
-    def test_put_returns_ok(self, app_event_xml, rf):
-        identifier, xml = app_event_xml
+    def test_put_returns_ok(self, event_xml, rf):
+        identifier = event_xml.identifier
         factories.EventFactory.create(event_identifier=identifier)
 
-        request = rf.put('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+        request = rf.put(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
         response = views.app_event(request, identifier)
 
         assert response.status_code == 200
 
     @pytest.mark.xfail(reason='Call to updateObjectFromXML fails unexpectedly.')
-    def test_put_response_content_type(self, app_event_xml, rf):
-        identifier, xml = app_event_xml
+    def test_put_response_content_type(self, event_xml, rf):
+        identifier = event_xml.identifier
         factories.EventFactory.create(event_identifier=identifier)
 
-        request = rf.put('/', xml, content_type='application/xml', HTTP_HOST='example.com')
+        request = rf.put(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
         response = views.app_event(request, identifier)
 
         assert response.get('Content-Type') == self.CONTENT_TYPE

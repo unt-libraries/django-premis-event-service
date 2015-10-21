@@ -325,3 +325,133 @@ class TestPremisAgentXMLGetObjects:
         tree = etree.fromstring(agent_xml.obj_xml)
         with pytest.raises(Http404):
             presentation.premisAgentXMLgetObject(tree)
+
+
+@pytest.mark.django_db
+class TestObjectToPremisEventXML:
+
+    def check_namespace(self, element):
+        return element.nsmap['premis'] == 'info:lc/xmlns/premis-v2'
+
+    def test_returns_Element(self):
+        event = factories.EventFactory()
+        event_xml = presentation.objectToPremisEventXML(event)
+        assert isinstance(event_xml, etree._Element)
+
+    def test_root_namespace(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+        assert self.check_namespace(event_xml)
+
+    def test_event_identifier(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventIdentifier.eventIdentifierValue
+        assert element == event.event_identifier
+        assert self.check_namespace(element)
+
+    def test_event_identifier_type(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventIdentifier.eventIdentifierType
+        assert element == event.event_identifier_type
+        assert self.check_namespace(element)
+
+    def test_event_type(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventType
+        assert element == event.event_type
+        assert self.check_namespace(element)
+
+    def test_event_date_time(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventDateTime
+        assert element.text in str(event.event_date_time)
+        assert self.check_namespace(element)
+
+    def test_event_outcome(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventOutcomeInformation.eventOutcome
+        assert element == event.event_outcome
+        assert self.check_namespace(element)
+
+    def test_event_outcome_detail(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventOutcomeInformation.eventOutcomeDetail
+        assert element == event.event_outcome_detail
+        assert self.check_namespace(element)
+
+    def test_event_detail(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.eventDetail
+        assert element == event.event_detail
+        assert self.check_namespace(element)
+
+    def test_linking_agent_identifier_value(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.linkingAgentIdentifier.linkingAgentIdentifierValue
+        assert element == event.linking_agent_identifier_value
+        assert self.check_namespace(element)
+
+    def test_linking_agent_identifier_type(self):
+        event = factories.EventFactory()
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.linkingAgentIdentifier.linkingAgentIdentifierType
+        assert element == event.linking_agent_identifier_type
+        assert self.check_namespace(element)
+
+    def test_link_object_identifier(self):
+        event = factories.EventFactory(linking_objects=True, linking_objects__count=2)
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        element = event_xml.linkingObjectIdentifier
+        assert len(element) == 2
+        assert self.check_namespace(element)
+
+    def test_link_object_identifier_value(self):
+        event = factories.EventFactory(linking_objects=True)
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        linking_object = event.linking_objects.first()
+
+        element = event_xml.linkingObjectIdentifier.linkingObjectIdentifierValue
+        assert element == linking_object.object_identifier
+        assert self.check_namespace(element)
+
+    def test_link_object_identifier_type(self):
+        event = factories.EventFactory(linking_objects=True)
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        linking_object = event.linking_objects.first()
+
+        element = event_xml.linkingObjectIdentifier.linkingObjectIdentifierType
+        assert element == linking_object.object_type
+        assert self.check_namespace(element)

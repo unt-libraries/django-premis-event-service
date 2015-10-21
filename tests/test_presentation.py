@@ -5,7 +5,7 @@ from mock import patch
 from lxml import etree, objectify
 import pytest
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 from premis_event_service import presentation, models
 from . import factories
@@ -283,3 +283,45 @@ class TestPremisAgentXMLToObject:
         presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
         # No assertions here. We only want to make sure that no exceptions
         # were raised.
+
+
+@pytest.mark.django_db
+class TestPremisEventXMLGetObjects:
+
+    def test_returns_correct_event_object(self, event_xml):
+        tree = etree.fromstring(event_xml.entry_xml)
+        factories.EventFactory(event_identifier=event_xml.identifier)
+        event_obj = presentation.premisEventXMLgetObject(tree)
+        assert event_obj.event_identifier == event_xml.identifier
+        assert isinstance(event_obj, models.Event)
+
+    def test_raises_Http404_if_object_not_found(self, event_xml):
+        tree = etree.fromstring(event_xml.entry_xml)
+        with pytest.raises(Http404):
+            presentation.premisEventXMLgetObject(tree)
+
+    def test_raises_Http404_when_xml_has_no_id(self, event_xml):
+        xml_obj = objectify.fromstring(event_xml.entry_xml)
+        del xml_obj.id
+        tree = objectify_to_etree(xml_obj)
+
+        factories.EventFactory(event_identifier=event_xml.identifier)
+
+        with pytest.raises(Http404):
+            presentation.premisEventXMLgetObject(tree)
+
+
+@pytest.mark.django_db
+class TestPremisAgentXMLGetObjects:
+
+    def test_returns_correct_agent_object(self, agent_xml):
+        tree = etree.fromstring(agent_xml.obj_xml)
+        factories.AgentFactory(agent_identifier=agent_xml.identifier)
+        agent_obj = presentation.premisAgentXMLgetObject(tree)
+        assert agent_obj.agent_identifier == agent_xml.identifier
+        assert isinstance(agent_obj, models.Agent)
+
+    def test_raises_Http404_if_object_not_found(self, agent_xml):
+        tree = etree.fromstring(agent_xml.obj_xml)
+        with pytest.raises(Http404):
+            presentation.premisAgentXMLgetObject(tree)

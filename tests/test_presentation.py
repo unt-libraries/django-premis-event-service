@@ -300,7 +300,7 @@ class TestPremisEventXMLGetObjects:
         with pytest.raises(Http404):
             presentation.premisEventXMLgetObject(tree)
 
-    def test_raises_Http404_xml_has_no_id(self, event_xml):
+    def test_raises_Http404_when_xml_has_no_id(self, event_xml):
         xml_obj = objectify.fromstring(event_xml.entry_xml)
         del xml_obj.id
         tree = objectify_to_etree(xml_obj)

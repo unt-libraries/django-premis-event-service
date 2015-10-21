@@ -455,3 +455,14 @@ class TestObjectToPremisEventXML:
         element = event_xml.linkingObjectIdentifier.linkingObjectIdentifierType
         assert element == linking_object.object_type
         assert self.check_namespace(element)
+
+    def test_link_object_role(self):
+        event = factories.EventFactory(linking_objects=True)
+        tree = presentation.objectToPremisEventXML(event)
+        event_xml = etree_to_objectify(tree)
+
+        linking_object = event.linking_objects.first()
+
+        element = event_xml.linkingObjectIdentifier.linkingObjectRole
+        assert element.text == linking_object.object_role
+        assert self.check_namespace(element)

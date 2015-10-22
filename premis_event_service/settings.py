@@ -9,7 +9,7 @@ them in that file rather than here.
 '''
 from django.conf import settings
 
-# Used in coda/util.py
+# Used in codalib/util.py
 EVENT_ID_TYPE_XML = getattr(settings, 'EVENT_ID_TYPE_XML',
     "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID")
 LINK_AGENT_ID_TYPE_XML = getattr(settings, 'LINK_AGENT_ID_TYPE_XML',
@@ -18,7 +18,7 @@ LINK_AGENT_ID_ROLE_XML = getattr(settings, 'LINK_AGENT_ID_ROLE_XML',
     "http://id.loc.gov/vocabulary/preservation/eventRelatedAgentRole/exe"
 )
 
-# Used in coda/bagatom.py
+# Used in codalib/bagatom.py
 BAGATOM_BAG_NAMESPACE = getattr(settings, 'BAGATOM_BAG_NAMESPACE', "TODO")
 BAGATOM_QXML_NAMESPACE = getattr(settings, 'BAGATOM_QXML_NAMESPACE', "TODO")
 BAGATOM_NODE_NAMESPACE = getattr(settings, 'BAGATOM_NODE_NAMESPACE', "TODO")

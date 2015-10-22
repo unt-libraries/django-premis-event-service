@@ -7,7 +7,7 @@ import pytest
 
 from django.http import HttpResponse, Http404
 
-from premis_event_service import presentation, models
+from premis_event_service import presentation, models, settings
 from . import factories
 
 
@@ -466,3 +466,86 @@ class TestObjectToPremisEventXML:
         element = event_xml.linkingObjectIdentifier.linkingObjectRole
         assert element.text == linking_object.object_role
         assert self.check_namespace(element)
+
+
+@pytest.mark.django_db
+class TestObjectToAgentXML:
+
+    def test_returns_Element(self):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToAgentXML(agent)
+        assert isinstance(agent_xml, etree._Element)
+
+    def test_agent_identifier_value(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierValue
+        assert element == agent.agent_identifier
+
+    def test_agent_identifier_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierType
+        assert element == 'PES:Agent'
+
+    def test_agent_name(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentName
+        assert element == agent.agent_name
+
+    def test_agent_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentType
+        assert element == agent.agent_type
+
+
+@pytest.mark.django_db
+class TestObjectToPremisAentXML:
+
+    def test_returns_Element(self):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        assert isinstance(agent_xml, etree._Element)
+
+    def test_agent_identifier_value(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierValue
+        identifier = 'http://example.com/agent/{0}/'.format(agent.agent_identifier)
+        assert element == identifier
+
+    def test_agent_identifier_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierType
+        assert element == settings.LINK_AGENT_ID_TYPE_XML
+
+    def test_agent_name(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentName
+        assert element == agent.agent_name
+
+    def test_agent_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentType
+        assert element == agent.agent_type

@@ -525,7 +525,7 @@ class TestObjectToAgentXML:
 
 
 @pytest.mark.django_db
-class TestObjectToPremisAentXML:
+class TestObjectToPremisAgentXML:
 
     def test_returns_Element(self):
         agent = factories.AgentFactory()

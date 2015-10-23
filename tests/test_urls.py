@@ -68,6 +68,11 @@ def test_agentXML():
     assert url.func == views.agentXML
 
 
+def test_premis_agentXML():
+    url = resolve('/agent/agentId.premis.xml')
+    assert url.func == views.agentXML
+
+
 def test_json_agent():
     url = resolve('/agent/agentId.json')
     assert url.func == views.json_agent

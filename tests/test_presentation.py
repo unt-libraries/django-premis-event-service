@@ -7,7 +7,7 @@ import pytest
 
 from django.http import HttpResponse, Http404
 
-from premis_event_service import presentation, models
+from premis_event_service import presentation, models, settings
 from . import factories
 
 
@@ -19,6 +19,15 @@ def etree_to_objectify(tree):
 def objectify_to_etree(obj):
     """Test helper to convert an objectify object to an etree object."""
     return etree.fromstring(etree.tostring(obj))
+
+
+def has_premis_namespace(tree):
+    """True if the element has the Premis namespace.
+
+    Arguments:
+        tree: An etree._Element instance.
+    """
+    return tree.nsmap['premis'] == 'info:lc/xmlns/premis-v2'
 
 
 @pytest.mark.django_db
@@ -330,9 +339,6 @@ class TestPremisAgentXMLGetObjects:
 @pytest.mark.django_db
 class TestObjectToPremisEventXML:
 
-    def check_namespace(self, element):
-        return element.nsmap['premis'] == 'info:lc/xmlns/premis-v2'
-
     def test_returns_Element(self):
         event = factories.EventFactory()
         event_xml = presentation.objectToPremisEventXML(event)
@@ -342,7 +348,7 @@ class TestObjectToPremisEventXML:
         event = factories.EventFactory()
         tree = presentation.objectToPremisEventXML(event)
         event_xml = etree_to_objectify(tree)
-        assert self.check_namespace(event_xml)
+        assert has_premis_namespace(event_xml)
 
     def test_event_identifier(self):
         event = factories.EventFactory()
@@ -351,7 +357,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventIdentifier.eventIdentifierValue
         assert element == event.event_identifier
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_event_identifier_type(self):
         event = factories.EventFactory()
@@ -360,7 +366,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventIdentifier.eventIdentifierType
         assert element == event.event_identifier_type
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_event_type(self):
         event = factories.EventFactory()
@@ -369,7 +375,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventType
         assert element == event.event_type
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_event_date_time(self):
         event = factories.EventFactory()
@@ -378,7 +384,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventDateTime
         assert element.text in str(event.event_date_time)
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_event_outcome(self):
         event = factories.EventFactory()
@@ -387,7 +393,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventOutcomeInformation.eventOutcome
         assert element == event.event_outcome
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_event_outcome_detail(self):
         event = factories.EventFactory()
@@ -396,7 +402,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventOutcomeInformation.eventOutcomeDetail
         assert element == event.event_outcome_detail
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_event_detail(self):
         event = factories.EventFactory()
@@ -405,7 +411,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.eventDetail
         assert element == event.event_detail
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_linking_agent_identifier_value(self):
         event = factories.EventFactory()
@@ -414,7 +420,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.linkingAgentIdentifier.linkingAgentIdentifierValue
         assert element == event.linking_agent_identifier_value
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_linking_agent_identifier_type(self):
         event = factories.EventFactory()
@@ -423,7 +429,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.linkingAgentIdentifier.linkingAgentIdentifierType
         assert element == event.linking_agent_identifier_type
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_link_object_identifier(self):
         event = factories.EventFactory(linking_objects=True, linking_objects__count=2)
@@ -432,7 +438,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.linkingObjectIdentifier
         assert len(element) == 2
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_link_object_identifier_value(self):
         event = factories.EventFactory(linking_objects=True)
@@ -443,7 +449,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.linkingObjectIdentifier.linkingObjectIdentifierValue
         assert element == linking_object.object_identifier
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_link_object_identifier_type(self):
         event = factories.EventFactory(linking_objects=True)
@@ -454,7 +460,7 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.linkingObjectIdentifier.linkingObjectIdentifierType
         assert element == linking_object.object_type
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
 
     def test_link_object_role(self):
         event = factories.EventFactory(linking_objects=True)
@@ -465,4 +471,105 @@ class TestObjectToPremisEventXML:
 
         element = event_xml.linkingObjectIdentifier.linkingObjectRole
         assert element.text == linking_object.object_role
-        assert self.check_namespace(element)
+        assert has_premis_namespace(element)
+
+
+@pytest.mark.django_db
+class TestObjectToAgentXML:
+
+    def test_returns_Element(self):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToAgentXML(agent)
+        assert isinstance(agent_xml, etree._Element)
+
+    def test_root_namespace(self):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToAgentXML(agent)
+        assert has_premis_namespace(agent_xml)
+
+    def test_agent_identifier_value(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierValue
+        assert element == agent.agent_identifier
+        assert has_premis_namespace(element)
+
+    def test_agent_identifier_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierType
+        assert element == 'PES:Agent'
+        assert has_premis_namespace(element)
+
+    def test_agent_name(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentName
+        assert element == agent.agent_name
+        assert has_premis_namespace(element)
+
+    def test_agent_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToAgentXML(agent)
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentType
+        assert element == agent.agent_type
+        assert has_premis_namespace(element)
+
+
+@pytest.mark.django_db
+class TestObjectToPremisAgentXML:
+
+    def test_returns_Element(self):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        assert isinstance(agent_xml, etree._Element)
+
+    def test_root_namespace(self):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        assert has_premis_namespace(agent_xml)
+
+    def test_agent_identifier_value(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierValue
+        identifier = 'http://example.com/agent/{0}/'.format(agent.agent_identifier)
+        assert element == identifier
+        assert has_premis_namespace(element)
+
+    def test_agent_identifier_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentIdentifier.agentIdentifierType
+        assert element == settings.LINK_AGENT_ID_TYPE_XML
+        assert has_premis_namespace(element)
+
+    def test_agent_name(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentName
+        assert element == agent.agent_name
+        assert has_premis_namespace(element)
+
+    def test_agent_type(self):
+        agent = factories.AgentFactory()
+        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = etree_to_objectify(tree)
+
+        element = agent_xml.agentType
+        assert element == agent.agent_type
+        assert has_premis_namespace(element)

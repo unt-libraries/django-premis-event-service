@@ -607,7 +607,7 @@ class TestDoSimpleXMLAssignment:
 
         chain = ['element']
 
-        # Since the function mutates the the object, we will verify that the
+        # Since the function mutates the object, we will verify that the
         # attribute is the expected value before the function call.
         assert record_obj.value is None
         presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)

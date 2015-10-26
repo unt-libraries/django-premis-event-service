@@ -586,12 +586,12 @@ class TestDoSimpleXMLAssignment:
     def test_attribute_not_set_when_element_value_is_none(self, record_obj):
         tree = etree.fromstring(
             """<root>
-                <value/>
+                <element/>
             </root>
             """
         )
 
-        chain = ['value']
+        chain = ['element']
 
         record_obj.value = 10
         presentation.doSimpleXMLAssignment(record_obj, 'd', tree, chain)
@@ -600,12 +600,12 @@ class TestDoSimpleXMLAssignment:
     def test_without_nested_elements(self, record_obj):
         tree = etree.fromstring(
             """<root>
-                <value>1</value>
+                <element>1</element>
             </root>
             """
         )
 
-        chain = ['value']
+        chain = ['element']
 
         # Since the function mutates the the object, we will verify that the
         # attribute is the expected value before the function call.
@@ -616,12 +616,12 @@ class TestDoSimpleXMLAssignment:
     def test_chain_is_name_of_element(self, record_obj):
         tree = etree.fromstring(
             """<root>
-                <value>1</value>
+                <element>1</element>
             </root>
             """
         )
 
-        chain = 'value'
+        chain = 'element'
 
         assert record_obj.value is None
         presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
@@ -631,13 +631,13 @@ class TestDoSimpleXMLAssignment:
         tree = etree.fromstring(
             """<root>
                 <element>
-                    <value>1</value>
+                    <subelement>1</subelement>
                 </element>
             </root>
             """
         )
 
-        chain = ['element', 'value']
+        chain = ['element', 'subelement']
 
         assert record_obj.value is None
         presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
@@ -648,14 +648,14 @@ class TestDoSimpleXMLAssignment:
             """<root>
                 <element>
                     <subelement>
-                        <value>1</value>
+                        <subsubelement>1</subsubelement>
                     </subelement>
                 </element>
             </root>
             """
         )
 
-        chain = ['element', 'subelement', 'value']
+        chain = ['element', 'subelement', 'subsubelement']
 
         assert record_obj.value is None
         presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
@@ -664,12 +664,12 @@ class TestDoSimpleXMLAssignment:
     def test_element_text_is_stripped(self, record_obj):
         tree = etree.fromstring(
             """<root>
-                <value>     1     </value>
+                <element>     1     </element>
             </root>
             """
         )
 
-        chain = ['value']
+        chain = ['element']
 
         assert record_obj.value is None
         presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)

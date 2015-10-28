@@ -12,7 +12,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.template.context import RequestContext
 
-from coda.bagatom import makeObjectFeed, addObjectFromXML, \
+from codalib.bagatom import makeObjectFeed, addObjectFromXML, \
     updateObjectFromXML, wrapAtom, makeServiceDocXML
 from presentation import premisEventXMLToObject, premisEventXMLgetObject, \
     premisAgentXMLToObject, objectToPremisEventXML, objectToPremisAgentXML, \

@@ -4,7 +4,7 @@ from lxml import etree
 
 from django.shortcuts import get_object_or_404
 
-from coda.bagatom import getValueByName, getNodeByName, getNodesByName
+from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from . import settings
 

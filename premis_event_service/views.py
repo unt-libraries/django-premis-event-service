@@ -78,7 +78,7 @@ def app(request):
         collections
     )
     serviceXMLText = XML_HEADER % etree.tostring(serviceXML, pretty_print=True)
-    resp = HttpResponse(serviceXMLText, mimetype="application/atom+xml")
+    resp = HttpResponse(serviceXMLText, content_type="application/atom+xml")
     return resp
 
 
@@ -331,7 +331,7 @@ def json_event_search(request):
                 "title": "Premis Event Search"
             }
         }
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     json.dump(
         event_json,
         fp=response,
@@ -367,7 +367,7 @@ def json_agent(request, identifier=None):
     # get data for json dictionary
     a = get_object_or_404(Agent, agent_identifier=identifier)
     # dump the dict to as an HttpResponse
-    response = HttpResponse(mimetype='application/json')
+    response = HttpResponse(content_type='application/json')
     # construct the dictionary with values from aggregates
     jsonDict = {
         'id': "http://%s%s" % (request.get_host(), a.get_absolute_url()),
@@ -436,7 +436,7 @@ def findEvent(request, linked_identifier, event_type=None):
         eventXML, lateEvent.event_identifier, lateEvent.event_identifier
     )
     atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
-    resp = HttpResponse(atomText, mimetype="application/atom+xml")
+    resp = HttpResponse(atomText, content_type="application/atom+xml")
     return resp
 
 
@@ -467,7 +467,7 @@ def agentXML(request, identifier):
             )
         returnXML = objectToAgentXML(agentObject)
         returnText = XML_HEADER % etree.tostring(returnXML, pretty_print=True)
-    return HttpResponse(returnText, mimetype="application/atom+xml")
+    return HttpResponse(returnText, content_type="application/atom+xml")
 
 
 def app_event(request, identifier=None):
@@ -496,7 +496,7 @@ def app_event(request, identifier=None):
             title=newEvent.event_identifier,
         )
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
-        resp = HttpResponse(atomText, mimetype="application/atom+xml")
+        resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 201
         resp['Location'] = 'http://%s/APP/event/%s/' % (
             request.META['HTTP_HOST'],
@@ -568,7 +568,7 @@ def app_event(request, identifier=None):
         )
         atomFeed.append(comment)
         atomFeedText = XML_HEADER % etree.tostring(atomFeed, pretty_print=True)
-        resp = HttpResponse(atomFeedText, mimetype="application/atom+xml")
+        resp = HttpResponse(atomFeedText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp
     # updating an existing record
@@ -586,7 +586,7 @@ def app_event(request, identifier=None):
         eventObjectXML = objectToPremisEventXML(returnEvent)
         atomXML = wrapAtom(eventObjectXML, identifier, identifier)
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
-        resp = HttpResponse(atomText, mimetype="application/atom+xml")
+        resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp
     if request.method == 'GET' and identifier:
@@ -607,7 +607,7 @@ def app_event(request, identifier=None):
             title=identifier,
         )
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
-        resp = HttpResponse(atomText, mimetype="application/atom+xml")
+        resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp
     elif request.method == 'DELETE' and identifier:
@@ -631,7 +631,7 @@ def app_event(request, identifier=None):
             title=identifier,
         )
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
-        resp = HttpResponse(atomText, mimetype="application/atom+xml")
+        resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp
 
@@ -668,7 +668,7 @@ def app_agent(request, identifier=None):
             atomFeedText = XML_HEADER % etree.tostring(
                 atomFeed, pretty_print=True
             )
-            resp = HttpResponse(atomFeedText, mimetype="application/atom+xml")
+            resp = HttpResponse(atomFeedText, content_type="application/atom+xml")
             resp.status_code = 200
             return resp
         elif request.method == 'POST':
@@ -684,7 +684,7 @@ def app_agent(request, identifier=None):
                 returnEntry,
                 pretty_print=True
             )
-            resp = HttpResponse(entryText, mimetype="application/atom+xml")
+            resp = HttpResponse(entryText, content_type="application/atom+xml")
             resp.status_code = 201
             resp['Location'] = agent_object.agent_identifier + '/'
             return resp
@@ -717,7 +717,7 @@ def app_agent(request, identifier=None):
                 returnEntry,
                 pretty_print=True
             )
-            resp = HttpResponse(entryText, mimetype="application/atom+xml")
+            resp = HttpResponse(entryText, content_type="application/atom+xml")
             resp.status_code = 200
             return resp
         elif request.method == 'GET':
@@ -726,6 +726,6 @@ def app_agent(request, identifier=None):
                 returnXML,
                 pretty_print=True
             )
-            resp = HttpResponse(returnText, mimetype="application/atom+xml")
+            resp = HttpResponse(returnText, content_type="application/atom+xml")
             resp.status_code = 200
             return resp

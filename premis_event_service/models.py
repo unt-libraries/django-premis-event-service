@@ -44,7 +44,7 @@ class Agent(models.Model):
         return self.agent_name
 
     def get_absolute_url(self):
-        return reverse('premis_event_service.views.humanAgent', args=[self.agent_identifier])
+        return reverse('agent-detail', args=[self.agent_identifier])
 
     class Meta:
         ordering = ['agent_name']

@@ -69,7 +69,7 @@ def test_humanAgent_returns_all_agents(client):
 def test_humanAgent_with_identifier(client):
     agent = factories.AgentFactory.create()
     response = client.get(
-            reverse('premis_event_service.views.humanAgent', args=[agent.agent_identifier]))
+            reverse('agent-detail', args=[agent.agent_identifier]))
     context_agent = response.context[-1]['agents'][0]
     assert agent.agent_identifier == context_agent['agent_identifier']
 
@@ -85,7 +85,7 @@ def test_recent_event_list_context(client):
     """Test the Events in the response context."""
     num_events = 30
     factories.EventFactory.create_batch(num_events)
-    response = client.get(reverse('premis_event_service.views.recent_event_list'))
+    response = client.get(reverse('event-list'))
 
     context = response.context[-1]
     assert len(context['entries']) == 10
@@ -625,7 +625,7 @@ class TestEventSearch:
     def test_results_per_page(self, client):
         factories.EventFactory.create_batch(self.RESULTS_PER_PAGE * 3)
 
-        url = reverse('premis_event_service.views.event_search')
+        url = reverse('event-search')
         response = client.get(url)
 
         context = response.context[-1]
@@ -637,7 +637,7 @@ class TestEventSearch:
         event = factories.EventFactory.create(event_date_time=timezone.now())
 
         query_string = '?start_date=01/31/2015'
-        url = reverse('premis_event_service.views.event_search')
+        url = reverse('event-search')
         response = client.get(url + query_string)
 
         assert self.response_has_event(response, event)
@@ -648,7 +648,7 @@ class TestEventSearch:
         event = factories.EventFactory.create(event_date_time=datetime_obj)
 
         query_string = '?end_date=01/31/2015'
-        url = reverse('premis_event_service.views.event_search')
+        url = reverse('event-search')
         response = client.get(url + query_string)
 
         assert self.response_has_event(response, event)
@@ -660,7 +660,7 @@ class TestEventSearch:
         linking_object = event.linking_objects.first()
 
         query_string = '?linked_object_id={0}'.format(linking_object.object_identifier)
-        url = reverse('premis_event_service.views.event_search')
+        url = reverse('event-search')
         response = client.get(url + query_string)
 
         assert self.response_has_event(response, event)
@@ -671,7 +671,7 @@ class TestEventSearch:
         event = factories.EventFactory.create(event_outcome=event_outcome)
 
         query_string = '?outcome={0}'.format(event_outcome)
-        url = reverse('premis_event_service.views.event_search')
+        url = reverse('event-search')
         response = client.get(url + query_string)
 
         assert self.response_has_event(response, event)
@@ -682,7 +682,7 @@ class TestEventSearch:
         event = factories.EventFactory.create(event_type=event_type)
 
         query_string = '?event_type={0}'.format(event_type)
-        url = reverse('premis_event_service.views.event_search')
+        url = reverse('event-search')
         response = client.get(url + query_string)
 
         assert self.response_has_event(response, event)

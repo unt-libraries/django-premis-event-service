@@ -1,30 +1,20 @@
-try:
-    from django.conf.urls import patterns, url
-except ImportError:
-    from django.conf.urls.defaults import *  # In case of Django<=1.3
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns(
-    'premis_event_service.views',
-    # begin CODA Family url structure >
-    (r'^APP/$', 'app'),
-    # node urls
-    # (r'^APP/node/$', 'node'),
-    # (r'^APP/node/(?P<identifier>.+?)/$', 'node'),
-    # event urls
-    (r'^APP/event/$', 'app_event'),
-    (r'^APP/event/(?P<identifier>.+?)/$', 'app_event'),
-    # agent urls
-    (r'^APP/agent/$', 'app_agent'),
-    (r'^APP/agent/(?P<identifier>.+?)/$', 'app_agent'),
-    # html view urls
-    (r'^event/$', 'recent_event_list'),
-    (r'^event/search/$', 'event_search'),
-    (r'^event/search.json$', 'json_event_search'),
-    (r'^event/find/(?P<linked_identifier>.+?)/(?P<event_type>.+?)?/$', 'findEvent'),
-    (r'^event/(?P<identifier>.+?)/$', 'humanEvent'),
-    (r'^agent/$', 'humanAgent'),
-    (r'^agent/(?P<identifier>.+?).xml$', 'agentXML'),
-    (r'^agent/(?P<identifier>.+?).premis.xml$', 'agentXML'),
-    (r'^agent/(?P<identifier>.+?).json$', 'json_agent'),
-    (r'^agent/(?P<identifier>.+?)/$', 'humanAgent'),
-)
+urlpatterns = [
+    url(r'^APP/$', views.app, name='app'),
+    url(r'^APP/event/$', views.app_event, name='app-event'),
+    url(r'^APP/event/(?P<identifier>.+?)/$', views.app_event, name='app-event-detail'),
+    url(r'^APP/agent/$', views.app_agent, name='app-agent'),
+    url(r'^APP/agent/(?P<identifier>.+?)/$', views.app_agent, name='app-agent-detail'),
+    url(r'^event/$', views.recent_event_list, name='event-list'),
+    url(r'^event/search/$', views.event_search, name='event-search'),
+    url(r'^event/search.json$', views.json_event_search, name='event-search-json'),
+    url(r'^event/find/(?P<linked_identifier>.+?)/(?P<event_type>.+?)?/$', views.findEvent, name='find-event'),
+    url(r'^event/(?P<identifier>.+?)/$', views.humanEvent, name='event-detail'),
+    url(r'^agent/$', views.humanAgent, name='agent-list'),
+    url(r'^agent/(?P<identifier>.+?).xml$', views.agentXML, name='agent-detail-xml'),
+    url(r'^agent/(?P<identifier>.+?).premis.xml$', views.agentXML, name='agent-detail-premis-xml'),
+    url(r'^agent/(?P<identifier>.+?).json$', views.json_agent, name='agent-detail-json'),
+    url(r'^agent/(?P<identifier>.+?)/$', views.humanAgent, name='agent-detail'),
+]

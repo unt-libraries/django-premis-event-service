@@ -7,23 +7,25 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-setup(
-    name = "django-premis-event-service",
-    version = "1.0.0",
-    packages = find_packages(),
-    include_package_data = True,
-    package_data = {
-		'': ['*.html'],
-    },
+install_requires = [
+    'lxml >= 3.0.0',
+    'codalib>=1.0.0'
+]
 
-    # metadata (used during PyPI upload)
-    license = "BSD",
-    description = "A Django application for storing and querying PREMIS Events",
+setup(
+    name="django-premis-event-service",
+    version="1.0.0",
+    packages=find_packages(),
+    include_package_data=True,
+    package_data={'': ['*.html']},
+    license="BSD",
+    description="A Django application for storing and querying PREMIS Events",
     long_description=README,
-    keywords = "django PREMIS preservation",
-    author = "University of North Texas Libraries",
-    url = "https://github.com/unt-libraries/django-premis-event-service",
-    classifiers = [
+    keywords="django PREMIS preservation",
+    author="University of North Texas Libraries",
+    url="https://github.com/unt-libraries/django-premis-event-service",
+    install_requires=install_requires,
+    classifiers=[
         "Environment :: Web Environment",
         "Framework :: Django",
         "Intended Audience :: System Administrators",

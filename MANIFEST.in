@@ -1,0 +1,2 @@
+include LICENSE
+recursive-include premis_event_service/templates * 

@@ -20,22 +20,10 @@ from presentation import premisEventXMLToObject, premisEventXMLgetObject, \
 from .models import Event, Agent, AGENT_TYPE_CHOICES
 from .forms import EventSearchForm
 
+
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = translateDict
-ISO8601Pattern = r"(?P<year>\d\d\d\d)(-(?P<month>\d\d)(-(?P<day>\d\d))?)?(T\
-(?P<hour>\d\d):(?P<minute>\d\d)(:(?P<second>\d\d)(\.(?P<microsecond>\d+))?)?)?\
-(?P<timezone>Z|((\+|-)\d\d:\d\d))?"
-dateReg = re.compile(ISO8601Pattern)
-ARK_ID_REGEX = re.compile(r'ark:/67531/\w.*')
-TYPE_LIST = Event.objects.order_by().values_list(
-    'event_type', flat=True
-).distinct()
-OUTCOME_LIST = Event.objects.order_by().values_list(
-    'event_outcome', flat=True
-).distinct()
-AGENT_LIST = Event.objects.order_by().values_list(
-    'linking_agent_identifier_value', flat=True
-).distinct()
+
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
 # Get a request's body (POST data). Works with all Django versions.

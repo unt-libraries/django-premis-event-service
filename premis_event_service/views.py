@@ -25,8 +25,11 @@ EVENT_UPDATE_TRANSLATION_DICT = translateDict
 
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
-# Get a request's body (POST data). Works with all Django versions.
-get_request_body = lambda r: getattr(r, 'body', getattr(r, 'raw_post_data', ''))
+
+def get_request_body(request):
+    """Get a request's body (POST data). Works with all Django versions."""
+    return getattr(request, 'body', getattr(request, 'raw_post_data', ''))
+
 
 def app(request):
     """

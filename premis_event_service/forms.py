@@ -53,6 +53,3 @@ class EventSearchForm(forms.Form):
         ),
         max_length=20,
     )
-
-    def clean(self, *args, **kwargs):
-        return self.cleaned_data

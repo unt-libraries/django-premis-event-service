@@ -636,9 +636,8 @@ class TestEventSearch:
         factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
         event = factories.EventFactory.create(event_date_time=timezone.now())
 
-        query_string = '?start_date=01/31/2015'
         url = reverse('event-search')
-        response = client.get(url + query_string)
+        response = client.get(url, {'start_date': '01/31/2015'})
 
         assert self.response_has_event(response, event)
 
@@ -647,9 +646,8 @@ class TestEventSearch:
         factories.EventFactory.create_batch(30, event_date_time=timezone.now())
         event = factories.EventFactory.create(event_date_time=datetime_obj)
 
-        query_string = '?end_date=01/31/2015'
         url = reverse('event-search')
-        response = client.get(url + query_string)
+        response = client.get(url, {'end_date': '01/31/2015'})
 
         assert self.response_has_event(response, event)
 
@@ -658,9 +656,8 @@ class TestEventSearch:
         event = factories.EventFactory.create(linking_objects=True)
         linking_object = event.linking_objects.first()
 
-        query_string = '?linked_object_id={0}'.format(linking_object.object_identifier)
         url = reverse('event-search')
-        response = client.get(url + query_string)
+        response = client.get(url, {'linked_object_id': linking_object.object_identifier})
 
         assert self.response_has_event(response, event)
 
@@ -695,9 +692,8 @@ class TestEventSearch:
         factories.EventFactory.create_batch(10, event_type=first_type)
         event = factories.EventFactory.create(event_type=second_type)
 
-        query_string = '?event_type={0}'.format(second_type)
         url = reverse('event-search')
-        response = client.get(url + query_string)
+        response = client.get(url, {'event_type': second_type})
 
         assert self.response_has_event(response, event)
 

@@ -127,7 +127,7 @@ def event_search(request):
     event_type = data.get('event_type')
     linked_object = data.get('linked_object_id')
 
-    events = Event.objects.all()
+    events = Event.objects.all().order_by('-event_date_time')
     events = events.filter(event_date_time__gte=start_date) if start_date else events
     events = events.filter(event_date_time__lte=end_date) if end_date else events
     events = events.filter(event_outcome=outcome) if outcome else events

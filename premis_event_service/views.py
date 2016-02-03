@@ -125,23 +125,16 @@ def event_search(request):
     end_date = data.get('end_date')
     outcome = data.get('outcome')
     event_type = data.get('event_type')
+    linked_object = data.get('linked_object_id')
 
     events = Event.objects.all()
-    events = Event.objects.filter(event_date_time__gte=start_date) if start_date else events
-    events = Event.objects.filter(event_date_time__lte=end_date) if end_date else events
-    events = Event.objects.filter(event_outcome=outcome) if outcome else events
-    events = Event.objects.filter(event_type=event_type) if event_type else events
+    events = events.filter(event_date_time__gte=start_date) if start_date else events
+    events = events.filter(event_date_time__lte=end_date) if end_date else events
+    events = events.filter(event_outcome=outcome) if outcome else events
+    events = events.filter(event_type=event_type) if event_type else events
 
-    if request.GET.get('linked_object_id'):
-        linking_object_id = request.GET.get('linked_object_id').strip()
-
-        if ARK_ID_REGEX.match(linking_object_id):
-            events = events.filter(linking_objects__object_identifier=linking_object_id)
-
-        elif ARK_ID_REGEX.match("ark:/67531/%s" % linking_object_id):
-            linking_object_id = "ark:/67531/%s" % linking_object_id
-            events = events.filter(
-                linking_objects__object_identifier=linking_object_id)
+    if linked_object:
+        events = events.filter(linking_objects__object_identifier__icontains=linked_object)
 
     paginated_entries = paginate_entries(request, events, num_per_page=20)
     context = {'search_form': form, 'entries': paginated_entries}

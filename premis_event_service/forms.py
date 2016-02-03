@@ -15,8 +15,8 @@ class EventSearchForm(forms.Form):
             }
         ),
         choices=OUTCOME_CHOICES,
+        required=False)
 
-    )
     event_type = forms.ChoiceField(
         widget=forms.Select(
             attrs={
@@ -25,7 +25,8 @@ class EventSearchForm(forms.Form):
             }
         ),
         choices=EVENT_TYPE_CHOICES,
-    )
+        required=False)
+
     start_date = forms.DateField(
         widget=forms.DateInput(
             attrs={
@@ -33,8 +34,9 @@ class EventSearchForm(forms.Form):
                 'placeholder': 'Start Date',
                 'class': 'input-small',
             }
-        )
-    )
+        ),
+        required=False)
+
     end_date = forms.DateField(
         widget=forms.DateInput(
             attrs={
@@ -42,8 +44,9 @@ class EventSearchForm(forms.Form):
                 'placeholder': 'End Date',
                 'class': 'input-small',
             }
-        )
-    )
+        ),
+        required=False)
+
     linked_object_id = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -52,4 +55,5 @@ class EventSearchForm(forms.Form):
             }
         ),
         max_length=20,
+        required=False,
     )

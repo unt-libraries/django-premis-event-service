@@ -38,7 +38,7 @@ class LinkObjectFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.LinkObject
 
-    object_identifier = factory.Sequence(lambda n: 'ark:/00001/coda{0}'.format(n))
+    object_identifier = factory.Sequence(lambda n: 'ark:/67531/coda{0}'.format(n))
     object_type = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#ARK'
     object_role = None
 

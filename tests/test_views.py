@@ -665,23 +665,24 @@ class TestEventSearch:
 
         assert self.response_has_event(response, event)
 
-    def test_filter_by_outcome(self, client):
-        event_outcome = 'Test outcome'
-        factories.EventFactory.create_batch(30)
-        event = factories.EventFactory.create(event_outcome=event_outcome)
+    def test_filter_by_outcome(self, client, rf):
+        first_outcome, second_outcome = factories.EVENT_OUTCOMES[0:2]
 
-        query_string = '?outcome={0}'.format(event_outcome)
+        factories.EventFactory.create_batch(30, event_outcome=first_outcome)
+        event = factories.EventFactory.create(event_outcome=second_outcome)
+
         url = reverse('event-search')
-        response = client.get(url + query_string)
+        response = client.get(url, {'outcome': second_outcome})
 
         assert self.response_has_event(response, event)
 
     def test_filter_by_event_type(self, client):
-        event_type = 'Test Event Type'
-        factories.EventFactory.create_batch(30)
-        event = factories.EventFactory.create(event_type=event_type)
+        first_type, second_type = factories.EVENT_TYPES[0:2]
 
-        query_string = '?event_type={0}'.format(event_type)
+        factories.EventFactory.create_batch(10, event_type=first_type)
+        event = factories.EventFactory.create(event_type=second_type)
+
+        query_string = '?event_type={0}'.format(second_type)
         url = reverse('event-search')
         response = client.get(url + query_string)
 

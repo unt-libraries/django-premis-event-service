@@ -1,3 +1,4 @@
+import re
 import datetime
 import json
 import urllib
@@ -8,7 +9,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from lxml import etree
 
@@ -18,6 +19,9 @@ from .presentation import (premisEventXMLToObject, premisEventXMLgetObject,
                            premisAgentXMLToObject, objectToPremisEventXML,
                            objectToPremisAgentXML, objectToAgentXML,
                            translateDict)
+
+
+ARK_ID_REGEX = re.compile(r'ark:/67531/\w.*')
 
 
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
@@ -114,72 +118,35 @@ def event_search(request):
     Return a human readable list of search results
     """
 
+    form = EventSearchForm(request.GET)
+    data = form.cleaned_data if form.is_valid() else {}
+
+    start_date = data.get('start_date')
+    end_date = data.get('end_date')
+    outcome = data.get('outcome')
+    event_type = data.get('event_type')
+
     events = Event.objects.all()
-    DATE_FORMAT = "%m/%d/%Y"
-    start_date = '01/01/1999'
-    end_date = '12/31/2999'
-    linking_object_id = ''
-    outcome = ''
-    event_type = ''
-    # make initial dict for persistent form fields
-    initial = {}
-    # parse the request get variables and filter the search
-    if request.GET.get('start_date'):
-        start_date = datetime.datetime.strptime(
-            request.GET.get('start_date').strip(), DATE_FORMAT
-        )
-        events = events.filter(event_date_time__gte=start_date)
-        initial.setdefault('start_date', start_date.strftime(DATE_FORMAT))
-    if request.GET.get('end_date'):
-        end_date = datetime.datetime.strptime(
-            request.GET.get('end_date').strip(), DATE_FORMAT
-        )
-        events = events.filter(event_date_time__lte=end_date)
-        initial.setdefault('end_date', end_date.strftime(DATE_FORMAT))
+    events = Event.objects.filter(event_date_time__gte=start_date) if start_date else events
+    events = Event.objects.filter(event_date_time__lte=end_date) if end_date else events
+    events = Event.objects.filter(event_outcome=outcome) if outcome else events
+    events = Event.objects.filter(event_type=event_type) if event_type else events
+
     if request.GET.get('linked_object_id'):
         linking_object_id = request.GET.get('linked_object_id').strip()
+
         if ARK_ID_REGEX.match(linking_object_id):
-            events = events.filter(
-                linking_objects__object_identifier=linking_object_id
-            )
+            events = events.filter(linking_objects__object_identifier=linking_object_id)
+
         elif ARK_ID_REGEX.match("ark:/67531/%s" % linking_object_id):
             linking_object_id = "ark:/67531/%s" % linking_object_id
             events = events.filter(
-                linking_objects__object_identifier=linking_object_id
-            )
-        else:
-            pass
-        initial.setdefault('linked_object_id', linking_object_id)
-    if request.GET.get('outcome'):
-        outcome = request.GET.get('outcome').strip()
-        events = events.filter(event_outcome=outcome)
-        initial.setdefault('outcome', outcome)
-    if request.GET.get('event_type'):
-        event_type = request.GET.get('event_type').strip()
-        events = events.filter(event_type=str(event_type))
-        initial.setdefault('event_type', event_type)
-    # sort events by date
-    events = events.order_by('-event_date_time')
-    # paginate 20 per page
+                linking_objects__object_identifier=linking_object_id)
+
     paginated_entries = paginate_entries(request, events, num_per_page=20)
-    # render to the template
-    return render_to_response(
-        'premis_event_service/search.html',
-        {
-            'search_form': EventSearchForm(initial=initial),
-            'linking_object_id': linking_object_id,
-            'start_date': start_date,
-            'end_date': end_date,
-            'event_type': event_type,
-            'outcome': outcome,
-            'type_list': TYPE_LIST,
-            'outcome_list': OUTCOME_LIST,
-            'agent_list': AGENT_LIST,
-            'entries': paginated_entries,
-            'maintenance_message': MAINTENANCE_MSG,
-        },
-        context_instance=RequestContext(request),
-    )
+    context = {'search_form': form, 'entries': paginated_entries}
+
+    return render(request, 'premis_event_service/search.html', context)
 
 
 def json_event_search(request):

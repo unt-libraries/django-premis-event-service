@@ -114,18 +114,14 @@ def paginate_entries(request, entries, num_per_page=20):
 
 
 def event_search(request):
-    """
-    Return a human readable list of search results
-    """
-
+    """Return a human readable list of search results."""
     form = EventSearchForm(request.GET)
     data = form.cleaned_data if form.is_valid() else {}
 
     events = Event.objects.search(**data)
+    results = paginate_entries(request, events)
 
-    paginated_entries = paginate_entries(request, events, num_per_page=20)
-    context = {'search_form': form, 'entries': paginated_entries}
-
+    context = {'search_form': form, 'entries': results}
     return render(request, 'premis_event_service/search.html', context)
 
 

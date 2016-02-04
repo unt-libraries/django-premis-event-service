@@ -71,58 +71,66 @@ class TestEventManager:
             return False
         return True
 
-    def test_filter_by_start_date(self, client):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
-        factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
+    @pytest.fixture
+    def manager(self):
+        """Fixture to provide the EventManager object with the
+        correct setup.
+        """
+        manager = models.EventManager()
+        manager.model = models.Event
+        return manager
+
+    def test_search_filters_by_start_date(self, manager):
         event = factories.EventFactory.create(event_date_time=timezone.now())
 
-        start_date = timezone.now().replace(2015, 1, 2)
+        # Create a batch of events that occur before the intial event.
+        event_date_time = timezone.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=event_date_time)
 
-        manager = models.EventManager()
+        # Search for events AFTER the initial event.
+        start_date = timezone.now().replace(2015, 1, 2)
         results = manager.search(start_date=start_date)
 
         assert self.results_has_event(results, event)
 
-    def test_filter_by_end_date(self, client):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
+    def test_search_filters_by_end_date(self, manager):
+        event_date_time = timezone.now().replace(2015, 1, 1)
+        event = factories.EventFactory.create(event_date_time=event_date_time)
+
+        # Create a batch of events that occur AFTER the intial event.
         factories.EventFactory.create_batch(30, event_date_time=timezone.now())
-        event = factories.EventFactory.create(event_date_time=datetime_obj)
 
+        # Search for events from BEFORE this test was executed.
         end_date = timezone.now().replace(2015, 1, 31)
-
-        manager = models.EventManager()
         results = manager.search(end_date=end_date)
 
         assert self.results_has_event(results, event)
 
-    def test_filter_by_fully_qualified_linked_object_id(self, client):
+    def test_search_filters_linked_object_id(self, manager):
         factories.EventFactory.create_batch(30)
         event = factories.EventFactory.create(linking_objects=True)
         linking_object = event.linking_objects.first()
 
-        manager = models.EventManager()
         results = manager.search(linked_object_id=linking_object.object_identifier)
 
         assert self.results_has_event(results, event)
 
-    def test_filter_by_outcome(self, client, rf):
+    def test_search_filters_by_event_outcome(self, manager):
         event_outcome = 'Test Outcome'
 
         factories.EventFactory.create_batch(30)
         event = factories.EventFactory.create(event_outcome=event_outcome)
 
-        manager = models.EventManager()
         results = manager.search(event_outcome=event_outcome)
 
         assert self.results_has_event(results, event)
 
-    def test_filter_by_event_type(self, client):
+    def test_search_filters_by_event_type(self, manager):
         event_type = 'Test Type'
 
         factories.EventFactory.create_batch(10)
         event = factories.EventFactory.create(event_type=event_type)
 
-        manager = models.EventManager()
         results = manager.search(event_type=event_type)
 
         assert self.results_has_event(results, event)

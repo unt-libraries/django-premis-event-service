@@ -121,20 +121,7 @@ def event_search(request):
     form = EventSearchForm(request.GET)
     data = form.cleaned_data if form.is_valid() else {}
 
-    start_date = data.get('start_date')
-    end_date = data.get('end_date')
-    outcome = data.get('event_outcome')
-    event_type = data.get('event_type')
-    linked_object = data.get('linked_object_id')
-
-    events = Event.objects.all().order_by('-event_date_time')
-    events = events.filter(event_date_time__gte=start_date) if start_date else events
-    events = events.filter(event_date_time__lte=end_date) if end_date else events
-    events = events.filter(event_outcome=outcome) if outcome else events
-    events = events.filter(event_type=event_type) if event_type else events
-
-    if linked_object:
-        events = events.filter(linking_objects__object_identifier__icontains=linked_object)
+    events = Event.objects.search(**data)
 
     paginated_entries = paginate_entries(request, events, num_per_page=20)
     context = {'search_form': form, 'entries': paginated_entries}

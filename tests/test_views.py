@@ -651,27 +651,13 @@ class TestEventSearch:
 
         assert self.response_has_event(response, event)
 
-    def test_filter_by_fully_qualified_linked_object_id(self, client):
+    def test_filter_by_linked_object_id(self, client):
         factories.EventFactory.create_batch(30)
         event = factories.EventFactory.create(linking_objects=True)
         linking_object = event.linking_objects.first()
 
         url = reverse('event-search')
         response = client.get(url, {'linked_object_id': linking_object.object_identifier})
-
-        assert self.response_has_event(response, event)
-
-    def test_filter_by_linked_object_id(self, client):
-        factories.EventFactory.create_batch(30)
-        event = factories.EventFactory.create(linking_objects=True)
-
-        linking_object = event.linking_objects.first()
-        object_id = (linking_object.object_identifier
-                                   .split('/')
-                                   .pop())
-
-        url = reverse('event-search')
-        response = client.get(url, {'linked_object_id': object_id})
 
         assert self.response_has_event(response, event)
 

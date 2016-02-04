@@ -62,7 +62,7 @@
                     <i class="icon-asterisk"></i> {{ entry.event_type }}
                 </td>
                 <td>
-                    {% for lo in entry.linking_objects.values %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+                    {% for lo in entry.linking_objects.all %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
                 </td>
                 <td>
                     <span title="{{ entry.entry_outcome }}" class="disabled btn btn-block btn-mini btn-{{ entry.is_good|yesno:"success,danger" }}">{{ entry.event_outcome|slice:"53:" }}</span>

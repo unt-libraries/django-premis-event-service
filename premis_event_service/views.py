@@ -118,10 +118,12 @@ def event_search(request):
     form = EventSearchForm(request.GET)
     data = form.cleaned_data if form.is_valid() else {}
 
-    events = Event.objects.search(**data)
-    results = paginate_entries(request, events)
+    events = (Event.objects.search(**data)
+                           .prefetch_related('linking_objects'))
 
+    results = paginate_entries(request, events)
     context = {'search_form': form, 'entries': results}
+
     return render(request, 'premis_event_service/search.html', context)
 
 

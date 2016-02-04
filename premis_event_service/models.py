@@ -75,10 +75,35 @@ class LinkObject(models.Model):
         return self.object_identifier
 
 
+class EventManager(models.Manager):
+
+    def search(self, **kwargs):
+        start_date = kwargs.get('start_date')
+        end_date = kwargs.get('end_date')
+        outcome = kwargs.get('event_outcome')
+        event_type = kwargs.get('event_type')
+        linked_object_id = kwargs.get('linked_object_id')
+
+        events = Event.objects.all().order_by('-event_date_time')
+
+        # Filter based on the the supplied the arguments.
+        events = events.filter(event_date_time__gte=start_date) if start_date else events
+        events = events.filter(event_date_time__lte=end_date) if end_date else events
+        events = events.filter(event_outcome=outcome) if outcome else events
+        events = events.filter(event_type=event_type) if event_type else events
+
+        if linked_object_id:
+            events = events.filter(linking_objects__object_identifier__icontains=linked_object_id)
+
+        return events
+
+
 class Event(models.Model):
     """
     Holds all data for the events, along with the linking objects ids
     """
+
+    objects = EventManager()
 
     event_identifier = models.CharField(
         primary_key=True,

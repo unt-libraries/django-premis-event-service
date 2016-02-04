@@ -123,7 +123,7 @@ def event_search(request):
 
     start_date = data.get('start_date')
     end_date = data.get('end_date')
-    outcome = data.get('outcome')
+    outcome = data.get('event_outcome')
     event_type = data.get('event_type')
     linked_object = data.get('linked_object_id')
 

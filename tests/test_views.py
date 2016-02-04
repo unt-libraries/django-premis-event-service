@@ -682,7 +682,7 @@ class TestEventSearch:
         event = factories.EventFactory.create(event_outcome=second_outcome)
 
         url = reverse('event-search')
-        response = client.get(url, {'outcome': second_outcome})
+        response = client.get(url, {'event_outcome': second_outcome})
 
         assert self.response_has_event(response, event)
 

@@ -7,7 +7,7 @@ EVENT_TYPE_CHOICES = settings.EVENT_TYPE_CHOICES
 
 
 class EventSearchForm(forms.Form):
-    outcome = forms.ChoiceField(
+    event_outcome = forms.ChoiceField(
         widget=forms.Select(
             attrs={
                 'id': 'prependedInput',

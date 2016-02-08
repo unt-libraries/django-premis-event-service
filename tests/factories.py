@@ -5,22 +5,16 @@ import factory.fuzzy
 
 from django.utils import timezone
 
-from premis_event_service import models
+from premis_event_service import models, settings
 
 
 UUID_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID'
 
 URL_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL'
 
-EVENT_TYPES = [
-    'http://purl.org/net/untl/vocabularies/preservationEvents/#replication',
-    'http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck'
-]
+EVENT_TYPES = [value for value, _ in settings.EVENT_TYPE_CHOICES]
 
-EVENT_OUTCOMES = [
-    'http://purl.org/net/untl/vocabularies/eventOutcomes/#success',
-    'http://purl.org/net/untl/vocabularies/eventOutcomes/#failure'
-]
+EVENT_OUTCOMES = [value for value, _ in settings.EVENT_OUTCOME_CHOICES]
 
 AGENTS = [
     'http://example.com/agent/codareplicationverification',

@@ -631,59 +631,19 @@ class TestEventSearch:
         context = response.context[-1]
         assert len(context['entries']) == self.RESULTS_PER_PAGE
 
-    def test_filter_by_start_date(self, client):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
-        factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
-        event = factories.EventFactory.create(event_date_time=timezone.now())
-
-        query_string = '?start_date=01/31/2015'
-        url = reverse('event-search')
-        response = client.get(url + query_string)
-
-        assert self.response_has_event(response, event)
-
-    def test_filter_by_end_date(self, client):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
-        factories.EventFactory.create_batch(30, event_date_time=timezone.now())
-        event = factories.EventFactory.create(event_date_time=datetime_obj)
-
-        query_string = '?end_date=01/31/2015'
-        url = reverse('event-search')
-        response = client.get(url + query_string)
-
-        assert self.response_has_event(response, event)
-
-    @pytest.mark.xfail(reason='Magic strings prevent block from executing.')
-    def test_filter_by_linked_object_id(self, client):
-        factories.EventFactory.create_batch(30)
+    def test_filtering_results(self, client):
         event = factories.EventFactory.create(linking_objects=True)
         linking_object = event.linking_objects.first()
 
-        query_string = '?linked_object_id={0}'.format(linking_object.object_identifier)
-        url = reverse('event-search')
-        response = client.get(url + query_string)
-
-        assert self.response_has_event(response, event)
-
-    def test_filter_by_outcome(self, client):
-        event_outcome = 'Test outcome'
         factories.EventFactory.create_batch(30)
-        event = factories.EventFactory.create(event_outcome=event_outcome)
 
-        query_string = '?outcome={0}'.format(event_outcome)
         url = reverse('event-search')
-        response = client.get(url + query_string)
-
-        assert self.response_has_event(response, event)
-
-    def test_filter_by_event_type(self, client):
-        event_type = 'Test Event Type'
-        factories.EventFactory.create_batch(30)
-        event = factories.EventFactory.create(event_type=event_type)
-
-        query_string = '?event_type={0}'.format(event_type)
-        url = reverse('event-search')
-        response = client.get(url + query_string)
+        response = client.get(
+            url, {
+                'event_outcome': event.event_outcome,
+                'event_type': event.event_type,
+                'linked_object_id': linking_object.object_identifier
+            })
 
         assert self.response_has_event(response, event)
 

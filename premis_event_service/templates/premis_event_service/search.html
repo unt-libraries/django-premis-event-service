@@ -13,8 +13,8 @@
 <form action = "./" class="pagination-centered well" method="get">
     <div class="control-group">
         <div class="input-prepend">
-            <span class='add-on'>{{ search_form.outcome.label }}</span>
-            {{ search_form.outcome }}
+            <span class='add-on'>{{ search_form.event_outcome.label }}</span>
+            {{ search_form.event_outcome }}
         </div>
         <div class="input-prepend">
             <span class='add-on'>{{ search_form.event_type.label|title }}</span>
@@ -62,7 +62,7 @@
                     <i class="icon-asterisk"></i> {{ entry.event_type }}
                 </td>
                 <td>
-                    {% for lo in entry.linking_objects.values %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+                    {% for lo in entry.linking_objects.all %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
                 </td>
                 <td>
                     <span title="{{ entry.entry_outcome }}" class="disabled btn btn-block btn-mini btn-{{ entry.is_good|yesno:"success,danger" }}">{{ entry.event_outcome|slice:"53:" }}</span>
@@ -71,18 +71,17 @@
         {% endfor %}
     </table>
 {% endif %}
-
 {% if entries.paginator.num_pages > 1 %}
     <div class="pagination pagination-centered">
         <ul>
             {% if entries.number != 1 %}
-                <li><a href="?page=1&amp;outcome={{ outcome|urlencode }}&amp;event_type={{ event_type|urlencode }}&amp;start_date={{ start_date|date:"m/d/Y" }}&amp;end_date={{ end_date|date:"m/d/Y" }}&amp;linked_object_id={{ linking_object_id|urlencode }}">first</a></li>
+                <li><a href="?page=1&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">first</a></li>
             {% else %}
                 <li class="disabled"><span>first</span></li>
             {% endif %}
 
             {% if entries.has_previous %}
-                <li><a href="?page={{ entries.previous_page_number }}&amp;outcome={{ outcome|urlencode }}&amp;event_type={{ event_type|urlencode }}&amp;start_date={{ start_date|date:"m/d/Y" }}&amp;end_date={{ end_date|date:"m/d/Y" }}&amp;linked_object_id={{ linking_object_id|urlencode }}">prev</a></li>
+                <li><a href="?page={{ entries.previous_page_number }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">prev</a></li>
             {% else %}
                 <li class="disabled"><span>prev</span></li>
             {% endif %}
@@ -93,7 +92,7 @@
 
                 {% else %} {% if page > entries.number|add:"-6" and page < entries.number|add:"6"  %}
                     <li>
-                        <a href="?page={{ page }}&amp;outcome={{ outcome|urlencode }}&amp;event_type={{ event_type|urlencode }}&amp;start_date={{ start_date|date:"m/d/Y" }}&amp;end_date={{ end_date|date:"m/d/Y" }}&amp;linked_object_id={{ linking_object_id|urlencode }}">
+                        <a href="?page={{ page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">
                             {{ page }}
                         </a>
                     </li>
@@ -101,13 +100,13 @@
             {% endfor %}
 
             {% if entries.has_next %}
-                <li><a href="?page={{ entries.next_page_number }}&amp;outcome={{ outcome|urlencode }}&amp;event_type={{ event_type|urlencode }}&amp;start_date={{ start_date|date:"m/d/Y" }}&amp;end_date={{ end_date|date:"m/d/Y" }}&amp;linked_object_id={{ linking_object_id|urlencode }}">next</a></li>
+                <li><a href="?page={{ entries.next_page_number }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">next</a></li>
             {% else %}
                 <li class="disabled"><span>next</span></li>
             {% endif %}
 
             {% if entries.number != entries.paginator.num_pages %}
-                <li><a href="?page={{ entries.paginator.num_pages }}&amp;outcome={{ outcome|urlencode }}&amp;event_type={{ event_type|urlencode }}&amp;start_date={{ start_date|date:"m/d/Y" }}&amp;end_date={{ end_date|date:"m/d/Y" }}&amp;linked_object_id={{ linking_object_id|urlencode }}">last</a></li>
+                <li><a href="?page={{ entries.paginator.num_pages }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">last</a></li>
             {% else %}
                 <li class="disabled"><span>last</span></li>
             {% endif %}

@@ -83,7 +83,7 @@ class TestEventManager:
     def test_search_filters_by_start_date(self, manager):
         event = factories.EventFactory.create(event_date_time=timezone.now())
 
-        # Create a batch of events that occur before the intial event.
+        # Create a batch of events that occur before the initial event.
         event_date_time = timezone.now().replace(2015, 1, 1)
         factories.EventFactory.create_batch(30, event_date_time=event_date_time)
 

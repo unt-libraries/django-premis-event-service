@@ -1,8 +1,8 @@
+from django.utils import timezone
 import pytest
 
-from django.utils import timezone
-from . import factories
 from premis_event_service import models
+from . import factories
 
 
 class TestAgent:

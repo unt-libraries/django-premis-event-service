@@ -9,3 +9,5 @@ __pycache__/
 
 db.sqlite3
 docs/build/
+
+.coverage

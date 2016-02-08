@@ -13,4 +13,10 @@ matrix:
 install:
   - pip install tox
 script:
-  - tox -e $TOX_ENV
+    - tox -e $TOX_ENV -- --cov premis_event_service --cov-report html
+
+before_install:
+    - pip install codecov 
+
+after_success:
+    - codecov

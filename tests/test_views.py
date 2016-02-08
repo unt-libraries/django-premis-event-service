@@ -359,6 +359,42 @@ class TestAppAgent:
         response = views.app_agent(request, agent.agent_identifier)
         assert agent.agent_identifier in response.content
 
+    def test_head_without_identifier(self, rf):
+        request = rf.head('/')
+        response = views.app_agent(request)
+        assert response.content == '', 'The message body must be empty'
+        assert response.status_code == 200
+
+    def test_head_and_get_headers_match_without_identifier(self, rf):
+        head_request, get_request = rf.head('/'), rf.get('/')
+
+        head_response = views.app_agent(head_request)
+        get_response = views.app_agent(get_request)
+
+        expected_headers = get_response.serialize_headers()
+        actual_headers = head_response.serialize_headers()
+
+        assert expected_headers == actual_headers, 'The response headers do not match.'
+
+    def test_head_with_identifier(self, rf):
+        agent = factories.AgentFactory.create()
+        request = rf.head('/')
+        response = views.app_agent(request, agent.agent_identifier)
+        assert response.content == '', 'The message body must be empty'
+        assert response.status_code == 200
+
+    def test_head_and_get_headers_match_with_identifier(self, rf):
+        agent = factories.AgentFactory.create()
+        head_request, get_request = rf.head('/'), rf.get('/')
+
+        head_response = views.app_agent(head_request, agent.agent_identifier)
+        get_response = views.app_agent(get_request, agent.agent_identifier)
+
+        expected_headers = get_response.serialize_headers()
+        actual_headers = head_response.serialize_headers()
+
+        assert expected_headers == actual_headers, 'The response headers do not match.'
+
 
 class TestAppEvent:
     """Tests for views.app_event."""
@@ -600,6 +636,43 @@ class TestAppEvent:
         views.app_event(request, event.event_identifier)
         assert models.Agent.objects.count() == 0
 
+    def test_head_without_identifier(self, rf):
+        request = rf.head('/')
+        response = views.app_event(request)
+        assert response.content == '', 'The message body must be empty'
+        assert response.status_code == 200
+
+    def test_head_and_get_headers_match_without_identifier(self, rf):
+        head_request, get_request = rf.head('/'), rf.get('/')
+
+        head_response = views.app_event(head_request)
+        get_response = views.app_event(get_request)
+
+        expected_headers = get_response.serialize_headers()
+        actual_headers = head_response.serialize_headers()
+
+        assert expected_headers == actual_headers, 'The response headers do not match.'
+
+    def test_head_with_identifier(self, rf):
+        event = factories.EventFactory.create()
+        request = rf.head('/')
+        response = views.app_event(request, event.event_identifier)
+        assert response.content == '', 'The message body must be empty'
+        assert response.status_code == 200
+
+    def test_head_and_get_headers_match_with_identifier(self, rf):
+        event = factories.EventFactory.create()
+
+        head_request = rf.head('/', HTTP_HOST='example.com')
+        get_request = rf.get('/', HTTP_HOST='example.com')
+
+        head_response = views.app_event(head_request, event.event_identifier)
+        get_response = views.app_event(get_request, event.event_identifier)
+
+        expected_headers = get_response.serialize_headers()
+        actual_headers = head_response.serialize_headers()
+
+        assert expected_headers == actual_headers, 'The response headers do not match.'
 
 class TestEventSearch:
     """Tests for views.event_search."""

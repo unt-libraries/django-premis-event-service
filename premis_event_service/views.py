@@ -281,7 +281,11 @@ def recent_event_list(request):
     Return a tabled list of 10 most recent events
     """
 
-    events = Event.objects.all().order_by('-event_date_time')[:10]
+    events = (Event.objects
+                   .all()
+                   .prefetch_related('linking_objects')
+                   .order_by('-event_date_time')[:10])
+
     # render to the template
     return render_to_response(
         'premis_event_service/recent_event_list.html',

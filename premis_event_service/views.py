@@ -549,6 +549,10 @@ def app_event(request, identifier=None):
         resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp
+
+    elif request.method == 'HEAD':
+        return HttpResponse(content_type="application/atom+xml")
+
     elif request.method == 'DELETE' and identifier:
     # attempt to retrieve record -- error if unable
         try:
@@ -627,6 +631,8 @@ def app_agent(request, identifier=None):
             resp.status_code = 201
             resp['Location'] = agent_object.agent_identifier + '/'
             return resp
+        elif request.method == 'HEAD':
+            return HttpResponse(content_type="application/atom+xml")
         else:
             return HttpResponseBadRequest("Invalid method for this URL.")
     # identifier supplied, will be a GET or DELETE
@@ -668,3 +674,5 @@ def app_agent(request, identifier=None):
             resp = HttpResponse(returnText, content_type="application/atom+xml")
             resp.status_code = 200
             return resp
+        elif request.method == 'HEAD':
+            return HttpResponse(content_type="application/atom+xml")

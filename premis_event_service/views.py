@@ -615,8 +615,18 @@ def app_agent(request, identifier=None):
             resp.status_code = 200
             return resp
         elif request.method == 'POST':
-            agent_object = premisAgentXMLToObject(request_body)
-            agent_object.save()
+            try:
+                agent_object = premisAgentXMLToObject(request_body)
+            except etree.XMLSyntaxError:
+                return HttpResponse("Invalid XML in request body.\n",
+                    status=400, content_type="text/plain"
+                )
+            try:
+                agent_object.save()
+            except IntegrityError:
+                return HttpResponse("Conflict with already-existing resource.\n",
+                    status=409, content_type="text/plain"
+                )
             returnXML = objectToAgentXML(agent_object)
             returnEntry = wrapAtom(
                 returnXML,
@@ -631,6 +641,7 @@ def app_agent(request, identifier=None):
             resp.status_code = 201
             resp['Location'] = agent_object.agent_identifier + '/'
             return resp
+        # why? if we're not doing etags, etc.?
         elif request.method == 'HEAD':
             return HttpResponse(content_type="application/atom+xml")
         else:

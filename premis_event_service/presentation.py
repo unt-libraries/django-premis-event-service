@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from . import settings
+import collections
 
 PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
 PREMIS = "{%s}" % PREMIS_NAMESPACE
@@ -15,19 +16,18 @@ PES_AGENT_ID_TYPE = "PES:Agent"
 dateFormat = "%Y-%m-%d %H:%M:%S"
 altDateFormat = "%Y-%m-%dT%H:%M:%S"
 
-translateDict = {
-    "event_identifier": ["eventIdentifier", "eventIdentifierValue"],
-    "event_identifier_type": ["eventIdentifier", "eventIdentifierType"],
-    "event_type": ["eventType"],
-    "event_date_time": ["eventDateTime"],
-    "event_detail": ["eventDetail"],
-    "event_outcome": ["eventOutcomeInformation", "eventOutcome"],
-    "event_outcome_detail": ["eventOutcomeInformation", "eventOutcomeDetail"],
-    "linking_agent_identifier_type": ["linkingAgentIdentifier",
-                                      "linkingAgentIdentifierType"],
-    "linking_agent_identifier_value": ["linkingAgentIdentifier",
-                                       "linkingAgentIdentifierValue"],
-}
+translateDict = collections.OrderedDict()
+translateDict["event_identifier_type"] =  ["eventIdentifier", "eventIdentifierType"]
+translateDict["event_identifier"] =  ["eventIdentifier", "eventIdentifierValue"]
+translateDict["event_type"] = ["eventType"]
+translateDict["event_date_time"] = ["eventDateTime"]
+translateDict["event_detail"] = ["eventDetail"]
+translateDict["event_outcome"] = ["eventOutcomeInformation", "eventOutcome"]
+translateDict["event_outcome_detail"] = ["eventOutcomeInformation", "eventOutcomeDetail", "eventOutcomeDetailNote"]
+translateDict["linking_agent_identifier_type"] = ["linkingAgentIdentifier", 
+        "linkingAgentIdentifierType"]
+translateDict["linking_agent_identifier_value"] = ["linkingAgentIdentifier", 
+        "linkingAgentIdentifierValue"]
 
 
 def premisEventXMLToObject(eventXML):
@@ -187,7 +187,7 @@ def objectToPremisEventXML(eventObject):
         except TypeError, t:
             value = getattr(eventObject, fieldName)
             if type(value) == datetime:
-                baseNode.text = value.strftime(dateFormat)
+                baseNode.text = value.isoformat()
     linking_objects = eventObject.linking_objects.all()
     for linking_object in linking_objects:
         linkObjectIDXML = etree.SubElement(
@@ -242,17 +242,17 @@ def objectToPremisAgentXML(agentObject, webRoot):
 
     agentXML = etree.Element(PREMIS + "agent", nsmap=PREMIS_NSMAP)
     agentIdentifier = etree.SubElement(agentXML, PREMIS + "agentIdentifier")
+    agentIdentifierType = etree.SubElement(
+        agentIdentifier, PREMIS + "agentIdentifierType"
+    )
+    # is this just a constant? yes.
+    agentIdentifierType.text = settings.LINK_AGENT_ID_TYPE_XML
     agentIdentifierValue = etree.SubElement(
         agentIdentifier, PREMIS + "agentIdentifierValue"
     )
     agentIdentifierValue.text = 'http://%s%s' % (
         webRoot, agentObject.get_absolute_url()
     )
-    agentIdentifierType = etree.SubElement(
-        agentIdentifier, PREMIS + "agentIdentifierType"
-    )
-    # is this just a constant? yes.
-    agentIdentifierType.text = settings.LINK_AGENT_ID_TYPE_XML
     agentName = etree.SubElement(agentXML, PREMIS + "agentName")
     agentName.text = agentObject.agent_name
     agentType = etree.SubElement(agentXML, PREMIS + "agentType")

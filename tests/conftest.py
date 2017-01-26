@@ -42,6 +42,7 @@ class EventTestXML(object):
               </content>
             </entry>
         """
+        self.attributes["event_date_time"] = self.attributes["event_date_time"].isoformat()
         return xml.format(
                 linking_objects=self._linking_objects_xml(),
                 **self.attributes)
@@ -50,24 +51,27 @@ class EventTestXML(object):
     def obj_xml(self):
         xml = """<?xml version="1.0"?>
             <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
-              <premis:eventDetail>{event_detail}</premis:eventDetail>
-              <premis:eventOutcomeInformation>
-                <premis:eventOutcomeDetail>{event_outcome_detail}</premis:eventOutcomeDetail>
-                <premis:eventOutcome>{event_outcome}</premis:eventOutcome>
-              </premis:eventOutcomeInformation>
-              <premis:eventType>{event_type}</premis:eventType>
-              <premis:linkingAgentIdentifier>
-                <premis:linkingAgentIdentifierValue>{linking_agent_identifier_value}</premis:linkingAgentIdentifierValue>
-                <premis:linkingAgentIdentifierType>{linking_agent_identifier_type}</premis:linkingAgentIdentifierType>
-              </premis:linkingAgentIdentifier>
-              <premis:eventIdentifier>
-                  <premis:eventIdentifierValue>{event_identifier}</premis:eventIdentifierValue>
-                <premis:eventIdentifierType>{event_identifier_type}</premis:eventIdentifierType>
-              </premis:eventIdentifier>
-              <premis:eventDateTime>{event_date_time}</premis:eventDateTime>
-              {linking_objects}
+                <premis:eventIdentifier>
+                    <premis:eventIdentifierType>{event_identifier_type}</premis:eventIdentifierType>
+                    <premis:eventIdentifierValue>{event_identifier}</premis:eventIdentifierValue>
+                </premis:eventIdentifier>
+                <premis:eventType>{event_type}</premis:eventType>
+                <premis:eventDateTime>{event_date_time}</premis:eventDateTime>
+                <premis:eventDetail>{event_detail}</premis:eventDetail>
+                <premis:eventOutcomeInformation>
+                    <premis:eventOutcome>{event_outcome}</premis:eventOutcome>
+                    <premis:eventOutcomeDetail>
+                        <premis:eventOutcomeDetailNote>{event_outcome_detail}</premis:eventOutcomeDetailNote>
+                    </premis:eventOutcomeDetail>
+                </premis:eventOutcomeInformation>
+                <premis:linkingAgentIdentifier>
+                    <premis:linkingAgentIdentifierType>{linking_agent_identifier_type}</premis:linkingAgentIdentifierType>
+                    <premis:linkingAgentIdentifierValue>{linking_agent_identifier_value}</premis:linkingAgentIdentifierValue>
+                </premis:linkingAgentIdentifier>
+                {linking_objects}
             </premis:event>
         """
+        self.attributes["event_date_time"] = self.attributes["event_date_time"].isoformat()
         return xml.format(
                 linking_objects=self._linking_objects_xml(),
                 **self.attributes)

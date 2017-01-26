@@ -11,6 +11,7 @@ from . import settings
 PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
 PREMIS = "{%s}" % PREMIS_NAMESPACE
 PREMIS_NSMAP = {"premis": PREMIS_NAMESPACE}
+PREMIS_IDENTIFIER_TYPE = "PES:Agent"
 dateFormat = "%Y-%m-%d %H:%M:%S"
 altDateFormat = "%Y-%m-%dT%H:%M:%S"
 
@@ -214,15 +215,18 @@ def objectToAgentXML(agentObject):
 
     agentXML = etree.Element(PREMIS + "agent", nsmap=PREMIS_NSMAP)
     agentIdentifier = etree.SubElement(agentXML, PREMIS + "agentIdentifier")
-    agentIdentifierValue = etree.SubElement(
-        agentIdentifier, PREMIS + "agentIdentifierValue"
-    )
-    agentIdentifierValue.text = agentObject.agent_identifier
+    # order matters here. these items are defined as part of the
+    # agentIdentifier *sequence* in the XSD -- type must come first
+    # to validate
     agentIdentifierType = etree.SubElement(
         agentIdentifier, PREMIS + "agentIdentifierType"
     )
     # is this just a constant? yes.
-    agentIdentifierType.text = "PES:Agent"
+    agentIdentifierType.text = PREMIS_IDENTIFIER_TYPE
+    agentIdentifierValue = etree.SubElement(
+        agentIdentifier, PREMIS + "agentIdentifierValue"
+    )
+    agentIdentifierValue.text = agentObject.agent_identifier
     agentName = etree.SubElement(agentXML, PREMIS + "agentName")
     agentName.text = agentObject.agent_name
     agentType = etree.SubElement(agentXML, PREMIS + "agentType")

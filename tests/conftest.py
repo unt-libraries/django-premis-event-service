@@ -1,7 +1,10 @@
 import pytest
+import os
+from lxml import etree
 
 from . import factories
 
+SCHEMA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'schema')
 
 class EventTestXML(object):
 
@@ -90,8 +93,8 @@ class AgentTestXML(object):
         xml = """<?xml version="1.0"?>
             <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
               <premis:agentIdentifier>
-                <premis:agentIdentifierValue>{agent_identifier}</premis:agentIdentifierValue>
                 <premis:agentIdentifierType>PES:Agent</premis:agentIdentifierType>
+                <premis:agentIdentifierValue>{agent_identifier}</premis:agentIdentifierValue>
               </premis:agentIdentifier>
               <premis:agentName>{agent_name}</premis:agentName>
               <premis:agentType>{agent_type}</premis:agentType>
@@ -130,3 +133,16 @@ def agent_xml():
     obj_xml: The object xml.
     """
     return AgentTestXML()
+
+@pytest.fixture
+def premis_schema():
+    """Provides an lxml schema object for the Premis v2 XSD suitable
+    for validation.
+    """
+
+    schema_file = open(os.path.join(SCHEMA_DIR, "premis-v2-3.xsd"))
+    schema_doc = etree.parse(schema_file)
+    schema = etree.XMLSchema(schema_doc)
+
+    return schema
+

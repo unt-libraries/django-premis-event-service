@@ -204,6 +204,13 @@ class TestPremisEventXMLToObject:
 @pytest.mark.django_db
 class TestPremisAgentXMLToObject:
 
+    def test_validate_agent_fixture(self, agent_xml, premis_schema):
+        axml = etree.fromstring(agent_xml.obj_xml)
+        assert isinstance(axml, etree._Element)
+        assert isinstance(premis_schema, etree.XMLSchema)
+        # validate agent fixture doc against premis v2.3 XSD
+        premis_schema.assert_(axml)
+
     def test_returns_agent(self, agent_xml):
         agent = presentation.premisAgentXMLToObject(agent_xml.obj_xml)
         assert isinstance(agent, models.Agent)
@@ -522,6 +529,11 @@ class TestObjectToAgentXML:
         element = agent_xml.agentType
         assert element == agent.agent_type
         assert has_premis_namespace(element)
+
+    def test_validate_agentxml(self, premis_schema):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToAgentXML(agent)
+        premis_schema.assert_(agent_xml)
 
 
 @pytest.mark.django_db

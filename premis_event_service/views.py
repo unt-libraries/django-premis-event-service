@@ -626,6 +626,14 @@ def app_agent(request, identifier=None):
             return resp
         elif request.method == 'POST':
             try:
+                agent_object = premisAgentXMLGetObject(request_body)
+            except:
+                pass
+            else:
+                return HttpResponse("Conflict with already-existing resource.\n",
+                    status=409, content_type="text/plain"
+                )
+            try:
                 agent_object = premisAgentXMLToObject(request_body)
             except etree.XMLSyntaxError:
                 return HttpResponse("Invalid XML in request body.\n",
@@ -688,11 +696,14 @@ def app_agent(request, identifier=None):
             return resp
         elif request.method == 'GET':
             returnXML = objectToAgentXML(agent_object)
-            returnText = XML_HEADER % etree.tostring(
-                returnXML,
+            returnEntry = wrapAtom(
+                returnXML, agent_object.agent_name, agent_object.agent_name
+            )
+            entryText = XML_HEADER % etree.tostring(
+                returnEntry,
                 pretty_print=True
             )
-            resp = HttpResponse(returnText, content_type="application/atom+xml")
+            resp = HttpResponse(entryText, content_type="application/atom+xml")
             resp.status_code = 200
             return resp
         elif request.method == 'HEAD':

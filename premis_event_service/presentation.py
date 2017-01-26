@@ -11,7 +11,7 @@ from . import settings
 PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
 PREMIS = "{%s}" % PREMIS_NAMESPACE
 PREMIS_NSMAP = {"premis": PREMIS_NAMESPACE}
-PREMIS_IDENTIFIER_TYPE = "PES:Agent"
+PES_AGENT_ID_TYPE = "PES:Agent"
 dateFormat = "%Y-%m-%d %H:%M:%S"
 altDateFormat = "%Y-%m-%dT%H:%M:%S"
 
@@ -222,7 +222,7 @@ def objectToAgentXML(agentObject):
         agentIdentifier, PREMIS + "agentIdentifierType"
     )
     # is this just a constant? yes.
-    agentIdentifierType.text = PREMIS_IDENTIFIER_TYPE
+    agentIdentifierType.text = PES_AGENT_ID_TYPE
     agentIdentifierValue = etree.SubElement(
         agentIdentifier, PREMIS + "agentIdentifierValue"
     )

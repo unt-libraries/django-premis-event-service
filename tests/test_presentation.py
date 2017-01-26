@@ -33,6 +33,13 @@ def has_premis_namespace(tree):
 @pytest.mark.django_db
 class TestPremisEventXMLToObject:
 
+    def test_validate_event_fixture(self, event_xml, premis_schema):
+        exml = etree.fromstring(event_xml.obj_xml)
+        assert isinstance(exml, etree._Element)
+        assert isinstance(premis_schema, etree.XMLSchema)
+        # validate event fixture doc against premis v2.3 XSD
+        premis_schema.assert_(exml)
+
     def test_returns_event(self, event_xml):
         tree = etree.fromstring(event_xml.obj_xml)
         event = presentation.premisEventXMLToObject(tree)
@@ -59,9 +66,9 @@ class TestPremisEventXMLToObject:
 
         # The XML datetime string may contain milliseconds and/or timezone
         # information. Here, we check that the Event datetime string, which
-        # will never have milliseconds or timzone information, is present
+        # will never have milliseconds or timezone information, is present
         # in the XML datetime string.
-        assert str(event.event_date_time) in xml_obj.eventDateTime.text
+        assert event.event_date_time.isoformat() in xml_obj.eventDateTime.text
         assert isinstance(event.event_date_time, datetime)
 
     def test_sets_event_detail(self, event_xml):
@@ -83,7 +90,9 @@ class TestPremisEventXMLToObject:
         event = presentation.premisEventXMLToObject(tree)
 
         xml_obj = etree_to_objectify(tree)
-        assert event.event_outcome_detail == xml_obj.eventOutcomeInformation.eventOutcomeDetail
+        eodn = xml_obj.eventOutcomeInformation.eventOutcomeDetail
+        eodn = eodn.eventOutcomeDetailNote
+        assert event.event_outcome_detail == eodn
 
     def test_sets_linking_agent_identifier_type(self, event_xml):
         tree = etree.fromstring(event_xml.obj_xml)
@@ -304,6 +313,13 @@ class TestPremisAgentXMLToObject:
 @pytest.mark.django_db
 class TestPremisEventXMLGetObjects:
 
+    def test_validate_event_fixture(self, event_xml, premis_schema):
+        exml = etree.fromstring(event_xml.obj_xml)
+        assert isinstance(exml, etree._Element)
+        assert isinstance(premis_schema, etree.XMLSchema)
+        # validate event fixture doc against premis v2.3 XSD
+        premis_schema.assert_(exml)
+
     def test_returns_correct_event_object(self, event_xml):
         tree = etree.fromstring(event_xml.entry_xml)
         factories.EventFactory(event_identifier=event_xml.identifier)
@@ -390,7 +406,7 @@ class TestObjectToPremisEventXML:
         event_xml = etree_to_objectify(tree)
 
         element = event_xml.eventDateTime
-        assert element.text in str(event.event_date_time)
+        assert element.text == event.event_date_time.isoformat()
         assert has_premis_namespace(element)
 
     def test_event_outcome(self):
@@ -408,6 +424,7 @@ class TestObjectToPremisEventXML:
         event_xml = etree_to_objectify(tree)
 
         element = event_xml.eventOutcomeInformation.eventOutcomeDetail
+        element = element.eventOutcomeDetailNote
         assert element == event.event_outcome_detail
         assert has_premis_namespace(element)
 
@@ -480,6 +497,11 @@ class TestObjectToPremisEventXML:
         assert element.text == linking_object.object_role
         assert has_premis_namespace(element)
 
+    def test_validate_eventxml(self, premis_schema):
+        evt = factories.EventFactory()
+        evt_xml = presentation.objectToPremisEventXML(evt)
+        premis_schema.assert_(evt_xml)
+
 
 @pytest.mark.django_db
 class TestObjectToAgentXML:
@@ -509,7 +531,7 @@ class TestObjectToAgentXML:
         agent_xml = etree_to_objectify(tree)
 
         element = agent_xml.agentIdentifier.agentIdentifierType
-        assert element == 'PES:Agent'
+        assert element == presentation.PES_AGENT_ID_TYPE
         assert has_premis_namespace(element)
 
     def test_agent_name(self):
@@ -586,6 +608,10 @@ class TestObjectToPremisAgentXML:
         assert element == agent.agent_type
         assert has_premis_namespace(element)
 
+    def test_validate_agentxml(self, premis_schema):
+        agent = factories.AgentFactory()
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        premis_schema.assert_(agent_xml)
 
 class TestDoSimpleXMLAssignment:
 

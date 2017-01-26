@@ -6,7 +6,7 @@ import urllib
 from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
                              updateObjectFromXML, wrapAtom, makeServiceDocXML)
 from django.conf import settings
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
 from django.shortcuts import render, render_to_response, get_object_or_404
@@ -488,18 +488,23 @@ def app_event(request, identifier=None):
             page = int(request.GET['page']) if request.GET.get('page') else 1
         else:
             page = 1
-        atomFeed = makeObjectFeed(
-            paginator=Paginator(events, 20),
-            objectToXMLFunction=objectToPremisEventXML,
-            feedId=request.path[1:],
-            webRoot='http://%s' % request.META.get('HTTP_HOST'),
-            title="Event Entry Feed",
-            idAttr="event_identifier",
-            nameAttr="event_identifier",
-            dateAttr="event_date_time",
-            request=request,
-            page=page,
-        )
+        try:
+            atomFeed = makeObjectFeed(
+                paginator=Paginator(events, 20),
+                objectToXMLFunction=objectToPremisEventXML,
+                feedId=request.path[1:],
+                webRoot='http://%s' % request.META.get('HTTP_HOST'),
+                title="Event Entry Feed",
+                idAttr="event_identifier",
+                nameAttr="event_identifier",
+                dateAttr="event_date_time",
+                request=request,
+                page=page,
+            )
+        except EmptyPage:
+            return HttpResponse("That page does not exist.\n", status=400,
+                content_type='text/plain'
+            )
         comment = etree.Comment(\
             "\n".join(debug_list) + \
             "\nTime prior to filtering is %s, time after filtering is %s" % \
@@ -597,17 +602,22 @@ def app_agent(request, identifier=None):
                 page = request.GET.get('page')
             else:
                 page = 1
-            atomFeed = makeObjectFeed(
-                paginator=Paginator(Agent.objects.all(), 20),
-                objectToXMLFunction=objectToAgentXML,
-                feedId=requestString[1:],
-                webRoot="http://%s" % request.META.get('HTTP_HOST'),
-                title="Agent Entry Feed",
-                idAttr="agent_identifier",
-                nameAttr="agent_name",
-                request=request,
-                page=page,
-            )
+            try:
+                atomFeed = makeObjectFeed(
+                    paginator=Paginator(Agent.objects.all(), 20),
+                    objectToXMLFunction=objectToAgentXML,
+                    feedId=requestString[1:],
+                    webRoot="http://%s" % request.META.get('HTTP_HOST'),
+                    title="Agent Entry Feed",
+                    idAttr="agent_identifier",
+                    nameAttr="agent_name",
+                    request=request,
+                    page=page,
+                )
+            except EmptyPage:
+                return HttpResponse("That page doesn't exist.\n", status=400,
+                    content_type='text/plain'
+                )
             atomFeedText = XML_HEADER % etree.tostring(
                 atomFeed, pretty_print=True
             )

@@ -5,6 +5,7 @@ from lxml import etree
 from django.shortcuts import get_object_or_404
 
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
+from codalib.util import xsDateTime_format, xsDateTime_parse
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from . import settings
 import collections
@@ -13,8 +14,6 @@ PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
 PREMIS = "{%s}" % PREMIS_NAMESPACE
 PREMIS_NSMAP = {"premis": PREMIS_NAMESPACE}
 PES_AGENT_ID_TYPE = "PES:Agent"
-dateFormat = "%Y-%m-%d %H:%M:%S"
-altDateFormat = "%Y-%m-%dT%H:%M:%S"
 
 translateDict = collections.OrderedDict()
 translateDict["event_identifier_type"] =  ["eventIdentifier", "eventIdentifierType"]
@@ -76,13 +75,11 @@ def premisEventXMLToObject(eventXML):
     datetimeObject = None
     dateString = newEventObject.event_date_time.split(".", 1)[0]
     try:
-        datetimeObject = datetime.strptime(dateString, dateFormat)
+        datetimeObject = xsDateTime_parse(dateString)
     except ValueError:
-        try:
-            datetimeObject = datetime.strptime(dateString, altDateFormat)
-        except ValueError:
-            raise Exception("Unable to parse %s (%s) into datetime object" %
-                            (dateString, newEventObject.event_date_time))
+        raise Exception("Unable to parse %s (%s) into datetime object" %
+            (dateString, newEventObject.event_date_time)
+        )
     newEventObject.event_date_time = datetimeObject
     return newEventObject
 

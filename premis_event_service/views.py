@@ -1,5 +1,5 @@
 import re
-import datetime
+from datetime import datetime
 import json
 import urllib
 
@@ -137,12 +137,12 @@ def json_event_search(request):
     args = {}
     # get data for json dictionary
     if request.GET.get('start_date'):
-        args['start_date'] = datetime.datetime.strptime(
+        args['start_date'] = datetime.strptime(
             request.GET.get('start_date').strip(), DATE_FORMAT
         )
         events = events.filter(event_date_time__gte=args['start_date'])
     if request.GET.get('end_date'):
-        args['end_date'] = datetime.datetime.strptime(
+        args['end_date'] = datetime.strptime(
             request.GET.get('end_date').strip(), DATE_FORMAT
         )
         events = events.filter(event_date_time__lte=args['end_date'])
@@ -447,16 +447,16 @@ def app_event(request, identifier=None):
     elif request.method == 'GET' and not identifier:
         # negotiate the details of our feed here
         events = Event.objects.all()
-        startTime = datetime.datetime.now()
+        startTime = datetime.utcnow()
         # parse the request get variables and filter the search
         if request.GET.get('start_date'):
-            start_date = datetime.datetime.strptime(
+            start_date = datetime.strptime(
                 request.GET.get('start_date'),
                 DATE_FORMAT
             )
             events = events.filter(event_date_time__gte=start_date)
         if request.GET.get('end_date'):
-            end_date = datetime.datetime.strptime(
+            end_date = datetime.strptime(
                 request.GET.get('end_date'),
                 DATE_FORMAT
             )
@@ -482,7 +482,7 @@ def app_event(request, identifier=None):
             else:
                 events = events.order_by(order_field)
         debug_list = []
-        endTime = datetime.datetime.now()
+        endTime = datetime.utcnow()
         requestString = request.path
         if request.GET:
             requestString = "%s?%s" % (request.path, request.GET.urlencode())

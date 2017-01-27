@@ -1,6 +1,8 @@
-app:
-    build: .
-    volumes:
-        - .:/app/
-    ports:
-        - "8000:80"
+version: '2'
+services:
+    app:
+        build: .
+        volumes:
+            - .:/app/
+        ports:
+            - "8000:80"

@@ -404,8 +404,9 @@ def agentXML(request, identifier):
             return HttpResponseNotFound(
                 "There is no agent with the identifier %s" % identifier
             )
-        returnXML = objectToAgentXML(agentObject)
-        returnText = XML_HEADER % etree.tostring(returnXML, pretty_print=True)
+        agent_obj_xml = objectToAgentXML(agentObject)
+        return_atom = wrapAtom(agent_obj_xml, identifier, identifier)
+        returnText = XML_HEADER % etree.tostring(return_atom, pretty_print=True)
     return HttpResponse(returnText, content_type="application/atom+xml")
 
 

@@ -145,6 +145,7 @@ class TestPremisEventXMLToObject:
 
         assert isinstance(event_or_response, HttpResponse)
 
+    @pytest.mark.xfail(reason='For consistency\'s sake, all duplicate IDs should 409.')
     def test_new_identifier_created_if_not_valid_uuid4(self, event_xml):
         # Replace the existing hex identifier with a non-hex identifier.
         invalid_identifier = 'invalid-hex'

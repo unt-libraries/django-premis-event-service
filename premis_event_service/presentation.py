@@ -78,7 +78,7 @@ def premisEventXMLToObject(eventXML):
     datetimeObject = None
     dateString = newEventObject.event_date_time
     try:
-        datetimeObject = xsDateTime_parse(dateString)
+        datetimeObject = xsDateTime_parse(dateString, as_utc=True)
     except ValueError:
         raise Exception("Unable to parse %s (%s) into datetime object" %
             (dateString, newEventObject.event_date_time)

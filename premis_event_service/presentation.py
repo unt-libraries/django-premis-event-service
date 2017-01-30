@@ -76,7 +76,7 @@ def premisEventXMLToObject(eventXML):
             )[0]
         newEventObject.linking_objects.add(linkObject)
     datetimeObject = None
-    dateString = newEventObject.event_date_time.split(".", 1)[0]
+    dateString = newEventObject.event_date_time
     try:
         datetimeObject = xsDateTime_parse(dateString)
     except ValueError:

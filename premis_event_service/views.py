@@ -18,7 +18,7 @@ from .models import Event, Agent, AGENT_TYPE_CHOICES
 from .presentation import (premisEventXMLToObject, premisEventXMLgetObject,
                            premisAgentXMLToObject, objectToPremisEventXML,
                            objectToPremisAgentXML, objectToAgentXML,
-                           translateDict)
+                           translateDict, DuplicateEventError)
 
 
 ARK_ID_REGEX = re.compile(r'ark:/67531/\w.*')
@@ -420,10 +420,16 @@ def app_event(request, identifier=None):
     # are we POSTing a new identifier here?
     if request.method == 'POST' and not identifier:
         xmlDoc = etree.fromstring(request_body)
-        newEvent = addObjectFromXML(
-            xmlDoc, premisEventXMLToObject, "event", "event_identifier",
-            EVENT_UPDATE_TRANSLATION_DICT
-        )
+        try:
+            newEvent = addObjectFromXML(
+                xmlDoc, premisEventXMLToObject, "event", "event_identifier",
+                EVENT_UPDATE_TRANSLATION_DICT
+            )
+        except DuplicateEventError as e:
+            return HttpResponse(
+                "An event with id='{}' exists.".format(e.message),
+                status=409, content_type="text/plain"
+            )
         if type(newEvent) == HttpResponse:
             return newEvent
         eventObjectXML = objectToPremisEventXML(newEvent)

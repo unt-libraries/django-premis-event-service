@@ -28,6 +28,9 @@ translateDict["linking_agent_identifier_type"] = ["linkingAgentIdentifier",
 translateDict["linking_agent_identifier_value"] = ["linkingAgentIdentifier", 
         "linkingAgentIdentifierValue"]
 
+class DuplicateEventError(Exception):
+    pass
+
 
 def premisEventXMLToObject(eventXML):
     """
@@ -39,12 +42,12 @@ def premisEventXMLToObject(eventXML):
         doSimpleXMLAssignment(newEventObject, fieldName, eventXML, chain)
     linkingObjectIDNodes = getNodesByName(eventXML, "linkingObjectIdentifier")
     try:
-        Event.objects.get(event_identifier=identifier)
-        resp = HttpResponse('The uuid already exists')
-        resp.status_code = 409
-        return resp
-    except Exception, e:
+        Event.objects.get(event_identifier=newEventObject.event_identifier)
+        raise DuplicateEventError(newEventObject.event_identifier)
+    except Event.DoesNotExist as e:
         pass
+    except DuplicateEventError as e:
+        raise e
     # if we dont have a uuid looking event_identifier
     # create our own before we save.
     try:

@@ -96,38 +96,37 @@ def premisAgentXMLToObject(agentXML):
 
     # we need to make this xpath parseable, and not just raw text.
     entryRoot = etree.XML(agentXML)
+    agent_root = entryRoot.xpath('//premis:agent', namespaces=PREMIS_NSMAP)[0]
     # first, let's get the agent identifier and see if it exists already
     try:
-        agent_object = premisAgentXMLgetObject(entryRoot)
+        agent_object = premisAgentXMLgetObject(agent_root)
     # if we can't get the object, then we're making a new one.
     except Exception:
         agent_object = Agent()
     try:
         # move to identifier node
-        agent_xml = entryRoot.xpath("*[local-name() = 'agentIdentifier']")[0]
-        agent_identifier = agent_xml.xpath(
-            "*[local-name() = 'agentIdentifierValue']"
+        agent_identifier = agent_root.xpath(
+            "//premis:agentIdentifierValue",
+            namespaces=PREMIS_NSMAP
         )[0].text.strip()
         agent_object.agent_identifier = agent_identifier
-        # and now move back to the parent node for the other xpath gets
-        agent_xml = agent_xml.getparent()
     except Exception, e:
         raise Exception("Unable to set 'agent_identifier' attribute: %s" % e)
     try:
-        agent_object.agent_name = agent_xml.xpath(
-            "*[local-name() = 'agentName']"
+        agent_object.agent_name = agent_root.xpath(
+            "//premis:agentName", namespaces=PREMIS_NSMAP
         )[0].text.strip()
     except Exception, e:
         raise Exception("Unable to set 'agent_name' attribute: %s" % e)
     try:
-        agent_object.agent_type = agent_xml.xpath(
-            "*[local-name() = 'agentType']"
+        agent_object.agent_type = agent_root.xpath(
+            "//premis:agentType", namespaces=PREMIS_NSMAP
         )[0].text.strip()
     except Exception, e:
         raise Exception("Unable to set 'agent_type' attribute: %s" % e)
     try:
-        agent_object.agent_note = agent_xml.xpath(
-            "*[local-name() = 'agentNote']"
+        agent_object.agent_note = agent_root.xpath(
+                "//premis:agentNote", namespaces=PREMIS_NSMAP
         )[0].text.strip()
     except Exception, e:
         pass
@@ -153,10 +152,9 @@ def premisAgentXMLgetObject(agentXML):
     """
     Agent XML -> existing object
     """
-
-    agent_xml = agentXML.xpath("*[local-name() = 'agentIdentifier']")[0]
+    agent_xml = agentXML.xpath("//premis:agent", namespaces=PREMIS_NSMAP)[0]
     agent_identifier = agent_xml.xpath(
-        "*[local-name() = 'agentIdentifierValue']"
+        "//premis:agentIdentifierValue", namespaces=PREMIS_NSMAP
     )[0].text.strip()
     ExistingObject = get_object_or_404(
         Agent, agent_identifier=agent_identifier

@@ -10,19 +10,7 @@ them in that file rather than here.
 import os.path
 import json
 
-secrets_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "secrets.json")
-with open(secrets_path) as f:
-    secrets = json.loads(f.read())
-
-def get_secret(setting, secrets=secrets):
-    try:
-        return secrets[setting]
-    except KeyError:
-        error_msg = "The {0} setting is not set.".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = '0xBADBEEF0'
 
 DEBUG = True
 
@@ -64,17 +52,16 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'NAME': get_secret("DB_NAME"),
-        'USER': get_secret("DB_USER"),
         'ENGINE': 'django.db.backends.mysql',
-        'PASSWORD': get_secret("DB_PASSWORD"),
-        'HOST': get_secret("DB_HOST"),
-        'PORT': get_secret("DB_PORT"),
         'OPTIONS': {
             'init_command': 'SET storage_engine=MyISAM'
         }
     }
 }
+DATABASES['default']['NAME'] = 'premis_local'
+DATABASES['default']['USER'] = 'root'
+DATABASES['default']['PASSWORD'] = 'root'
+DATABASES['default']['HOST'] = 'db'
 
 ROOT_URLCONF = 'tests.urls'
 

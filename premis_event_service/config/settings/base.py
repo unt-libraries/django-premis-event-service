@@ -7,13 +7,6 @@ These settings values will be used only if they are not found in the project
 settings.py module. If you want to override any of these values, just redefine
 them in that file rather than here.
 '''
-import os.path
-import json
-
-SECRET_KEY = '0xBADBEEF0'
-
-DEBUG = True
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,19 +42,6 @@ TEMPLATES = [
         },
     },
 ]
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'init_command': 'SET storage_engine=MyISAM'
-        }
-    }
-}
-DATABASES['default']['NAME'] = 'premis_local'
-DATABASES['default']['USER'] = 'root'
-DATABASES['default']['PASSWORD'] = 'root'
-DATABASES['default']['HOST'] = 'db'
 
 ROOT_URLCONF = 'tests.urls'
 

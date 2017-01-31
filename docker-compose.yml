@@ -18,7 +18,7 @@ services:
             - db
         environment:
             - DJANGO_SETTINGS_MODULE=premis_event_service.settings
-        command: python manage.py runserver 0.0.0.0:80
+        command: /appstart.sh
         ports:
             - "8000:80"
         links:

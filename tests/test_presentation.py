@@ -7,7 +7,8 @@ import pytest
 
 from django.http import HttpResponse, Http404
 
-from premis_event_service import presentation, models, settings
+from premis_event_service import presentation, models
+from premis_event_service.config.settings import base as settings
 from . import factories
 
 

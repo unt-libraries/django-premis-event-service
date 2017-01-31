@@ -1,4 +1,7 @@
 #!/bin/bash
 /wait-for-mysqld.sh
-python manage.py migrate
-python manage.py runserver 0.0.0.0:80
+echo "Migrate..."
+python manage.py migrate --settings=premis_event_service.config.settings.local
+echo "Start app..."
+python manage.py runserver 0.0.0.0:80 --settings=premis_event_service.config.settings.local
+

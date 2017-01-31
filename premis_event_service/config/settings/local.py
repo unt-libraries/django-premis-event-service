@@ -1,4 +1,8 @@
-from . import base
+from .base import *
+
+DEBUG = True
+
+SECRET_KEY = '0xBADBEEF'
 
 DATABASES = {
     'default': {

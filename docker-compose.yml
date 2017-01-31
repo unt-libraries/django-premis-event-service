@@ -17,7 +17,7 @@ services:
         depends_on:
             - db
         environment:
-            - DJANGO_SETTINGS_MODULE=premis_event_service.settings
+            - DJANGO_SETTINGS_MODULE=premis_event_service.config.settings.local
         command: /appstart.sh
         ports:
             - "8000:80"

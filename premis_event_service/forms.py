@@ -1,6 +1,6 @@
 from django import forms
 
-import settings
+from .config.settings import base as settings
 
 OUTCOME_CHOICES = settings.EVENT_OUTCOME_CHOICES
 EVENT_TYPE_CHOICES = settings.EVENT_TYPE_CHOICES

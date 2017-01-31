@@ -5,7 +5,8 @@ import factory.fuzzy
 
 from django.utils import timezone
 
-from premis_event_service import models, settings
+from premis_event_service import models
+from premis_event_service.config.settings import base as settings
 
 
 UUID_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID'

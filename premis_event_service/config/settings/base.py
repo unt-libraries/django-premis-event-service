@@ -86,4 +86,3 @@ EVENT_TYPE_CHOICES = (
     ('http://id.loc.gov/vocabulary/preservation/eventType/ing', 'Ingestion'),
     ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
 )
-

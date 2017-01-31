@@ -8,7 +8,6 @@ settings.py module. If you want to override any of these values, just redefine
 them in that file rather than here.
 '''
 import os.path
-from django.conf import settings
 import json
 
 secrets_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "secrets.json")
@@ -94,34 +93,30 @@ STATIC_URL = '/static/'
 MAINTENANCE_MSG = None
 
 # Used in codalib/util.py
-EVENT_ID_TYPE_XML = getattr(settings, 'EVENT_ID_TYPE_XML',
-    "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID")
-LINK_AGENT_ID_TYPE_XML = getattr(settings, 'LINK_AGENT_ID_TYPE_XML',
-    "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL")
-LINK_AGENT_ID_ROLE_XML = getattr(settings, 'LINK_AGENT_ID_ROLE_XML', 
+EVENT_ID_TYPE_XML = \
+        "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID"
+LINK_AGENT_ID_TYPE_XML = \
+    "http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL"
+LINK_AGENT_ID_ROLE_XML = \
     "http://id.loc.gov/vocabulary/preservation/eventRelatedAgentRole/exe"
-)
 
 # Used in codalib/bagatom.py
-BAGATOM_BAG_NAMESPACE = getattr(settings, 'BAGATOM_BAG_NAMESPACE', "TODO")
-BAGATOM_QXML_NAMESPACE = getattr(settings, 'BAGATOM_QXML_NAMESPACE', "TODO")
-BAGATOM_NODE_NAMESPACE = getattr(settings, 'BAGATOM_NODE_NAMESPACE', "TODO")
+BAGATOM_BAG_NAMESPACE = "TODO"
+BAGATOM_QXML_NAMESPACE = "TODO"
+BAGATOM_NODE_NAMESPACE = "TODO"
 
 # Used in forms.py
-EVENT_OUTCOME_CHOICES = getattr(settings, 'EVENT_OUTCOME_CHOICES',
-    (
-        ('', 'None'),
-        ('http://purl.org/net/untl/vocabularies/eventOutcomes/#success', 'Success'),
-        ('http://purl.org/net/untl/vocabularies/eventOutcomes/#failure', 'Failure'),
-    )
+EVENT_OUTCOME_CHOICES = (
+    ('', 'None'),
+    ('http://purl.org/net/untl/vocabularies/eventOutcomes/#success', 'Success'),
+    ('http://purl.org/net/untl/vocabularies/eventOutcomes/#failure', 'Failure'),
 )
-EVENT_TYPE_CHOICES = getattr(settings, 'EVENT_TYPE_CHOICES',
-    (
-        ('', 'None'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/fix', 'Fixity Check'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/rep', 'Replication'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/ing', 'Ingestion'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
-    )
+
+EVENT_TYPE_CHOICES = (
+    ('', 'None'),
+    ('http://id.loc.gov/vocabulary/preservation/eventType/fix', 'Fixity Check'),
+    ('http://id.loc.gov/vocabulary/preservation/eventType/rep', 'Replication'),
+    ('http://id.loc.gov/vocabulary/preservation/eventType/ing', 'Ingestion'),
+    ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
 )
 

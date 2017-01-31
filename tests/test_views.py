@@ -55,7 +55,7 @@ def test_humanAgent_returns_ok(rf):
 def test_humanAgent_with_invalid_identifier(rf):
     request = rf.get('/')
     response = views.humanAgent(request, 'test-identifier')
-    assert response.status_code == 200
+    assert response.status_code == 404
 
 
 def test_humanAgent_returns_all_agents(client):

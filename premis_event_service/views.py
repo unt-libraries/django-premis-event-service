@@ -4,11 +4,14 @@ import json
 import urllib
 
 from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
-                             updateObjectFromXML, wrapAtom, makeServiceDocXML)
+                             updateObjectFromXML, wrapAtom, makeServiceDocXML,
+                             getNodeByName)
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage
+from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
+from django.db.utils import IntegrityError
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from lxml import etree
@@ -373,8 +376,12 @@ def findEvent(request, linked_identifier, event_type=None):
             lateDate = singleEvent.event_date_time
             lateEvent = singleEvent
     eventXML = objectToPremisEventXML(lateEvent)
+    althref = request.build_absolute_uri(
+        reverse('event-detail', args=[lateEvent.event_identifier,])
+    )
     atomXML = wrapAtom(
-        eventXML, lateEvent.event_identifier, lateEvent.event_identifier
+        eventXML, lateEvent.event_identifier, lateEvent.event_identifier,
+        alt=althref
     )
     atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
     resp = HttpResponse(atomText, content_type="application/atom+xml")
@@ -399,6 +406,7 @@ def agentXML(request, identifier):
             webRoot=request.get_host() + '/',
         )
         returnText = XML_HEADER % etree.tostring(returnXML, pretty_print=True)
+        content_type = "application/xml"
     else:
         try:
             agentObject = Agent.objects.get(agent_identifier=identifier)
@@ -407,9 +415,15 @@ def agentXML(request, identifier):
                 "There is no agent with the identifier %s" % identifier
             )
         agent_obj_xml = objectToAgentXML(agentObject)
-        return_atom = wrapAtom(agent_obj_xml, identifier, identifier)
+        althref = request.build_absolute_uri(
+            reverse('agent-detail', args=[identifier,])
+        )
+        return_atom = wrapAtom(agent_obj_xml, identifier, identifier,
+            alt=althref
+        )
         returnText = XML_HEADER % etree.tostring(return_atom, pretty_print=True)
-    return HttpResponse(returnText, content_type="application/atom+xml")
+        content_type = "application/atom+xml"
+    return HttpResponse(returnText, content_type=content_type)
 
 
 def app_event(request, identifier=None):
@@ -552,12 +566,15 @@ def app_event(request, identifier=None):
             )
         returnEvent = event_object
         eventObjectXML = objectToPremisEventXML(returnEvent)
+        althref = request.build_absolute_uri(
+            reverse('event-detail', args=[identifier,])
+        )
         atomXML = wrapAtom(
             xml=eventObjectXML,
             id='http://%s/APP/event/%s/' % (
                 request.META['HTTP_HOST'], identifier
             ),
-            title=identifier,
+            title=identifier, alt=althref
         )
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
         resp = HttpResponse(atomText, content_type="application/atom+xml")
@@ -634,8 +651,9 @@ def app_agent(request, identifier=None):
             resp.status_code = 200
             return resp
         elif request.method == 'POST':
+            entry_etree = etree.XML(request_body)
             try:
-                agent_object = premisAgentXMLGetObject(request_body)
+                agent_object = premisAgentXMLGetObject(entry_etree)
             except:
                 pass
             else:
@@ -705,8 +723,12 @@ def app_agent(request, identifier=None):
             return resp
         elif request.method == 'GET':
             returnXML = objectToAgentXML(agent_object)
+            althref = request.build_absolute_uri(
+                reverse('agent-detail', args=[identifier,])
+            )
             returnEntry = wrapAtom(
-                returnXML, agent_object.agent_name, agent_object.agent_name
+                returnXML, agent_object.agent_name, agent_object.agent_name,
+                alt=althref
             )
             entryText = XML_HEADER % etree.tostring(
                 returnEntry,

@@ -15,7 +15,7 @@ install_requires = [
 setup(
     name="django-premis-event-service",
     version="1.1.0",
-    packages=['premis_event_service', 'premis_event_service.config.settings.base'],
+    packages=['premis_event_service', 'premis_event_service.config.settings'],
     include_package_data=True,
     license="BSD",
     description="A Django application for storing and querying PREMIS Events",

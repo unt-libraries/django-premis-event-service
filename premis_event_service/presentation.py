@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
 from codalib.util import xsDateTime_format, xsDateTime_parse
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
-from .config.settings import base as settings
+from premis_event_service.config.settings import base as settings
 import collections
 
 PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"

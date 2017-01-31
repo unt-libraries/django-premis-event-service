@@ -331,6 +331,8 @@ def humanAgent(request, identifier=None):
 
     if identifier:
         agents = Agent.objects.filter(agent_identifier=identifier).values()
+        if not agents:
+            return HttpResponseNotFound("Agent not found.", content_type='text/plain')
     else:
         agents = Agent.objects.all().values()
     for a in agents:

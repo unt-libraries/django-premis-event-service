@@ -6,6 +6,11 @@ services:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_DATABASE=premis_local
 
+    base:
+        build: .
+        volumes:
+            - .:/app/
+
     app:
         extends:
             service: base
@@ -18,11 +23,6 @@ services:
             - "8000:80"
         links:
             - db
-
-    base:        
-        build: .
-        volumes:
-            - .:/app/
 
     test:
         extends:

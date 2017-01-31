@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
@@ -15,7 +15,7 @@ install_requires = [
 setup(
     name="django-premis-event-service",
     version="1.1.0",
-    packages=['premis_event_service', 'premis_event_service.config.settings'],
+    packages=find_packages(exclude=["tests",]),
     include_package_data=True,
     license="BSD",
     description="A Django application for storing and querying PREMIS Events",

@@ -115,21 +115,23 @@ class Event(models.Model):
 
     objects = EventManager()
 
+    help_text = "Unique identifier for an event. example: " +\
+        "urn:uuid:12345678-1234-5678-1234-567812345678"
     event_identifier = models.CharField(
         primary_key=True,
         max_length=64,
         editable=False,
-        help_text="Unique identifier for an event. example: " + \
-            "urn:uuid:12345678-1234-5678-1234-567812345678"
+        help_text=help_text
     )
     event_identifier_type = models.CharField(
         max_length=255,
         help_text="The categorization of the nature of the identifier used"
     )
+    help_text = "A categorization of the nature of the event use " +\
+        "controlled vocabulary"
     event_type = models.CharField(
         max_length=255,
-        help_text="A categorization of the nature of the event use " + \
-            "controlled vocabulary",
+        help_text=help_text,
         db_index=True
     )
     event_date_time = models.DateTimeField(
@@ -145,21 +147,24 @@ class Event(models.Model):
         blank=True,
         help_text="Additional information about the event."
     )
+    help_text = "A categorization of the overall result of the event in " + \
+        "terms of success, partial success, or failure."
     event_outcome = models.CharField(
         max_length=255,
-        help_text="A categorization of the overall result of the event in " + \
-            "terms of success, partial success, or failure.",
+        help_text=help_text,
         db_index=True
     )
+    help_text = "A non-coded detailed description of the result " + \
+        "of the event."
     event_outcome_detail = models.TextField(
         blank=True,
-        help_text="A non-coded detailed description of the result " + \
-            "of the event."
+        help_text=help_text
     )
+    help_text = "A designation of the domain in which the linking agent" + \
+        " identifier is unique."
     linking_agent_identifier_type = models.CharField(
         max_length=255,
-        help_text="A designation of the domain in which the linking agent" + \
-            " identifier is unique."
+        help_text=help_text
     )
     linking_agent_identifier_value = models.CharField(
         max_length=255,
@@ -187,7 +192,7 @@ class Event(models.Model):
 
     def is_good(self):
         if self.event_outcome.endswith("#success") or \
-            self.event_outcome == "pass":
+                self.event_outcome == "pass":
             return True
         return False
 

@@ -1,4 +1,4 @@
-from .base import *
+# from .base import *
 
 DEBUG = True
 
@@ -16,5 +16,3 @@ DATABASES['default']['NAME'] = 'premis_local'
 DATABASES['default']['USER'] = 'root'
 DATABASES['default']['PASSWORD'] = 'root'
 DATABASES['default']['HOST'] = 'db'
-
-

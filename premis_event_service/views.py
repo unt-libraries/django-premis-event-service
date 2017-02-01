@@ -4,10 +4,9 @@ import json
 import urllib
 
 from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
-                             updateObjectFromXML, wrapAtom, makeServiceDocXML,
-                             getNodeByName)
+                             updateObjectFromXML, wrapAtom, makeServiceDocXML,)
 from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
@@ -19,9 +18,9 @@ from lxml import etree
 from .forms import EventSearchForm
 from .models import Event, Agent, AGENT_TYPE_CHOICES
 from .presentation import (premisEventXMLToObject, premisEventXMLgetObject,
-                           premisAgentXMLToObject, objectToPremisEventXML,
-                           objectToPremisAgentXML, objectToAgentXML,
-                           translateDict, DuplicateEventError)
+                           premisAgentXMLToObject, premisAgentXMLgetObject,
+                           objectToPremisEventXML, objectToPremisAgentXML,
+                           objectToAgentXML, translateDict, DuplicateEventError)
 
 
 ARK_ID_REGEX = re.compile(r'ark:/67531/\w.*')
@@ -155,8 +154,8 @@ def json_event_search(request):
             events = events.filter(
                 linking_objects__object_identifier=args['linking_object_id']
             )
-        elif ARK_ID_REGEX.match("ark:/67531/%s" % linking_object_id):
-            args['linking_object_id'] = "ark:/67531/%s" % linking_object_id
+        elif ARK_ID_REGEX.match("ark:/67531/%s" % args["linking_object_id"]):
+            args['linking_object_id'] = "ark:/67531/%s" % args["linking_object_id"]
             events = events.filter(
                 linking_objects__object_identifier=args['linking_object_id']
             )
@@ -172,11 +171,8 @@ def json_event_search(request):
         # paginate 20 per page
         paginated_entries = paginate_entries(request, events, num_per_page=20)
         # prepare a results set and then append each event to it as a dict
-        event_url_prefix = "%s/event/search.json" % \
-            request.META.get('HTTP_HOST')
         rel_links = []
         entries = []
-        cur_page = paginated_entries.number
         # we will ALWAYS have a self, first and last relative link
         args['page'] = paginated_entries.number
         current_page_args = args.copy()
@@ -262,8 +258,8 @@ def json_event_search(request):
                 'entry': entries,
                 'link': rel_links,
                 'opensearch:Query': request.GET,
-                "opensearch:itemsPerPage": paginated_entries.\
-                    paginator.per_page,
+                "opensearch:itemsPerPage":
+                    paginated_entries.paginator.per_page,
                 "opensearch:startIndex": "1",
                 "opensearch:totalResults": events.count(),
                 "title": "Premis Event Search"
@@ -377,7 +373,7 @@ def findEvent(request, linked_identifier, event_type=None):
             lateEvent = singleEvent
     eventXML = objectToPremisEventXML(lateEvent)
     althref = request.build_absolute_uri(
-        reverse('event-detail', args=[lateEvent.event_identifier,])
+        reverse('event-detail', args=[lateEvent.event_identifier, ])
     )
     atomXML = wrapAtom(
         eventXML, lateEvent.event_identifier, lateEvent.event_identifier,
@@ -416,10 +412,10 @@ def agentXML(request, identifier):
             )
         agent_obj_xml = objectToAgentXML(agentObject)
         althref = request.build_absolute_uri(
-            reverse('agent-detail', args=[identifier,])
+            reverse('agent-detail', args=[identifier, ])
         )
-        return_atom = wrapAtom(agent_obj_xml, identifier, identifier,
-            alt=althref
+        return_atom = wrapAtom(
+            agent_obj_xml, identifier, identifier, alt=althref
         )
         returnText = XML_HEADER % etree.tostring(return_atom, pretty_print=True)
         content_type = "application/atom+xml"
@@ -431,6 +427,7 @@ def app_event(request, identifier=None):
     This method handles the ATOMpub protocol for events
     """
 
+    DATE_FORMAT = "%m/%d/%Y"
     returnEvent = None
     request_body = get_request_body(request)
     # are we POSTing a new identifier here?
@@ -505,9 +502,7 @@ def app_event(request, identifier=None):
                 events = events.order_by(order_field)
         debug_list = []
         endTime = datetime.utcnow()
-        requestString = request.path
         if request.GET:
-            requestString = "%s?%s" % (request.path, request.GET.urlencode())
             page = int(request.GET['page']) if request.GET.get('page') else 1
         else:
             page = 1
@@ -525,12 +520,13 @@ def app_event(request, identifier=None):
                 page=page,
             )
         except EmptyPage:
-            return HttpResponse("That page does not exist.\n", status=400,
+            return HttpResponse(
+                "That page does not exist.\n", status=400,
                 content_type='text/plain'
             )
-        comment = etree.Comment(\
-            "\n".join(debug_list) + \
-            "\nTime prior to filtering is %s, time after filtering is %s" % \
+        comment = etree.Comment(
+            "\n".join(debug_list) +
+            "\nTime prior to filtering is %s, time after filtering is %s" %
             (startTime, endTime)
         )
         atomFeed.append(comment)
@@ -567,7 +563,7 @@ def app_event(request, identifier=None):
         returnEvent = event_object
         eventObjectXML = objectToPremisEventXML(returnEvent)
         althref = request.build_absolute_uri(
-            reverse('event-detail', args=[identifier,])
+            reverse('event-detail', args=[identifier, ])
         )
         atomXML = wrapAtom(
             xml=eventObjectXML,
@@ -585,12 +581,12 @@ def app_event(request, identifier=None):
         return HttpResponse(content_type="application/atom+xml")
 
     elif request.method == 'DELETE' and identifier:
-    # attempt to retrieve record -- error if unable
+        # attempt to retrieve record -- error if unable
         try:
             event_object = Event.objects.get(event_identifier=identifier)
         except:
             return HttpResponseNotFound(
-                "Unable to Delete. There is no event for identifier %s.\n" \
+                "Unable to Delete. There is no event for identifier %s.\n"
                 % identifier
             )
         # grab the event, delete it, and inform the user.
@@ -641,7 +637,8 @@ def app_agent(request, identifier=None):
                     page=page,
                 )
             except EmptyPage:
-                return HttpResponse("That page doesn't exist.\n", status=400,
+                return HttpResponse(
+                    "That page doesn't exist.\n", status=400,
                     content_type='text/plain'
                 )
             atomFeedText = XML_HEADER % etree.tostring(
@@ -653,23 +650,26 @@ def app_agent(request, identifier=None):
         elif request.method == 'POST':
             entry_etree = etree.XML(request_body)
             try:
-                agent_object = premisAgentXMLGetObject(entry_etree)
+                agent_object = premisAgentXMLgetObject(entry_etree)
             except:
                 pass
             else:
-                return HttpResponse("Conflict with already-existing resource.\n",
+                return HttpResponse(
+                    "Conflict with already-existing resource.\n",
                     status=409, content_type="text/plain"
                 )
             try:
                 agent_object = premisAgentXMLToObject(request_body)
             except etree.XMLSyntaxError:
-                return HttpResponse("Invalid XML in request body.\n",
+                return HttpResponse(
+                    "Invalid XML in request body.\n",
                     status=400, content_type="text/plain"
                 )
             try:
                 agent_object.save()
             except IntegrityError:
-                return HttpResponse("Conflict with already-existing resource.\n",
+                return HttpResponse(
+                    "Conflict with already-existing resource.\n",
                     status=409, content_type="text/plain"
                 )
             returnXML = objectToAgentXML(agent_object)
@@ -698,7 +698,7 @@ def app_agent(request, identifier=None):
                 Agent,
                 agent_identifier=identifier
             )
-        except Exception, e:
+        except Exception:
             return HttpResponseNotFound(
                 "There is no agent for identifier \'%s\'.\n" % identifier
             )
@@ -724,7 +724,7 @@ def app_agent(request, identifier=None):
         elif request.method == 'GET':
             returnXML = objectToAgentXML(agent_object)
             althref = request.build_absolute_uri(
-                reverse('agent-detail', args=[identifier,])
+                reverse('agent-detail', args=(identifier, ))
             )
             returnEntry = wrapAtom(
                 returnXML, agent_object.agent_name, agent_object.agent_name,

@@ -5,7 +5,7 @@ from lxml import etree
 from django.shortcuts import get_object_or_404
 
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
-from codalib.util import xsDateTime_format, xsDateTime_parse
+from codalib.util import xsDateTime_parse
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from premis_event_service.config.settings import base as settings
 import collections
@@ -16,17 +16,22 @@ PREMIS_NSMAP = {"premis": PREMIS_NAMESPACE}
 PES_AGENT_ID_TYPE = "PES:Agent"
 
 translateDict = collections.OrderedDict()
-translateDict["event_identifier_type"] =  ["eventIdentifier", "eventIdentifierType"]
-translateDict["event_identifier"] =  ["eventIdentifier", "eventIdentifierValue"]
+translateDict["event_identifier_type"] = ["eventIdentifier", "eventIdentifierType"]
+translateDict["event_identifier"] = ["eventIdentifier", "eventIdentifierValue"]
 translateDict["event_type"] = ["eventType"]
 translateDict["event_date_time"] = ["eventDateTime"]
 translateDict["event_detail"] = ["eventDetail"]
 translateDict["event_outcome"] = ["eventOutcomeInformation", "eventOutcome"]
-translateDict["event_outcome_detail"] = ["eventOutcomeInformation", "eventOutcomeDetail", "eventOutcomeDetailNote"]
-translateDict["linking_agent_identifier_type"] = ["linkingAgentIdentifier", 
-        "linkingAgentIdentifierType"]
-translateDict["linking_agent_identifier_value"] = ["linkingAgentIdentifier", 
-        "linkingAgentIdentifierValue"]
+translateDict["event_outcome_detail"] = [
+    "eventOutcomeInformation", "eventOutcomeDetail", "eventOutcomeDetailNote"
+]
+translateDict["linking_agent_identifier_type"] = [
+    "linkingAgentIdentifier", "linkingAgentIdentifierType"
+]
+translateDict["linking_agent_identifier_value"] = [
+    "linkingAgentIdentifier", "linkingAgentIdentifierValue"
+]
+
 
 class DuplicateEventError(Exception):
     pass
@@ -68,7 +73,7 @@ def premisEventXMLToObject(eventXML):
             linkObject = LinkObject.objects.get(
                 object_identifier=identifierValue
             )
-        except LinkObject.DoesNotExist, dne:
+        except LinkObject.DoesNotExist:
             linkObject = LinkObject()
             linkObject.object_identifier = identifierValue
             linkObject.object_type = getValueByName(
@@ -76,7 +81,7 @@ def premisEventXMLToObject(eventXML):
             linkObject.object_role = getValueByName(
                 linkingObjectIDNode, "linkingObjectRole")
             linkObject.save()
-        except LinkObject.MultipleObjectsReturned, mob:
+        except LinkObject.MultipleObjectsReturned:
             linkObject = LinkObject.objects.filter(
                 object_identifier=identifierValue
             )[0]
@@ -140,7 +145,6 @@ def premisEventXMLgetObject(eventXML):
     """
 
     identifierValue = ''
-    tag = []
     for element in eventXML:
         if element.tag == '{http://www.w3.org/2005/Atom}id':
             identifierValue = element.text
@@ -184,7 +188,7 @@ def objectToPremisEventXML(eventObject):
                 baseNode = etree.SubElement(parentNode, PREMIS + chainItem)
         try:
             baseNode.text = getattr(eventObject, fieldName)
-        except TypeError, t:
+        except TypeError:
             value = getattr(eventObject, fieldName)
             if type(value) == datetime:
                 baseNode.text = value.isoformat()
@@ -265,7 +269,7 @@ def doSimpleXMLAssignment(recordObject, fieldName, node, chain):
     """
     """
 
-    if type(chain) != type([]) and type(chain) != type(()):
+    if not isinstance(chain, list) and not isinstance(chain, tuple):
         chain = [chain]
     currentNode = getNodeByName(node, chain[0])
     chain = chain[1:]

@@ -63,7 +63,7 @@ def premisEventXMLToObject(eventXML):
         pass
     else:
         newEventObject.event_date_time = xsDateTime_parse(
-            newEventObject.event_date_time, as_utc=True
+            newEventObject.event_date_time
         )
     newEventObject.save()
     for linkingObjectIDNode in linkingObjectIDNodes:
@@ -89,7 +89,7 @@ def premisEventXMLToObject(eventXML):
     datetimeObject = None
     if isinstance(newEventObject.event_date_time, basestring):
         dateString = newEventObject.event_date_time
-        datetimeObject = xsDateTime_parse(dateString, as_utc=True)
+        datetimeObject = xsDateTime_parse(dateString)
         newEventObject.event_date_time = datetimeObject
     return newEventObject
 

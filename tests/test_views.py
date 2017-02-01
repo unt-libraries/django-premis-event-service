@@ -5,7 +5,7 @@ import pytest
 
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.utils import timezone
+from datetime import datetime
 
 from premis_event_service import views, models
 from . import factories
@@ -212,7 +212,7 @@ def test_findEvent_finds_multiple_events(rf):
     # Create two events. Specify a datetime for the second event to assert
     # that the two events will not end up with the same event_date_time. We
     # will use that attribute to sort them later.
-    datetime_obj = timezone.now().replace(year=2015, month=1, day=1)
+    datetime_obj = datetime.now().replace(year=2015, month=1, day=1)
     event1 = factories.EventFactory.create(linking_objects=True)
     event2 = factories.EventFactory.create(event_date_time=datetime_obj)
 
@@ -498,9 +498,9 @@ class TestAppEvent:
 
     @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
     def test_list_filtering_by_start_date(self, rf):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
+        datetime_obj = datetime.now().replace(2015, 1, 1)
         factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
-        event = factories.EventFactory.create(event_date_time=timezone.now())
+        event = factories.EventFactory.create(event_date_time=datetime.now())
 
         request = rf.get('/?start_date=01/31/2015')
         response = views.app_event(request)
@@ -508,8 +508,8 @@ class TestAppEvent:
 
     @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
     def test_list_filtering_by_end_date(self, rf):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
-        factories.EventFactory.create_batch(30, event_date_time=timezone.now())
+        datetime_obj = datetime.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=datetime.now())
         event = factories.EventFactory.create(event_date_time=datetime_obj)
 
         request = rf.get('/?end_date=01/31/2015')
@@ -826,9 +826,9 @@ class TestJsonEventSearch:
                 assert 'page=3' in link['href']
 
     def test_filter_by_start_date(self, rf):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
+        datetime_obj = datetime.now().replace(2015, 1, 1)
         factories.EventFactory.create_batch(30, event_date_time=datetime_obj)
-        event = factories.EventFactory.create(event_date_time=timezone.now())
+        event = factories.EventFactory.create(event_date_time=datetime.now())
 
         request = rf.get('/?start_date=01/31/2015')
         response = views.json_event_search(request)
@@ -836,8 +836,8 @@ class TestJsonEventSearch:
         assert self.response_has_entry(response, event)
 
     def test_filter_by_end_date(self, rf):
-        datetime_obj = timezone.now().replace(2015, 1, 1)
-        factories.EventFactory.create_batch(30, event_date_time=timezone.now())
+        datetime_obj = datetime.now().replace(2015, 1, 1)
+        factories.EventFactory.create_batch(30, event_date_time=datetime.now())
         event = factories.EventFactory.create(event_date_time=datetime_obj)
 
         request = rf.get('/?end_date=01/31/2015')

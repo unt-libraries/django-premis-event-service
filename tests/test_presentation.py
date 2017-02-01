@@ -69,6 +69,10 @@ class TestPremisEventXMLToObject:
         # information. Here, we check that the Event datetime string, which
         # will never have milliseconds or timezone information, is present
         # in the XML datetime string.
+        from codalib.xsdatetime import xsDateTime_format, xsDateTime_parse
+        print xsDateTime_format(event.event_date_time)
+        print event.event_date_time
+        print xsDateTime_parse(xsDateTime_format(event.event_date_time))
         assert event.event_date_time.isoformat() in xml_obj.eventDateTime.text
         assert isinstance(event.event_date_time, datetime)
 

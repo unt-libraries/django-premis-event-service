@@ -3,7 +3,7 @@ import uuid
 import factory
 import factory.fuzzy
 
-from django.utils import timezone
+from datetime import datetime
 
 from premis_event_service import models
 from premis_event_service.config.settings import base as settings
@@ -53,7 +53,7 @@ class EventFactory(factory.django.DjangoModelFactory):
     event_identifier_type = UUID_TYPE
 
     event_type = factory.fuzzy.FuzzyChoice(EVENT_TYPES)
-    event_date_time = factory.fuzzy.FuzzyDateTime(timezone.now())
+    event_date_time = factory.fuzzy.FuzzyNaiveDateTime(datetime.now())
     event_detail = factory.fuzzy.FuzzyText()
     event_outcome = factory.fuzzy.FuzzyChoice(EVENT_OUTCOMES)
     event_outcome_detail = factory.fuzzy.FuzzyText()

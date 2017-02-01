@@ -674,6 +674,7 @@ class TestAppEvent:
 
         assert expected_headers == actual_headers, 'The response headers do not match.'
 
+
 class TestEventSearch:
     """Tests for views.event_search."""
     RESULTS_PER_PAGE = 20

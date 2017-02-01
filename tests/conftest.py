@@ -6,6 +6,7 @@ from . import factories
 
 SCHEMA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'schema')
 
+
 class EventTestXML(object):
 
     def __init__(self):
@@ -138,15 +139,13 @@ def agent_xml():
     """
     return AgentTestXML()
 
+
 @pytest.fixture
 def premis_schema():
     """Provides an lxml schema object for the Premis v2 XSD suitable
     for validation.
     """
-
     schema_file = open(os.path.join(SCHEMA_DIR, "premis-v2-3.xsd"))
     schema_doc = etree.parse(schema_file)
     schema = etree.XMLSchema(schema_doc)
-
     return schema
-

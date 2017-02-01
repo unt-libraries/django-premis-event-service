@@ -615,6 +615,7 @@ class TestObjectToPremisAgentXML:
         agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
         premis_schema.assert_(agent_xml)
 
+
 class TestDoSimpleXMLAssignment:
 
     @pytest.fixture

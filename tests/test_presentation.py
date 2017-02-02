@@ -11,6 +11,8 @@ from premis_event_service import presentation, models
 from premis_event_service.config.settings import base as settings
 from . import factories
 
+from codalib.xsdatetime import xsDateTime_format, localize_datetime
+
 
 def etree_to_objectify(tree):
     """Test helper to convert an etree object to an objectify object."""
@@ -65,16 +67,9 @@ class TestPremisEventXMLToObject:
         event = presentation.premisEventXMLToObject(tree)
         xml_obj = etree_to_objectify(tree)
 
-        # The XML datetime string may contain milliseconds and/or timezone
-        # information. Here, we check that the Event datetime string, which
-        # will never have milliseconds or timezone information, is present
-        # in the XML datetime string.
-        from codalib.xsdatetime import xsDateTime_format, xsDateTime_parse
-        print xsDateTime_format(event.event_date_time)
-        print event.event_date_time
-        print xsDateTime_parse(xsDateTime_format(event.event_date_time))
-        assert event.event_date_time.isoformat() in xml_obj.eventDateTime.text
         assert isinstance(event.event_date_time, datetime)
+        xsdt = xsDateTime_format(event.event_date_time)
+        assert xsdt in xml_obj.eventDateTime.text
 
     def test_sets_event_detail(self, event_xml):
         tree = etree.fromstring(event_xml.obj_xml)
@@ -412,7 +407,9 @@ class TestObjectToPremisEventXML:
         event_xml = etree_to_objectify(tree)
 
         element = event_xml.eventDateTime
-        assert element.text == event.event_date_time.isoformat()
+        dt = event.event_date_time
+        dt = localize_datetime(dt)
+        assert element.text == xsDateTime_format(dt)
         assert has_premis_namespace(element)
 
     def test_event_outcome(self):

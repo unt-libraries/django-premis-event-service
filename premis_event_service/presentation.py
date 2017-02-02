@@ -5,7 +5,7 @@ from lxml import etree
 from django.shortcuts import get_object_or_404
 
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
-from codalib.xsdatetime import xsDateTime_parse
+from codalib.xsdatetime import xsDateTime_parse, xsDateTime_format, localize_datetime
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from premis_event_service.config.settings import base as settings
 import collections
@@ -190,8 +190,10 @@ def objectToPremisEventXML(eventObject):
             baseNode.text = getattr(eventObject, fieldName)
         except TypeError:
             value = getattr(eventObject, fieldName)
-            if type(value) == datetime:
-                baseNode.text = value.isoformat()
+            if isinstance(value, datetime):
+                if value.tzinfo is None:
+                    value = localize_datetime(value)
+                baseNode.text = xsDateTime_format(value)
     linking_objects = eventObject.linking_objects.all()
     for linking_object in linking_objects:
         linkObjectIDXML = etree.SubElement(

@@ -27,7 +27,7 @@ services:
     test:
         extends:
             service: base
-        entrypoint: py.test
+        entrypoint: tox
         links:
             - db
 

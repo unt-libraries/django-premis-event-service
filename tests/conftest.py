@@ -75,7 +75,9 @@ class EventTestXML(object):
                 {linking_objects}
             </premis:event>
         """
-        self.attributes["event_date_time"] = self.attributes["event_date_time"].isoformat()
+        self.attributes["event_date_time"] = xsDateTime_format(
+            self.attributes["event_date_time"]
+        )
         return xml.format(
                 linking_objects=self._linking_objects_xml(),
                 **self.attributes)

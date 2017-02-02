@@ -466,7 +466,7 @@ def app_event(request, identifier=None):
     elif request.method == 'GET' and not identifier:
         # negotiate the details of our feed here
         events = Event.objects.all()
-        startTime = datetime.utcnow()
+        startTime = datetime.now()
         # parse the request get variables and filter the search
         if request.GET.get('start_date'):
             start_date = datetime.strptime(
@@ -501,7 +501,7 @@ def app_event(request, identifier=None):
             else:
                 events = events.order_by(order_field)
         debug_list = []
-        endTime = datetime.utcnow()
+        endTime = datetime.now()
         if request.GET:
             page = int(request.GET['page']) if request.GET.get('page') else 1
         else:

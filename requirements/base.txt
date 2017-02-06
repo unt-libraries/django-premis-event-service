@@ -1,4 +1,3 @@
 lxml==3.0.0
-#codalib==1.0.0
-git+https://github.com/unt-libraries/codalib@xsdate-fix
+codalib==1.0.1
 MySQL-python

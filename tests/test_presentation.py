@@ -501,9 +501,9 @@ class TestObjectToPremisEventXML:
         assert has_premis_namespace(element)
 
     def test_validate_eventxml(self, premis_schema):
-        evt = factories.EventFactory()
-        evt_xml = presentation.objectToPremisEventXML(evt)
-        premis_schema.assert_(evt_xml)
+        event = factories.EventFactory()
+        event_xml = presentation.objectToPremisEventXML(event)
+        premis_schema.assert_(event_xml)
 
 
 @pytest.mark.django_db

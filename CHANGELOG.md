@@ -9,7 +9,10 @@
 1.1.0
 -----
 
-?
+* Support Django 1.8 
+* Drop support for < 1.7
+* Use `codalib`
+* Refactor Event search
 
 1.0.0
 -----

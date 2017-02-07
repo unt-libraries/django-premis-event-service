@@ -19,12 +19,12 @@ class Agent(models.Model):
     agent_identifier = models.CharField(
         unique=True,
         max_length=255,
-        help_text="Short identifier for agent to be used in url",
+        help_text="Short identifier for agent to be used in url.",
         db_index=True,
     )
     agent_name = models.CharField(
         max_length=255,
-        help_text="Name of agent"
+        help_text="Name of agent."
     )
     agent_type = models.CharField(
         max_length=13,
@@ -33,7 +33,7 @@ class Agent(models.Model):
     )
     agent_note = models.TextField(
         blank=True,
-        help_text="Optional note about agent"
+        help_text="Optional note about agent."
     )
 
     def __unicode__(self):
@@ -53,17 +53,17 @@ class LinkObject(models.Model):
 
     object_identifier = models.CharField(
         max_length=255,
-        help_text="Unique identifier for this object",
+        help_text="Unique identifier for this object.",
         primary_key=True
     )
     object_type = models.CharField(
         max_length=255,
         help_text="High-level characterization of the type of object \
-            identifier"
+            identifier."
     )
     object_role = models.CharField(
         max_length=255,
-        help_text="A high-level characterization of the role of the object",
+        help_text="A high-level characterization of the role of the object.",
         null=True
     )
 
@@ -125,22 +125,22 @@ class Event(models.Model):
     )
     event_identifier_type = models.CharField(
         max_length=255,
-        help_text="The categorization of the nature of the identifier used"
+        help_text="The categorization of the nature of the identifier used."
     )
     help_text = "A categorization of the nature of the event use " +\
-        "controlled vocabulary"
+        "controlled vocabulary."
     event_type = models.CharField(
         max_length=255,
         help_text=help_text,
         db_index=True
     )
     event_date_time = models.DateTimeField(
-        help_text="Date/Time event was completed",
+        help_text="Date/Time event was completed.",
         db_index=True
     )
     event_added = models.DateTimeField(
         auto_now=True,
-        help_text="Date/Time event was added to system",
+        help_text="Date/Time event was added to system.",
         db_index=True
     )
     event_detail = models.TextField(
@@ -160,7 +160,7 @@ class Event(models.Model):
         blank=True,
         help_text=help_text
     )
-    help_text = "A designation of the domain in which the linking agent" + \
+    help_text = "A designation of the domain in which the linking agent." + \
         " identifier is unique."
     linking_agent_identifier_type = models.CharField(
         max_length=255,

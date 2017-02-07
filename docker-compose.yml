@@ -19,7 +19,7 @@ services:
         environment:
             - DJANGO_SETTINGS_MODULE=tests.settings
             - PES_BACKEND=mysql
-        command: /appstart.sh
+        command: /app/appstart.sh
         ports:
             - "8000:80"
         links:

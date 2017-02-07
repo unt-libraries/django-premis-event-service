@@ -415,7 +415,8 @@ def agentXML(request, identifier):
             reverse('agent-detail', args=[identifier, ])
         )
         return_atom = wrapAtom(
-            agent_obj_xml, identifier, identifier, alt=althref
+            agent_obj_xml, identifier, identifier,
+            alt=althref
         )
         returnText = XML_HEADER % etree.tostring(return_atom, pretty_print=True)
         content_type = "application/atom+xml"
@@ -570,7 +571,8 @@ def app_event(request, identifier=None):
             id='http://%s/APP/event/%s/' % (
                 request.META['HTTP_HOST'], identifier
             ),
-            title=identifier, alt=althref
+            title=identifier,
+            alt=althref
         )
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
         resp = HttpResponse(atomText, content_type="application/atom+xml")

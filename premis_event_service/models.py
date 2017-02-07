@@ -115,7 +115,7 @@ class Event(models.Model):
 
     objects = EventManager()
 
-    help_text = "Unique identifier for an event. example: " +\
+    help_text = "Unique identifier for an event. example: " + \
         "urn:uuid:12345678-1234-5678-1234-567812345678"
     event_identifier = models.CharField(
         primary_key=True,
@@ -127,7 +127,7 @@ class Event(models.Model):
         max_length=255,
         help_text="The categorization of the nature of the identifier used."
     )
-    help_text = "A categorization of the nature of the event use " +\
+    help_text = "A categorization of the nature of the event use " + \
         "controlled vocabulary."
     event_type = models.CharField(
         max_length=255,
@@ -160,7 +160,7 @@ class Event(models.Model):
         blank=True,
         help_text=help_text
     )
-    help_text = "A designation of the domain in which the linking agent." + \
+    help_text = "A designation of the domain in which the linking agent" + \
         " identifier is unique."
     linking_agent_identifier_type = models.CharField(
         max_length=255,

@@ -1,5 +1,4 @@
 from datetime import datetime
-import uuid
 
 from mock import patch
 from lxml import etree, objectify
@@ -145,8 +144,7 @@ class TestPremisEventXMLToObject:
 
         assert isinstance(event_or_response, HttpResponse)
 
-    @pytest.mark.xfail(reason='For consistency\'s sake, all duplicate IDs should 409.')
-    def test_new_identifier_created_if_not_valid_uuid4(self, event_xml):
+    def test_duplicate_event_id_raises_duplicate_error(self, event_xml):
         # Replace the existing hex identifier with a non-hex identifier.
         invalid_identifier = 'invalid-hex'
         xml_obj = objectify.fromstring(event_xml.obj_xml)
@@ -154,13 +152,11 @@ class TestPremisEventXMLToObject:
 
         tree = objectify_to_etree(xml_obj)
 
-        # Create an Event with the same non-hex identifier.
+        # Create an Event with the identifier.
         factories.EventFactory.create(event_identifier=invalid_identifier)
-        event = presentation.premisEventXMLToObject(tree)
-
-        # Make sure the returned Event is given a new hex identifier.
-        assert event.event_identifier != invalid_identifier
-        assert uuid.UUID(event.event_identifier, version=4)
+        # Try to create an Event with the same identifier (from xml).
+        with pytest.raises(presentation.DuplicateEventError):
+            presentation.premisEventXMLToObject(tree)
 
     @pytest.mark.xfail(reason='Validation error is raised on save(). The exception '
                               'this function tests will never be raised.')

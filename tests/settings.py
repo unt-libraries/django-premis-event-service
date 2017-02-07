@@ -43,7 +43,7 @@ TEMPLATES = [
     },
 ]
 
-if os.getenv("PES_BACKEND") is "mysql":
+if os.getenv('PES_BACKEND') is "mysql":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

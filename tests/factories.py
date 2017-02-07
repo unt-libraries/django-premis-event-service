@@ -5,8 +5,7 @@ import factory.fuzzy
 
 from datetime import datetime
 
-from premis_event_service import models
-from premis_event_service.config.settings import base as settings
+from premis_event_service import models, settings
 
 
 UUID_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID'

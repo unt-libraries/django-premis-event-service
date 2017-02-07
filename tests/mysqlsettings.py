@@ -1,4 +1,4 @@
-from .base import * # noqa
+from settings import * # noqa
 
 DEBUG = True
 

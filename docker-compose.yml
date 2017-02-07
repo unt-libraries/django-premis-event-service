@@ -17,7 +17,8 @@ services:
         depends_on:
             - db
         environment:
-            - DJANGO_SETTINGS_MODULE=premis_event_service.config.settings.local
+            - DJANGO_SETTINGS_MODULE=tests.settings
+            - PES_BACKEND=mysql
         command: /appstart.sh
         ports:
             - "8000:80"
@@ -27,7 +28,7 @@ services:
     test:
         extends:
             service: base
-        entrypoint: tox
+        entrypoint: tox -c /app/tox.mysql.ini
         links:
             - db
 

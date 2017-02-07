@@ -43,12 +43,26 @@ TEMPLATES = [
     },
 ]
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  os.path.join(BASE_DIR, 'db.sqlite3'),
+if os.getenv("PES_BACKEND") is "mysql":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'init_command': 'SET storage_engine=MyISAM'
+            }
+        }
     }
-}
+    DATABASES['default']['NAME'] = 'premis_local'
+    DATABASES['default']['USER'] = 'root'
+    DATABASES['default']['PASSWORD'] = 'root'
+    DATABASES['default']['HOST'] = 'db'
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME':  os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 ROOT_URLCONF = 'tests.urls'
 

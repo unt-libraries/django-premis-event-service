@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
 from codalib.xsdatetime import xsDateTime_parse, xsDateTime_format, localize_datetime
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
-from premis_event_service.config.settings import base as settings
+from premis_event_service import settings
 import collections
 
 PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
@@ -59,9 +59,7 @@ def premisEventXMLToObject(eventXML):
         uuid.UUID(newEventObject.event_identifier)
     except Exception, e:
         newEventObject.event_identifier = uuid.uuid4().hex
-    if isinstance(newEventObject.event_date_time, datetime):
-        pass
-    else:
+    if not isinstance(newEventObject.event_date_time, datetime):
         newEventObject.event_date_time = xsDateTime_parse(
             newEventObject.event_date_time
         )
@@ -86,11 +84,6 @@ def premisEventXMLToObject(eventXML):
                 object_identifier=identifierValue
             )[0]
         newEventObject.linking_objects.add(linkObject)
-    datetimeObject = None
-    if isinstance(newEventObject.event_date_time, basestring):
-        dateString = newEventObject.event_date_time
-        datetimeObject = xsDateTime_parse(dateString)
-        newEventObject.event_date_time = datetimeObject
     return newEventObject
 
 

@@ -578,7 +578,9 @@ def app_event(request, identifier=None):
         resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp
-
+    # This is here so clients can ping this endpoint to
+    # test for availability. See codalib's waitForURL func
+    # in util.py.
     elif request.method == 'HEAD':
         return HttpResponse(content_type="application/atom+xml")
 
@@ -688,7 +690,9 @@ def app_agent(request, identifier=None):
             resp.status_code = 201
             resp['Location'] = agent_object.agent_identifier + '/'
             return resp
-        # why? if we're not doing etags, etc.?
+        # This is here so clients can ping this endpoint to
+        # test for availability. See codalib's waitForURL func
+        # in util.py.
         elif request.method == 'HEAD':
             return HttpResponse(content_type="application/atom+xml")
         else:
@@ -739,5 +743,8 @@ def app_agent(request, identifier=None):
             resp = HttpResponse(entryText, content_type="application/atom+xml")
             resp.status_code = 200
             return resp
+        # This is here so clients can ping this endpoint to
+        # test for availability. See codalib's waitForURL func
+        # in util.py.
         elif request.method == 'HEAD':
             return HttpResponse(content_type="application/atom+xml")

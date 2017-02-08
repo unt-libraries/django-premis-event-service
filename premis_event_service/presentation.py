@@ -1,7 +1,8 @@
 from datetime import datetime
 import uuid
-from lxml import etree
+from urlparse import urlparse
 
+from lxml import etree
 from django.shortcuts import get_object_or_404
 
 from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
@@ -34,6 +35,10 @@ translateDict["linking_agent_identifier_value"] = [
 
 
 class DuplicateEventError(Exception):
+    pass
+
+
+class NoEventIdentifier(Exception):
     pass
 
 
@@ -137,12 +142,35 @@ def premisEventXMLgetObject(eventXML):
     the same identifier
     """
 
-    identifierValue = ''
-    for element in eventXML:
-        if element.tag == '{http://www.w3.org/2005/Atom}id':
-            identifierValue = element.text
-    ExistingObject = get_object_or_404(Event, event_identifier=identifierValue)
-    return ExistingObject
+    identifierValue = None
+    # Look for Event ID in entry metadata.
+    try:
+        identifierValue = eventXML.xpath('//id')[0].text
+    except (etree.LxmlError, IndexError):
+        identifierValue = None
+    # If no Event ID in entry metadata, look in
+    # premis:event eventIdentifierValue element.
+    if not identifierValue:
+        try:
+            identifierValue = eventXML.xpath(
+                '//premis:eventIdentifierValue', namespaces=PREMIS_NSMAP
+            )[0].text
+        except (etree.LxmlError, IndexError):
+            raise NoEventIdentifier('No event identifier in request XML.')
+    # It's possible that the XML tree is malformed, e.g. an empty
+    # eventIdentifierValue element. Check for '' or None again here.
+    if not identifierValue:
+        raise NoEventIdentifier('Missing event identifier.')
+    # If we have some kind of identifier, we check to see if it's url-ish
+    # and strip the ID out of the path if it is.
+    parsed_url = urlparse(identifierValue)
+    if parsed_url.scheme:
+        try:
+            identifierValue = parsed_url.path.strip('/').split('/')[-1]
+        except IndexError:
+            raise NoEventIdentifier('Malformed event identifier in request XML.')
+    existing_obj = Event.objects.get(event_identifier=identifierValue)
+    return existing_obj
 
 
 def premisAgentXMLgetObject(agentXML):

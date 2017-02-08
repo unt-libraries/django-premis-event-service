@@ -3,8 +3,7 @@ from datetime import datetime
 import json
 import urllib
 
-from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
-                             updateObjectFromXML, wrapAtom, makeServiceDocXML,)
+from lxml import etree
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.core.urlresolvers import reverse
@@ -14,22 +13,23 @@ from django.http import (HttpResponse, HttpResponseBadRequest,
 from django.db.utils import IntegrityError
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template.context import RequestContext
-from lxml import etree
 
+from codalib import APP_AUTHOR as CODALIB_APP_AUTHOR
+from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
+                             updateObjectFromXML, wrapAtom, makeServiceDocXML,)
+from codalib.xsdatetime import xsDateTime_parse
 from .forms import EventSearchForm
 from .models import Event, Agent, AGENT_TYPE_CHOICES
 from .presentation import (premisEventXMLToObject, premisEventXMLgetObject,
                            premisAgentXMLToObject, premisAgentXMLgetObject,
                            objectToPremisEventXML, objectToPremisAgentXML,
-                           objectToAgentXML, translateDict, DuplicateEventError)
+                           objectToAgentXML, translateDict, DuplicateEventError,
+                           PREMIS_NSMAP)
 from settings import ARK_NAAN
 
 ARK_ID_REGEX = re.compile(r'ark:/'+str(ARK_NAAN)+r'/\w.*')
-
-
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = translateDict
-
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
 
@@ -530,7 +530,8 @@ def app_event(request, identifier=None):
             )
         except EmptyPage:
             return HttpResponse(
-                "That page does not exist.\n", status=400,
+                "That page does not exist.\n",
+                status=400,
                 content_type='text/plain'
             )
         comment = etree.Comment(
@@ -545,13 +546,39 @@ def app_event(request, identifier=None):
         return resp
     # updating an existing record
     elif request.method == 'PUT' and identifier:
-        xmlDoc = etree.fromstring(request_body)
+        try:
+            xmlDoc = etree.fromstring(request_body)
+            xmlDoc = xmlDoc.xpath('//premis:event', namespaces=PREMIS_NSMAP)[0]
+        except etree.LxmlError:
+            return HttpResponse(
+                'Invalid request XML.',
+                content_type='text/plain',
+                status=400
+            )
+        except IndexError:
+            return HttpResponse(
+                'Event element missing in request body.',
+                content_type='text/plain',
+                status=400
+            )
         updatedEvent = updateObjectFromXML(
             xmlObject=xmlDoc,
             XMLToObjectFunc=premisEventXMLgetObject,
             topLevelName="event",
             idKey="event_identifier",
             updateList=EVENT_UPDATE_TRANSLATION_DICT,
+        )
+        # If XML identifier and resource ID don't match, bail.
+        if updatedEvent.event_identifier != identifier:
+            return HttpResponse(
+                'URI-identifier mismatch ("{}" != "{}")'.format(
+                    updatedEvent.event_identifier, identifier
+                ),
+                content_type='text/plain',
+                status=400
+            )
+        updatedEvent.event_date_time = xsDateTime_parse(
+            updatedEvent.event_date_time
         )
         returnEvent = updatedEvent
         updatedEvent.save()
@@ -580,7 +607,10 @@ def app_event(request, identifier=None):
                 request.META['HTTP_HOST'], identifier
             ),
             title=identifier,
-            alt=althref
+            alt=althref,
+            updated=event_object.event_added,
+            author=CODALIB_APP_AUTHOR["name"],
+            author_uri=CODALIB_APP_AUTHOR["uri"]
         )
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
         resp = HttpResponse(atomText, content_type="application/atom+xml")

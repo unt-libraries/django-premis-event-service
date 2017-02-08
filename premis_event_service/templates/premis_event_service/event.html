@@ -17,7 +17,7 @@
 	</tr>
 	<tr>
 		<th>Event Date</th>
-		<td><i class="icon-calendar"> </i> {{ record.event_date_time }}</td>
+		<td><i class="icon-calendar"> </i> {{ record.event_date_time|date:"N j, Y, P e" }}</td>
 	</tr>
 	<tr>
 		<th>Event Details</th>
@@ -25,7 +25,7 @@
 	</tr>
 	<tr>
 		<th>Date Added</th>
-		<td><i class="icon-calendar"> </i> {{ record.event_added }}</td>
+		<td><i class="icon-calendar"> </i> {{ record.event_added|date:"N j, Y, P e" }}</td>
 	</tr>
 	<tr>
 		<th>Linking Agent Identifier Value</th>

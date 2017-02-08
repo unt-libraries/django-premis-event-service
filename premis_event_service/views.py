@@ -771,8 +771,12 @@ def app_agent(request, identifier=None):
                 reverse('agent-detail', args=(identifier, ))
             )
             returnEntry = wrapAtom(
-                returnXML, agent_object.agent_name, agent_object.agent_name,
-                alt=althref
+                returnXML,
+                agent_object.agent_name,
+                agent_object.agent_name,
+                alt=althref,
+                author=CODALIB_APP_AUTHOR["name"],
+                author_uri=CODALIB_APP_AUTHOR["uri"]
             )
             entryText = XML_HEADER % etree.tostring(
                 returnEntry,

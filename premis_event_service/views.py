@@ -8,6 +8,7 @@ from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.core.urlresolvers import reverse
+from django.core.exceptions import FieldError
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
 from django.db.utils import IntegrityError
@@ -427,7 +428,6 @@ def app_event(request, identifier=None):
     """
     This method handles the ATOMpub protocol for events
     """
-
     DATE_FORMAT = "%m/%d/%Y"
     returnEvent = None
     request_body = get_request_body(request)
@@ -494,6 +494,7 @@ def app_event(request, identifier=None):
             events = events.filter(event_type=event_type)
         if request.GET.get('orderby'):
             order_field = request.GET.get('orderby')
+            unordered_events = events
             if request.GET.get('orderdir'):
                 if request.GET.get('orderdir') == 'descending':
                     events = events.order_by(order_field).reverse()
@@ -501,6 +502,13 @@ def app_event(request, identifier=None):
                     events = events.order_by(order_field)
             else:
                 events = events.order_by(order_field)
+            try:
+                # Trigger QuerySet eval.
+                if events:
+                    pass
+            except FieldError:
+                # If order_by fails, revert to natural order.
+                events = unordered_events
         debug_list = []
         endTime = datetime.now()
         if request.GET:

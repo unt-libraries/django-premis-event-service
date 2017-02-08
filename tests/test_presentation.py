@@ -5,6 +5,7 @@ from lxml import etree, objectify
 import pytest
 
 from django.http import HttpResponse, Http404
+from django.core.exceptions import ObjectDoesNotExist
 
 from premis_event_service import presentation, models
 from premis_event_service import settings
@@ -324,20 +325,32 @@ class TestPremisEventXMLGetObjects:
         assert event_obj.event_identifier == event_xml.identifier
         assert isinstance(event_obj, models.Event)
 
-    def test_raises_Http404_if_object_not_found(self, event_xml):
+    def test_raises_doesnotexist_if_object_not_found(self, event_xml):
         tree = etree.fromstring(event_xml.entry_xml)
-        with pytest.raises(Http404):
+        with pytest.raises(ObjectDoesNotExist):
             presentation.premisEventXMLgetObject(tree)
 
-    def test_raises_Http404_when_xml_has_no_id(self, event_xml):
+    def test_raises_noeventidentifier_when_xml_has_no_id(self, event_xml):
         xml_obj = objectify.fromstring(event_xml.entry_xml)
         del xml_obj.id
+        xml_obj.find(
+            './/premis:eventIdentifierValue', namespaces=presentation.PREMIS_NSMAP
+        ).clear()
         tree = objectify_to_etree(xml_obj)
 
         factories.EventFactory(event_identifier=event_xml.identifier)
 
-        with pytest.raises(Http404):
+        with pytest.raises(presentation.NoEventIdentifier):
             presentation.premisEventXMLgetObject(tree)
+
+    def test_returns_correct_event_on_uri_id(self, event_xml):
+        factories.EventFactory(event_identifier=event_xml.identifier)
+        base_id = event_xml.identifier
+        event_xml.identifier = 'http://example.com/a/b/c/{}'.format(base_id)
+        xml_obj = objectify.fromstring(event_xml.entry_xml)
+        tree = objectify_to_etree(xml_obj)
+        event_obj = presentation.premisEventXMLgetObject(tree)
+        assert event_obj.event_identifier == base_id
 
 
 @pytest.mark.django_db

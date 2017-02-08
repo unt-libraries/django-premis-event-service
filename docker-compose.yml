@@ -29,12 +29,22 @@ services:
         extends:
             service: base
         entrypoint: tox -c /app/tox.mysql.ini
+        environment:
+            - DJANGO_SETTINGS_MODULE=tests.settings
+            - PES_BACKEND=mysql
         links:
+            - db
+        depends_on:
             - db
 
     manage:
         extends:
             service: base
+        environment:
+            - DJANGO_SETTINGS_MODULE=tests.settings
+            - PES_BACKEND=mysql
         entrypoint: /app/manage.py
         links:
+            - db
+        depends_on:
             - db

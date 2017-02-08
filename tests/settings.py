@@ -42,8 +42,7 @@ TEMPLATES = [
         },
     },
 ]
-
-if os.getenv('PES_BACKEND') is "mysql":
+if os.getenv('PES_BACKEND') == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -68,13 +67,9 @@ ROOT_URLCONF = 'tests.urls'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
 USE_I18N = True
 
 USE_L10N = True
-
-USE_TZ = True
 
 STATIC_URL = '/static/'
 

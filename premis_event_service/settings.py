@@ -53,3 +53,7 @@ EVENT_TYPE_CHOICES = getattr(
         ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
     )
 )
+
+# Archival Resource Key Name Assigning Authority Number:
+# http://www.cdlib.org/services/uc3/naan_table.html
+ARK_NAAN = getattr(settings, 'ARK_NAAN', 67531)

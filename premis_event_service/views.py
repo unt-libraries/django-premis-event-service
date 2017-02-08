@@ -22,9 +22,9 @@ from .presentation import (premisEventXMLToObject, premisEventXMLgetObject,
                            premisAgentXMLToObject, premisAgentXMLgetObject,
                            objectToPremisEventXML, objectToPremisAgentXML,
                            objectToAgentXML, translateDict, DuplicateEventError)
+from settings import ARK_NAAN
 
-
-ARK_ID_REGEX = re.compile(r'ark:/67531/\w.*')
+ARK_ID_REGEX = re.compile(r'ark:/'+str(ARK_NAAN)+r'/\w.*')
 
 
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG

@@ -1,6 +1,5 @@
 #!/bin/bash
 /wait-for-mysqld.sh
-cd /app
 echo "Migrate..."
 python manage.py migrate --settings=tests.settings
 echo "Start app..."

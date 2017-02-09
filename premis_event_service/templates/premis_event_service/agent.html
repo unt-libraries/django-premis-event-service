@@ -73,9 +73,6 @@
                 <td>{{ agents.0.agent_note }}</td>
             </tr>
     </table>
-    <a class="btn btn-success btn-large" href="{% url 'premis_event_service.views.agentXML' agents.0.agent_identifier %}">
-        PREMIS XML
-    </a>
     <a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/APP/agent/{{ agents.0.agent_identifier }}/">
         ATOMPUB <i class="icon-rss"></i>
     </a>

@@ -147,7 +147,7 @@ def premisEventXMLgetObject(eventXML):
     try:
         identifierValue = eventXML.xpath('//id')[0].text
     except (etree.LxmlError, IndexError):
-        identifierValue = None
+        pass
     # If no Event ID in entry metadata, look in
     # premis:event eventIdentifierValue element.
     if not identifierValue:

@@ -4,7 +4,7 @@
 * Added PREMIS v2.3 validation and tests
 * PEP 8 conformity
 * Assorted AtomPub fixes
-* Update `codalib` requirement to 1.0.1
+* Update `codalib` requirement to 1.0.2
 
 1.1.0
 -----

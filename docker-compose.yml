@@ -19,6 +19,7 @@ services:
         environment:
             - DJANGO_SETTINGS_MODULE=tests.settings
             - PES_BACKEND=mysql
+            - PES_DEBUG_TOOLBAR=on
         command: ./appstart.sh
         ports:
             - "8000:80"

@@ -47,10 +47,10 @@ EVENT_TYPE_CHOICES = getattr(
     settings, 'EVENT_TYPE_CHOICES',
     (
         ('', 'None'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/fix', 'Fixity Check'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/rep', 'Replication'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/ing', 'Ingestion'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck', 'Fixity Check'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#replication', 'Replication'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#ingestion', 'Ingestion'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#migration', 'Migration'),
     )
 )
 

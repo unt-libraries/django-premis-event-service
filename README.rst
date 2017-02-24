@@ -92,7 +92,7 @@ Start the app and run the migrations.
 .. code-block :: sh
 
   # start the app
-  $ docker-compose up -d
+  $ docker-compose up -d db app
 
   # optional: add a superuser in order to login to the admin interface
   $ docker-compose run --rm app ./manage.py createsuperuser
@@ -111,10 +111,10 @@ However, if the requirements files change, it is important that you rebuild the 
   $ docker-compose rm app
 
   # rebuild the app container
-  $ docker-compose build app
+  $ docker-compose build app --no-cache
 
   # start the app
-  $ docker-compose up -d
+  $ docker-compose up -d app
 
 
 Running the Tests
@@ -126,9 +126,9 @@ To run the tests via Tox, use this command.
   $ docker-compose run --rm app tox
 
 
-To run the tests only with the development environment.
+To run the tests only with the development environment. Note that the debug toolbar must be disabled.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm app py.test
+  $ docker-compose run --rm app env PES_DEBUG_TOOLBAR='' py.test
 

@@ -111,7 +111,7 @@ However, if the requirements files change, it is important that you rebuild the 
   $ docker-compose rm app
 
   # rebuild the app container
-  $ docker-compose build app --no-cache
+  $ docker-compose build --no-cache app
 
   # start the app
   $ docker-compose up -d app

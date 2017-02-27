@@ -182,9 +182,6 @@ class Event(models.Model):
 
     class Meta:
         ordering = ["event_added"]
-        index_together = [
-            ['event_added', 'event_identifier']
-        ]
 
     def link_objects_string(self):
         values = self.linking_objects.values()

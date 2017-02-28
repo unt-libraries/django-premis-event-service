@@ -1,13 +1,16 @@
 import json
+import random
 
 from lxml import objectify
 import pytest
 
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.utils.http import urlquote
 from datetime import datetime
 
 from premis_event_service import views, models
+from premis_event_service.settings import EVENT_TYPE_CHOICES, EVENT_OUTCOME_CHOICES
 from . import factories
 
 
@@ -410,6 +413,9 @@ class TestAppEvent:
             return False
         return True
 
+    def response_includes_event(self, response, event):
+        return event.event_identifier in response.content
+
     def test_post_returns_created(self, event_xml, rf):
         request = rf.post(
             '/',
@@ -538,15 +544,16 @@ class TestAppEvent:
         assert self.response_has_event(response, event)
 
     def test_list_filtering_by_event_type(self, rf):
-        factories.EventFactory.create_batch(30)
+        factories.EventFactory.create_batch(10)
 
-        event_type = 'Test Type'
+        event_type = random.choice(EVENT_TYPE_CHOICES)
         event = factories.EventFactory.create(event_type=event_type)
 
-        request = rf.get('?type={0}'.format(event_type))
+        request = rf.get('?event_type={0}'.format(urlquote(event_type)))
         response = views.app_event(request)
-        assert self.response_has_event(response, event)
+        assert self.response_includes_event(response, event)
 
+    @pytest.mark.xfail(reason='Not implemented.')
     def test_list_ordering_ascending(self, rf):
         events = factories.EventFactory.create_batch(3)
         events.sort(key=lambda e: e.event_identifier)
@@ -681,15 +688,20 @@ class TestEventSearch:
 
     def response_has_event(self, response, event):
         """True if the event is the only Event in the response context."""
-        paginated_entries = response.context[-1]['entries']
-        filtered_entry = paginated_entries.object_list[0]
+        paginated_entries = response.context[-1]['events']
+        filtered_entry = paginated_entries[0]
 
-        if not len(paginated_entries.object_list) == 1:
+        if not len(paginated_entries) == 1:
             return False
 
         if not filtered_entry.event_identifier == event.event_identifier:
             return False
         return True
+
+    def response_includes_event(self, response, event):
+        events = response.context[-1]['entries'].object_list
+        event_ids = [e.event_identifier for e in events]
+        return event.event_identifier in event_ids
 
     def test_returns_ok(self, rf):
         request = rf.get('/')
@@ -703,7 +715,7 @@ class TestEventSearch:
         response = client.get(url)
 
         context = response.context[-1]
-        assert len(context['entries']) == self.RESULTS_PER_PAGE
+        assert len(context['events']) == self.RESULTS_PER_PAGE
 
     def test_filtering_results(self, client):
         event = factories.EventFactory.create(linking_objects=True)
@@ -743,6 +755,11 @@ class TestJsonEventSearch:
         if filtered_entry['identifier'] != event.event_identifier:
             return False
         return True
+
+    def response_includes_event(self, response, event):
+        events = json.loads(response.content)['feed']['entry']
+        event_ids = [e['identifier'] for e in events]
+        return event.event_identifier in event_ids
 
     def test_returns_ok(self, rf):
         request = rf.get('/')
@@ -858,21 +875,21 @@ class TestJsonEventSearch:
         assert self.response_has_entry(response, event)
 
     def test_filter_by_outcome(self, rf):
-        event_outcome = 'Test outcome'
-        factories.EventFactory.create_batch(30)
+        event_outcome = random.choice(EVENT_OUTCOME_CHOICES)[0]
+        factories.EventFactory.create_batch(10)
         event = factories.EventFactory.create(event_outcome=event_outcome)
 
-        request = rf.get('/?outcome={0}'.format(event_outcome))
+        request = rf.get('/?event_outcome={0}'.format(urlquote(event_outcome)))
         response = views.json_event_search(request)
 
-        assert self.response_has_entry(response, event)
+        assert self.response_includes_event(response, event)
 
     def test_filter_by_event_type(self, rf):
-        event_type = 'Test Event Type'
-        factories.EventFactory.create_batch(30)
+        event_type = random.choice(EVENT_TYPE_CHOICES)[0]
+        factories.EventFactory.create_batch(10)
         event = factories.EventFactory.create(event_type=event_type)
 
-        request = rf.get('/?type={0}'.format(event_type))
+        request = rf.get('/?event_type={0}'.format(urlquote(event_type)))
         response = views.json_event_search(request)
 
-        assert self.response_has_entry(response, event)
+        assert self.response_includes_event(response, event)

@@ -9,6 +9,12 @@ them in that file rather than here.
 '''
 from django.conf import settings
 
+INSTALLED_APPS = getattr(
+    settings, 'INSTALLED_APPS',
+    []
+)
+INSTALLED_APPS += ('django_readonly_field',)
+
 # Used in codalib/util.py
 EVENT_ID_TYPE_XML = getattr(
     settings, 'EVENT_ID_TYPE_XML',
@@ -47,10 +53,10 @@ EVENT_TYPE_CHOICES = getattr(
     settings, 'EVENT_TYPE_CHOICES',
     (
         ('', 'None'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/fix', 'Fixity Check'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/rep', 'Replication'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/ing', 'Ingestion'),
-        ('http://id.loc.gov/vocabulary/preservation/eventType/mig', 'Migration'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck', 'Fixity Check'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#replication', 'Replication'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#ingestion', 'Ingestion'),
+        ('http://purl.org/net/untl/vocabularies/preservationEvents/#migration', 'Migration'),
     )
 )
 

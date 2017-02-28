@@ -1,3 +1,4 @@
 lxml==3.0.0
-codalib==1.0.2
+codalib==1.0.3
 MySQL-python
+django-readonly-field==1.0.1

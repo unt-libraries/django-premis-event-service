@@ -56,6 +56,7 @@ class EventFactory(factory.django.DjangoModelFactory):
     event_detail = factory.fuzzy.FuzzyText()
     event_outcome = factory.fuzzy.FuzzyChoice(EVENT_OUTCOMES)
     event_outcome_detail = factory.fuzzy.FuzzyText()
+    ordinal = factory.Sequence(lambda n: n)
 
     linking_agent_identifier_type = URL_TYPE
     linking_agent_identifier_value = factory.fuzzy.FuzzyChoice(AGENTS)

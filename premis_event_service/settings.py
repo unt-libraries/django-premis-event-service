@@ -9,6 +9,12 @@ them in that file rather than here.
 '''
 from django.conf import settings
 
+INSTALLED_APPS = getattr(
+    settings, 'INSTALLED_APPS',
+    []
+)
+INSTALLED_APPS += ('django_readonly_field',)
+
 # Used in codalib/util.py
 EVENT_ID_TYPE_XML = getattr(
     settings, 'EVENT_ID_TYPE_XML',

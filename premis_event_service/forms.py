@@ -29,3 +29,8 @@ class EventSearchForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Linked Object ID', 'class': 'input-medium'}),
         max_length=20,
         required=False)
+
+    min_ordinal = forms.IntegerField(
+        widget=None,
+        required=False
+    )

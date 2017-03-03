@@ -194,6 +194,12 @@ class Event(models.Model):
         ordering = ["event_added"]
 
     def link_objects_string(self):
+        # Django ORM requires a PK value before
+        # custom relations can be created. This
+        # save call ensures we have one before
+        # accessing linking_objects.
+        if not self.ordinal:
+            self.save()
         values = self.linking_objects.values()
         idList = []
         for value in values:
@@ -209,6 +215,7 @@ class Event(models.Model):
     is_good.short_description = "Pass?"
     is_good.boolean = True
 
+
 class EventLinkObject(models.Model):
 
     class Meta:
@@ -217,8 +224,10 @@ class EventLinkObject(models.Model):
         # Without this, the Django ORM won't permit add/create/save/remove
         # without a custome manager for the linking field.
         auto_created = True
-    
-    event_id = models.ForeignKey(Event, to_field='event_identifier', db_column='event_id')
-    linkobject_id = models.ForeignKey(LinkObject, to_field='object_identifier', db_column='linkobject_id')
 
-
+    event_id = models.ForeignKey(
+        Event, to_field='event_identifier', db_column='event_id'
+    )
+    linkobject_id = models.ForeignKey(
+        LinkObject, to_field='object_identifier', db_column='linkobject_id'
+    )

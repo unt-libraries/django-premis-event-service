@@ -115,13 +115,19 @@ class Event(models.Model):
 
     objects = EventManager()
 
+    ordinal = models.AutoField(
+        primary_key=True,
+    )
+
     help_text = "Unique identifier for an event. example: " + \
         "urn:uuid:12345678-1234-5678-1234-567812345678"
     event_identifier = models.CharField(
-        primary_key=True,
         max_length=64,
         editable=False,
-        help_text=help_text
+        help_text=help_text,
+        unique=True,
+        null=False,
+        db_index=True
     )
     event_identifier_type = models.CharField(
         max_length=255,
@@ -175,7 +181,11 @@ class Event(models.Model):
         max_length=255,
         help_text="The role of the agent in relation to this event."
     )
-    linking_objects = models.ManyToManyField(LinkObject)
+    linking_objects = models.ManyToManyField(
+        LinkObject,
+        through='EventLinkObject',
+        through_fields=('event_id', 'linkobject_id')
+    )
 
     def __unicode__(self):
         return self.event_identifier
@@ -198,3 +208,14 @@ class Event(models.Model):
 
     is_good.short_description = "Pass?"
     is_good.boolean = True
+
+class EventLinkObject(models.Model):
+
+    class Meta:
+        # Not sure how to get the app label here *and* set the table name
+        db_table = 'premis_event_service_event_linking_objects'
+    
+    event_id = models.ForeignKey(Event, to_field='event_identifier', db_column='event_id')
+    linkobject_id = models.ForeignKey(LinkObject, to_field='object_identifier', db_column='linkobject_id')
+
+

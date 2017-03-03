@@ -18,8 +18,12 @@ services:
             - db
         environment:
             - DJANGO_SETTINGS_MODULE=tests.settings
+            # Comment for sqlite
             - PES_BACKEND=mysql
+            # Comment to disable debug toolbar.
             - PES_DEBUG_TOOLBAR=on
+            # Uncomment for query logging.
+            # - PES_DBDEBUG=on
         command: ./appstart.sh
         ports:
             - "8000:80"

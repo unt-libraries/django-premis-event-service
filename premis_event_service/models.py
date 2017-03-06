@@ -93,19 +93,46 @@ class EventManager(models.Manager):
         outcome = kwargs.get('event_outcome')
         event_type = kwargs.get('event_type')
         linked_object_id = kwargs.get('linked_object_id')
+        min_ordinal = kwargs.get('min_ordinal')
 
-        events = self.get_queryset().order_by('-event_date_time')
+        events = self.get_queryset().order_by('-ordinal')
 
-        # Filter based on the supplied the arguments.
-        events = events.filter(event_date_time__gte=start_date) if start_date else events
-        events = events.filter(event_date_time__lte=end_date) if end_date else events
-        events = events.filter(event_outcome=outcome) if outcome else events
-        events = events.filter(event_type=event_type) if event_type else events
+        # This shouldn't happen in practice, but this conditional prevents an
+        # unfiltered query from getting through this function. The stakes are
+        # reasonably high, as it becomes a very, very slow, very ,very resource
+        # intensive query if it does happen.
+        if any((start_date, end_date, outcome, event_type, linked_object_id)):
+            # Filter based on the supplied the arguments.
+            events = events.filter(event_date_time__gte=start_date) if start_date else events
+            events = events.filter(event_date_time__lte=end_date) if end_date else events
+            events = events.filter(event_outcome=outcome) if outcome else events
+            events = events.filter(event_type=event_type) if event_type else events
+        else:
+            events = events.filter(ordinal__lte=min_ordinal) if min_ordinal else events
 
         if linked_object_id:
             events = events.filter(linking_objects__object_identifier=linked_object_id)
 
         return events
+
+    # This method is used for paging through unfiltered search results.
+    # With large numbers of rows, a query w/o a 'where' clause becomes
+    # exceedingly slow when scanning deep into the table using offset and limit.
+    def searchunfilt(self, max_ordinal=None):
+        if not max_ordinal:
+            max_ordinal = self.get_queryset().all().aggregate(models.Max('ordinal'))
+            max_ordinal = max_ordinal.values()[0]
+            if max_ordinal:
+                max_ordinal += 1
+            # This should never happen in practice. But with test factories, etc.,
+            # it's possible.
+            else:
+                max_ordinal = 0
+        else:
+            pass
+        qs = self.get_queryset().order_by('-ordinal')
+        qs = qs.filter(ordinal__lt=max_ordinal)
+        return qs
 
 
 class Event(models.Model):

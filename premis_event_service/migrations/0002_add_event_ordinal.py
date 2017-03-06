@@ -62,24 +62,55 @@ def forward_sqlite(apps, schema_editor):
 def forward_mysql(apps, schema_editor):
     cur = schema_editor.connection.cursor()
     cur.execute(
-        """lock tables 
+        """
+        lock tables 
         premis_event_service_event write,
         premis_event_service_event_linking_objects write,
-        premis_event_service_linkobject write"""
+        premis_event_service_linkobject write
+        """
     )
     cur.execute(
-        """alter table premis_event_service_event drop primary key;"""
+        """
+        alter table premis_event_service_event drop primary key
+        """
     )
     cur.execute(
-        """alter table premis_event_service_event add unique(event_identifier);"""
+        """
+        alter table premis_event_service_event add unique(event_identifier)
+        """
     )
     cur.execute(
-        """alter table premis_event_service_event add column 
-        ordinal int not null primary key auto_increment first;
-    """
+        """
+        alter table premis_event_service_event add column 
+        ordinal int not null default 0 first
+        """
     )
     cur.execute(
-        """unlock tables"""
+        """
+        set @ord = 0
+        """
+    )
+    cur.execute(
+        """
+        update premis_event_service_event set ordinal = (@ord:=@ord+1)
+        order by event_added asc, event_identifier desc
+        """
+    )
+    cur.execute(
+        """
+        alter table premis_event_service_event add index
+        premis_event_service_event_ordinal_idx (ordinal)
+        """
+    )
+    cur.execute(
+        """
+        alter table premis_event_service_event change ordinal ordinal int not null
+        auto_increment primary key
+        """
+    )
+    cur.execute(
+        """unlock tables
+        """
     )
 
 

@@ -1,12 +1,13 @@
 import re
+import math
 from datetime import datetime
 import json
 import urllib
 
 from lxml import etree
 from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage
 from django.core.exceptions import FieldError
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
@@ -95,38 +96,61 @@ def humanEvent(request, identifier=None):
     )
 
 
-def paginate_entries(request, entries, num_per_page=20):
-    """
-    paginates a set of entries (set of model objects)
-    """
-
-    # create paginator from result set
-    paginator = Paginator(entries, num_per_page)
-    paginated_entries = None
-    # try to resolve the current page
-    try:
-        page = int(request.GET.get('page', '1'))
-    except ValueError:
-        page = 1
-    try:
-        paginated_entries = paginator.page(page)
-    except (EmptyPage, InvalidPage):
-        paginated_entries = paginator.page(paginator.num_pages)
-    # send back the paginated entries
-    return paginated_entries
+def paginate_events(valid, request, per_page=20):
+    total_events = None
+    events = None
+    page = int(request.GET.get('page', 1))
+    offset = None
+    unfiltered = True
+    if any([v for k, v in valid.items() if k != 'min_ordinal']):
+        events = (Event.objects.search(**valid)
+                  .prefetch_related('linking_objects'))
+        total_events = events.count()
+        offset = (page-1)*per_page
+        if 'min_ordinal' in valid and valid['min_ordinal']:
+            events = events.filter(ordinal__lte=valid['min_ordinal'])[:20]
+        else:
+            events = events[offset:offset+per_page]
+        unfiltered = False
+    else:
+        events = Event.objects.searchunfilt(request.GET.get('min_ordinal'))
+        total_events = Event.objects.all().count()
+        events = events.prefetch_related('linking_objects')[0:per_page]
+    page_max_ord = 0
+    page_min_ord = 0
+    if events:
+        page_max_ord = max([e.ordinal for e in events])
+        page_min_ord = min([e.ordinal for e in events])
+    if page > math.ceil(float(total_events)/per_page):
+        if page > 1:
+            raise EmptyPage()
+    max_page = int(math.ceil(total_events/float(per_page)))
+    page_range = range(
+        max(1, page-6),
+        min(max_page, page+7)
+    )
+    if unfiltered:
+        page_offsets = [(p, page_min_ord-(per_page*(p-page-1))) for p in page_range]
+    else:
+        # We don't know the (or at least can't really guess) ordinals for unfiltered
+        # searches. Set these to empty strings.
+        page_offsets = [(p, '') for p in page_range]
+    context = {
+        'events': events, 'page_range': page_range, 'page_offsets': page_offsets,
+        'page_max_ordinal': page_max_ord, 'page_min_ordinal': page_min_ord,
+        'last_page_ordinal': per_page+1, 'page': page, 'max_page': max_page,
+        'per_page': per_page, 'next_page': page+1, 'previous_page': page-1
+    }
+    return context
 
 
 def event_search(request):
     """Return a human readable list of search results."""
     form = EventSearchForm(request.GET)
-    data = form.cleaned_data if form.is_valid() else {}
-
-    events = (Event.objects.search(**data)
-                           .prefetch_related('linking_objects'))
-
-    results = paginate_entries(request, events)
-    context = {'search_form': form, 'entries': results}
-
+    valid = form.cleaned_data if form.is_valid() else {}
+    pagination_context = paginate_events(valid, request, 20)
+    context = {'search_form': form}
+    context.update(pagination_context)
     return render(request, 'premis_event_service/search.html', context)
 
 
@@ -134,52 +158,35 @@ def json_event_search(request):
     """
     returns json search results for premis events
     """
-
-    events = Event.objects.all()
-    DATE_FORMAT = "%m/%d/%Y"
     args = {}
-    # get data for json dictionary
-    if request.GET.get('start_date'):
-        args['start_date'] = datetime.strptime(
-            request.GET.get('start_date').strip(), DATE_FORMAT
-        )
-        events = events.filter(event_date_time__gte=args['start_date'])
-    if request.GET.get('end_date'):
-        args['end_date'] = datetime.strptime(
-            request.GET.get('end_date').strip(), DATE_FORMAT
-        )
-        events = events.filter(event_date_time__lte=args['end_date'])
-    if request.GET.get('link_object_id'):
-        args['linking_object_id'] = request.GET.get('link_object_id').strip()
-        if ARK_ID_REGEX.match(args['linking_object_id']):
-            events = events.filter(
-                linking_objects__object_identifier=args['linking_object_id']
-            )
-        elif ARK_ID_REGEX.match("ark:/67531/%s" % args["linking_object_id"]):
-            args['linking_object_id'] = "ark:/67531/%s" % args["linking_object_id"]
-            events = events.filter(
-                linking_objects__object_identifier=args['linking_object_id']
-            )
-    if request.GET.get('outcome'):
-        args['outcome'] = request.GET.get('outcome').strip()
-        events = events.filter(event_outcome=args['outcome'])
-    if request.GET.get('type'):
-        args['event_type'] = request.GET.get('type').strip()
-        events = events.filter(event_type=args['event_type'])
+    form = EventSearchForm(request.GET)
+    if form.is_valid():
+        valid = form.cleaned_data
+    else:
+        errors = []
+        for field, field_errors in form.errors.as_data().items():
+            errors.append('%s:' % field)
+            for field_error in field_errors:
+                message = field_error.message % field_error.params
+                errors.append('\t%s: %s' % (field_error.code, message))
+        errors = '\n'.join(errors)
+        return HttpResponse('Invalid parameters.\n'+errors, status=400)
     # make a results list to pass to the view
     event_json = []
+    # paginate 20 per page
+    paginated_entries = paginate_events(valid, request, per_page=20)
+    events = paginated_entries['events']
+    total_events = Event.objects.all().count()
     if events.count() is not 0:
-        # paginate 20 per page
-        paginated_entries = paginate_entries(request, events, num_per_page=20)
         # prepare a results set and then append each event to it as a dict
         rel_links = []
         entries = []
         # we will ALWAYS have a self, first and last relative link
-        args['page'] = paginated_entries.number
+        args['page'] = paginated_entries['page']
         current_page_args = args.copy()
         args['page'] = 1
         first_page_args = args.copy()
-        args['page'] = paginated_entries.paginator.num_pages
+        args['page'] = paginated_entries['max_page']
         last_page_args = args.copy()
         # store links for adjacent events relative to the current event
         rel_links.extend(
@@ -211,7 +218,7 @@ def json_event_search(request):
             ]
         )
         # if we are past the first event, we can always add a previous event
-        if paginated_entries.number > 1:
+        if paginated_entries['page'] > 1:
             args['page'] = current_page_args['page'] - 1
             rel_links.append(
                 {
@@ -224,7 +231,7 @@ def json_event_search(request):
                 },
             )
         # if our event is not the last in the list, we can add a next event
-        if paginated_entries.number < paginated_entries.paginator.num_pages:
+        if paginated_entries['page'] < paginated_entries['max_page']:
             args['page'] = current_page_args['page'] + 1
             rel_links.append(
                 {
@@ -236,7 +243,7 @@ def json_event_search(request):
                     )
                 },
             )
-        for entry in paginated_entries.object_list:
+        for entry in events:
             linked_objects = ", ".join(
                 entry.linking_objects.values_list(
                     'object_identifier',
@@ -260,9 +267,9 @@ def json_event_search(request):
                 'link': rel_links,
                 'opensearch:Query': request.GET,
                 "opensearch:itemsPerPage":
-                    paginated_entries.paginator.per_page,
+                    paginated_entries['per_page'],
                 "opensearch:startIndex": "1",
-                "opensearch:totalResults": events.count(),
+                "opensearch:totalResults": total_events,
                 "title": "Premis Event Search"
             }
         }

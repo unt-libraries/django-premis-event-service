@@ -96,17 +96,24 @@ def humanEvent(request, identifier=None):
     )
 
 
+def last_page_ordinal(query_set, per_page=20):
+    qa = query_set.order_by('ordinal')[0:20]
+    return qa.last().ordinal
+
+
 def paginate_events(valid, request, per_page=20):
     total_events = None
     events = None
     page = int(request.GET.get('page', 1))
     offset = None
     unfiltered = True
+    last_page_ord = per_page+1
     if any([v for k, v in valid.items() if k != 'min_ordinal']):
         events = (Event.objects.search(**valid)
                   .prefetch_related('linking_objects'))
         total_events = events.count()
         offset = (page-1)*per_page
+        last_page_ord = last_page_ordinal(events)
         if 'min_ordinal' in valid and valid['min_ordinal']:
             events = events.filter(ordinal__lte=valid['min_ordinal'])[:20]
         else:
@@ -138,7 +145,7 @@ def paginate_events(valid, request, per_page=20):
     context = {
         'events': events, 'page_range': page_range, 'page_offsets': page_offsets,
         'page_max_ordinal': page_max_ord, 'page_min_ordinal': page_min_ord,
-        'last_page_ordinal': per_page+1, 'page': page, 'max_page': max_page,
+        'last_page_ordinal': last_page_ord, 'page': page, 'max_page': max_page,
         'per_page': per_page, 'next_page': page+1, 'previous_page': page-1
     }
     return context

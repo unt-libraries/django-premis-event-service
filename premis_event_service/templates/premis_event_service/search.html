@@ -30,7 +30,7 @@
     </div>
 </form>
 <!-- If we have entries, iterate and display them -->
-{% if entries %}
+{% if events %}
     <table id="data" class="table table-striped table-hover">
         <thead><tr>
             <th>
@@ -50,63 +50,63 @@
             </th>
         </tr></thead>
         <!-- iterate through search results and display if not suppressed / deleted -->
-        {% for entry in entries.object_list %}
+        {% for event in events %}
             <tr>
                 <td>
-                    <i class="icon-tag"></i> <a href='http://{{ request.META.HTTP_HOST }}/event/{{ entry.event_identifier }}'>{{ entry.event_identifier }}</a>
+                    <i class="icon-tag"></i> <a href='http://{{ request.META.HTTP_HOST }}/event/{{ event.event_identifier }}'>{{ event.event_identifier }}</a>
                 </td>
                 <td>
-                    <i class="icon-calendar"></i> {{ entry.event_date_time }}
+                    <i class="icon-calendar"></i> {{ event.event_date_time }}
                 </td>
                 <td>
-                    <i class="icon-asterisk"></i> {{ entry.event_type }}
+                    <i class="icon-asterisk"></i> {{ event.event_type }}
                 </td>
                 <td>
-                    {% for lo in entry.linking_objects.all %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+                    {% for lo in event.linking_objects.all %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
                 </td>
                 <td>
-                    <span title="{{ entry.entry_outcome }}" class="disabled btn btn-block btn-mini btn-{{ entry.is_good|yesno:"success,danger" }}">{{ entry.event_outcome|slice:"53:" }}</span>
+                    <span title="{{ event.event_outcome }}" class="disabled btn btn-block btn-mini btn-{{ event.is_good|yesno:"success,danger" }}">{{ event.event_outcome|slice:"53:" }}</span>
                 </td>
             </tr>
         {% endfor %}
     </table>
 {% endif %}
-{% if entries.paginator.num_pages > 1 %}
+{% if page_range %}
     <div class="pagination pagination-centered">
         <ul>
-            {% if entries.number != 1 %}
+            {% if page != 1 %}
                 <li><a href="?page=1&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">first</a></li>
             {% else %}
                 <li class="disabled"><span>first</span></li>
             {% endif %}
 
-            {% if entries.has_previous %}
-                <li><a href="?page={{ entries.previous_page_number }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">prev</a></li>
+            {% if page > 1 %}
+            <li><a href="?page={{ previous_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ min_ordinal }}">prev</a></li>
             {% else %}
                 <li class="disabled"><span>prev</span></li>
             {% endif %}
 
-            {% for page in entries.paginator.page_range %}
-                {% if entries.number == page %}
-                    <li class="disabled"><span>{{ page }}</span></li>
+            {% for thispage, page_min_ord in page_offsets %}
+                {% if page == thispage %}
+                    <li class="disabled"><span>{{ thispage }}</span></li>
 
-                {% else %} {% if page > entries.number|add:"-6" and page < entries.number|add:"6"  %}
+                {% else %}
                     <li>
-                        <a href="?page={{ page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">
-                            {{ page }}
+                        <a href="?page={{ thispage }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ page_min_ord }}">
+                            {{ thispage }}
                         </a>
                     </li>
-                {% endif %}{% endif %}
+                {% endif %}
             {% endfor %}
 
-            {% if entries.has_next %}
-                <li><a href="?page={{ entries.next_page_number }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">next</a></li>
+            {% if page < max_page %}
+            <li><a href="?page={{ next_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ min_ordinal }}">next</a></li>
             {% else %}
                 <li class="disabled"><span>next</span></li>
             {% endif %}
 
-            {% if entries.number != entries.paginator.num_pages %}
-                <li><a href="?page={{ entries.paginator.num_pages }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">last</a></li>
+            {% if page != max_page %}
+            <li><a href="?page={{ max_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ last_page_ordinal }}">last</a></li>
             {% else %}
                 <li class="disabled"><span>last</span></li>
             {% endif %}

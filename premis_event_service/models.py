@@ -249,7 +249,7 @@ class EventLinkObject(models.Model):
         # Not sure how to get the app label here *and* set the table name
         db_table = 'premis_event_service_event_linking_objects'
         # Without this, the Django ORM won't permit add/create/save/remove
-        # without a custome manager for the linking field.
+        # without a custom manager for the linking field.
         auto_created = True
 
     event_id = models.ForeignKey(

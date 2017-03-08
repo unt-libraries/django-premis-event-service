@@ -107,6 +107,9 @@ def paginate_events(valid, request, per_page=20):
     page = int(request.GET.get('page', 1))
     offset = None
     unfiltered = True
+    # This is an assumption that will not hold if events
+    # are delete from the db. But this doesn't seem to
+    # happen in practice.
     last_page_ord = per_page+1
     if any([v for k, v in valid.items() if k != 'min_ordinal']):
         events = (Event.objects.search(**valid)
@@ -114,6 +117,10 @@ def paginate_events(valid, request, per_page=20):
         total_events = events.count()
         offset = (page-1)*per_page
         last_page_ord = last_page_ordinal(events)
+        # The min_ordinal is actually the "bottom" (end) of the current
+        # page and the top (start) of the next. This is because the
+        # ordinal is autoincrementing and acts as a proxy for
+        # date added, so we're paging from greatest to least.
         if 'min_ordinal' in valid and valid['min_ordinal']:
             events = events.filter(ordinal__lte=valid['min_ordinal'])[:20]
         else:
@@ -128,10 +135,9 @@ def paginate_events(valid, request, per_page=20):
     if events:
         page_max_ord = max([e.ordinal for e in events])
         page_min_ord = min([e.ordinal for e in events])
-    if page > math.ceil(float(total_events)/per_page):
-        if page > 1:
-            raise EmptyPage()
     max_page = int(math.ceil(total_events/float(per_page)))
+    if page > max_page and page > 1:
+        raise EmptyPage()
     page_range = range(
         max(1, page-6),
         min(max_page, page+7)
@@ -139,7 +145,7 @@ def paginate_events(valid, request, per_page=20):
     if unfiltered:
         page_offsets = [(p, page_min_ord-(per_page*(p-page-1))) for p in page_range]
     else:
-        # We don't know the (or at least can't really guess) ordinals for unfiltered
+        # We don't know (or at least can't really guess) the ordinals for unfiltered
         # searches. Set these to empty strings.
         page_offsets = [(p, '') for p in page_range]
     context = {
@@ -177,7 +183,11 @@ def json_event_search(request):
                 message = field_error.message % field_error.params
                 errors.append('\t%s: %s' % (field_error.code, message))
         errors = '\n'.join(errors)
-        return HttpResponse('Invalid parameters.\n'+errors, status=400)
+        return HttpResponse(
+            'Invalid parameters.\n'+errors,
+            status=400,
+            content_type="text/plain"
+        )
     # make a results list to pass to the view
     event_json = []
     # paginate 20 per page

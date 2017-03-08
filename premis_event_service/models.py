@@ -128,8 +128,6 @@ class EventManager(models.Manager):
             # it's possible.
             else:
                 max_ordinal = 0
-        else:
-            pass
         qs = self.get_queryset().order_by('-ordinal')
         qs = qs.filter(ordinal__lt=max_ordinal)
         return qs

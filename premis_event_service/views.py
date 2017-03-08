@@ -115,7 +115,7 @@ def paginate_events(valid, request, per_page=20):
         events = (Event.objects.search(**valid)
                   .prefetch_related('linking_objects'))
         total_events = events.count()
-        offset = (page-1)*per_page
+        offset = (page-1) * per_page
         last_page_ord = last_page_ordinal(events)
         # The min_ordinal is actually the "bottom" (end) of the current
         # page and the top (start) of the next. This is because the

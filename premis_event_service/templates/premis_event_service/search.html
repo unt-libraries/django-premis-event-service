@@ -81,7 +81,7 @@
             {% endif %}
 
             {% if page > 1 %}
-            <li><a href="?page={{ previous_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ min_ordinal }}">prev</a></li>
+            <li><a href="?page={{ previous_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ prev_page_ord }}">prev</a></li>
             {% else %}
                 <li class="disabled"><span>prev</span></li>
             {% endif %}
@@ -100,7 +100,7 @@
             {% endfor %}
 
             {% if page < max_page %}
-            <li><a href="?page={{ next_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ min_ordinal }}">next</a></li>
+            <li><a href="?page={{ next_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ next_page_ord }}">next</a></li>
             {% else %}
                 <li class="disabled"><span>next</span></li>
             {% endif %}

@@ -118,15 +118,15 @@ def get_page_offsets(query_set, page, page_range, page_lims, per_page=20):
     p0 = page_range[0]
     pN = page_range[-1]
     query_set = query_set.only('ordinal')
-    limit = (page-p0) * per_page
+    limit = (page-p0+1) * per_page
     ordinals = []
     if limit:
         offset_qs = query_set.filter(ordinal__gte=page_max_ord).order_by('ordinal')[0:limit]
-        ordinals = [evt.ordinal for ei, evt in enumerate(offset_qs) if not ei % per_page]
+        ordinals = [evt.ordinal for ei, evt in enumerate(offset_qs) if ei and not ei % per_page]
         ordinals = ordinals[::-1]
     offsets_lo = [p for p in page_range if p < page]
     offsets_lo = zip(offsets_lo, ordinals)
-    limit = (pN-page) * per_page if pN > page else 0
+    limit = (pN-page+1) * per_page if pN > page else 1
     ordinals = []
     if limit:
         offset_qs = query_set.filter(ordinal__lte=page_max_ord).order_by('-ordinal')[0:limit]
@@ -175,13 +175,13 @@ def paginate_events(valid, request, per_page=20):
         raise EmptyPage()
     page_range = range(
         max(1, page-6),
-        min(max_page, page+7)
+        min(max_page+1, page+7)
     )
     page_offsets = get_page_offsets(
         page_offset_qs, page, page_range, (page_min_ord, page_max_ord),
         per_page=per_page
     )
-    prev_page_ord = page_max_ord
+    prev_page_ord = page_max_ord+per_page
     next_page_ord = page_min_ord
     for p, poff in page_offsets:
         if p == (page-1):

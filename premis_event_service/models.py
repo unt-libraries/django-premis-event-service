@@ -129,7 +129,7 @@ class EventManager(models.Manager):
             else:
                 max_ordinal = 0
         qs = self.get_queryset().order_by('-ordinal')
-        qs = qs.filter(ordinal__lt=max_ordinal)
+        qs = qs.filter(ordinal__lte=max_ordinal)
         return qs
 
 

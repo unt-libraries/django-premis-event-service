@@ -98,7 +98,35 @@ def humanEvent(request, identifier=None):
 
 def last_page_ordinal(query_set, per_page=20):
     qa = query_set.order_by('ordinal')[0:20]
-    return qa.last().ordinal
+    for event in qa:
+        pass
+    return event.ordinal
+
+
+def get_page_offsets(query_set, page, page_range, page_lims, per_page=20):
+    if not page_range:
+        return ((1, ''),)
+    page_min_ord, page_max_ord = page_lims
+    p0 = page_range[0]
+    pN = page_range[-1]
+    print 'GETPGOFF', page_lims, page_range
+    query_set = query_set.only('ordinal')
+    limit = (page-p0) * per_page
+    ordinals = []
+    if limit:
+        offset_qs = query_set.filter(ordinal__gte=page_max_ord).order_by('ordinal')[0:limit]
+        ordinals = [evt.ordinal for ei, evt in enumerate(offset_qs) if not ei % per_page]
+        ordinals = ordinals[::-1]
+    offsets_lo = [p for p in page_range if p < page]
+    offsets_lo = zip(offsets_lo, ordinals)
+    limit = (pN-page) * per_page if pN > page else 0
+    ordinals = []
+    if limit:
+        offset_qs = query_set.filter(ordinal__lte=page_max_ord).order_by('-ordinal')[0:limit]
+        ordinals = [evt.ordinal for ei, evt in enumerate(offset_qs) if not ei % per_page]
+    offsets_hi = [p for p in page_range if p >= page]
+    offsets_hi = zip(offsets_hi, ordinals)
+    return tuple(offsets_lo+offsets_hi)
 
 
 def paginate_events(valid, request, per_page=20):
@@ -106,14 +134,12 @@ def paginate_events(valid, request, per_page=20):
     events = None
     page = int(request.GET.get('page', 1))
     offset = None
-    unfiltered = True
-    # This is an assumption that will not hold if events
-    # are delete from the db. But this doesn't seem to
-    # happen in practice.
-    last_page_ord = per_page+1
+    last_page_ord = per_page + 1
+    page_offset_qs = None
     if any([v for k, v in valid.items() if k != 'min_ordinal']):
         events = (Event.objects.search(**valid)
                   .prefetch_related('linking_objects'))
+        page_offset_qs = Event.objects.search(**valid)
         total_events = events.count()
         offset = (page-1) * per_page
         last_page_ord = last_page_ordinal(events)
@@ -122,13 +148,15 @@ def paginate_events(valid, request, per_page=20):
         # ordinal is autoincrementing and acts as a proxy for
         # date added, so we're paging from greatest to least.
         if 'min_ordinal' in valid and valid['min_ordinal']:
-            events = events.filter(ordinal__lte=valid['min_ordinal'])[:20]
+            events = events.filter(ordinal__lte=valid['min_ordinal'])[:per_page]
         else:
             events = events[offset:offset+per_page]
-        unfiltered = False
     else:
         events = Event.objects.searchunfilt(request.GET.get('min_ordinal'))
+        page_offset_qs = Event.objects.searchunfilt()
         total_events = Event.objects.all().count()
+        if total_events:
+            last_page_ord = last_page_ordinal(Event.objects.all())
         events = events.prefetch_related('linking_objects')[0:per_page]
     page_max_ord = 0
     page_min_ord = 0
@@ -142,17 +170,23 @@ def paginate_events(valid, request, per_page=20):
         max(1, page-6),
         min(max_page, page+7)
     )
-    if unfiltered:
-        page_offsets = [(p, page_min_ord-(per_page*(p-page-1))) for p in page_range]
-    else:
-        # We don't know (or at least can't really guess) the ordinals for unfiltered
-        # searches. Set these to empty strings.
-        page_offsets = [(p, '') for p in page_range]
+    page_offsets = get_page_offsets(
+        page_offset_qs, page, page_range, (page_min_ord, page_max_ord),
+        per_page=20
+    )
+    prev_page_ord = page_max_ord
+    next_page_ord = page_min_ord
+    for p, poff in page_offsets:
+        if p == (page-1):
+            prev_page_ord = poff
+        elif p == (page+1):
+            next_page_ord = poff
     context = {
         'events': events, 'page_range': page_range, 'page_offsets': page_offsets,
         'page_max_ordinal': page_max_ord, 'page_min_ordinal': page_min_ord,
         'last_page_ordinal': last_page_ord, 'page': page, 'max_page': max_page,
-        'per_page': per_page, 'next_page': page+1, 'previous_page': page-1
+        'per_page': per_page, 'next_page': page+1, 'previous_page': page-1,
+        'next_page_ord': next_page_ord, 'prev_page_ord': prev_page_ord
     }
     return context
 

@@ -33,6 +33,8 @@ MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = translateDict
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
+EVENT_SEARCH_PER_PAGE = 20
+
 
 def get_request_body(request):
     """Get a request's body (POST data). Works with all Django versions."""
@@ -101,11 +103,15 @@ def last_page_ordinal(query_set, per_page=20):
     # or use a step in the slice. And if you don't
     # evaluate the queryset, you can't get the
     # ordinal of the last item in the result set.
-    evt = query_set.order_by('ordinal')[0:20:1][-1]
+    evt = query_set.order_by('ordinal')[0:per_page:1][-1]
     return evt.ordinal
 
 
 def get_page_offsets(query_set, page, page_range, page_lims, per_page=20):
+    """
+    Returns a tuple of tuples of form (page, ordinal) for accurate paging even
+    in the event that autoincremented ordinals are sparse.
+    """
     if not page_range:
         return ((1, ''),)
     page_min_ord, page_max_ord = page_lims
@@ -173,7 +179,7 @@ def paginate_events(valid, request, per_page=20):
     )
     page_offsets = get_page_offsets(
         page_offset_qs, page, page_range, (page_min_ord, page_max_ord),
-        per_page=20
+        per_page=per_page
     )
     prev_page_ord = page_max_ord
     next_page_ord = page_min_ord
@@ -196,7 +202,7 @@ def event_search(request):
     """Return a human readable list of search results."""
     form = EventSearchForm(request.GET)
     valid = form.cleaned_data if form.is_valid() else {}
-    pagination_context = paginate_events(valid, request, 20)
+    pagination_context = paginate_events(valid, request, EVENT_SEARCH_PER_PAGE)
     context = {'search_form': form}
     context.update(pagination_context)
     return render(request, 'premis_event_service/search.html', context)
@@ -225,8 +231,8 @@ def json_event_search(request):
         )
     # make a results list to pass to the view
     event_json = []
-    # paginate 20 per page
-    paginated_entries = paginate_events(valid, request, per_page=20)
+    # paginate
+    paginated_entries = paginate_events(valid, request, per_page=EVENT_SEARCH_PER_PAGE)
     events = paginated_entries['events']
     total_events = Event.objects.all().count()
     if events.count() is not 0:

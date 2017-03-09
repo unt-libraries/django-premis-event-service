@@ -109,7 +109,6 @@ def get_page_offsets(query_set, page, page_range, page_lims, per_page=20):
     page_min_ord, page_max_ord = page_lims
     p0 = page_range[0]
     pN = page_range[-1]
-    print 'GETPGOFF', page_lims, page_range
     query_set = query_set.only('ordinal')
     limit = (page-p0) * per_page
     ordinals = []

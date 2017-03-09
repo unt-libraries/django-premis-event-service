@@ -97,10 +97,12 @@ def humanEvent(request, identifier=None):
 
 
 def last_page_ordinal(query_set, per_page=20):
-    qa = query_set.order_by('ordinal')[0:20]
-    for event in qa:
-        pass
-    return event.ordinal
+    # To evaluate the queryset, you have to iterate
+    # or use a step in the slice. And if you don't
+    # evaluate the queryset, you can't get the
+    # ordinal of the last item in the result set.
+    evt = query_set.order_by('ordinal')[0:20:1][-1]
+    return evt.ordinal
 
 
 def get_page_offsets(query_set, page, page_range, page_lims, per_page=20):

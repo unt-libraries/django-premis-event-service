@@ -1,3 +1,8 @@
+1.3.0
+-----
+
+* Improve event search performance
+
 1.2.0
 -----
 

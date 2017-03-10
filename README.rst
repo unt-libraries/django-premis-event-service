@@ -92,10 +92,10 @@ Start the app and run the migrations.
 .. code-block :: sh
 
   # start the app
-  $ docker-compose up -d
+  $ docker-compose up -d db app
 
   # optional: add a superuser in order to login to the admin interface
-  $ docker-compose run --rm app ./manage.py createsuperuser
+  $ docker-compose run manage createsuperuser
 
 
 The code is in a volume that is shared between your workstation and the app container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
@@ -116,7 +116,6 @@ However, if the requirements files change, it is important that you rebuild the 
   # start the app
   $ docker-compose up -d
 
-
 Running the Tests
 -----------------
 To run the tests via Tox, use this command.
@@ -132,3 +131,16 @@ To run the tests only with the development environment.
 
   $ docker-compose run --rm app py.test
 
+
+Running Locally, Outside of Docker
+----------------------------------
+
+The event service can also run outside of the Docker container environment using SQLite as a backend. Simply run the app using manage.py as is the convention with Django apps:
+
+.. code-block :: sh
+
+  # start the app
+  $ python manage.py runserver 127.0.0.1:8000
+
+  # or run the tests using tox
+  $ tox

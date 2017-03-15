@@ -1,8 +1,3 @@
-1.3.0
------
-
-* Improve event search performance
-
 1.2.0
 -----
 
@@ -10,6 +5,7 @@
 * PEP 8 conformity
 * Assorted AtomPub fixes
 * Update `codalib` requirement to 1.0.2
+* Improve event search performance
 
 1.1.0
 -----

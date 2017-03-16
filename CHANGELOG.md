@@ -1,3 +1,8 @@
+1.2.1
+-----
+
+* Fix broken PUT request handling (#72)
+
 1.2.0
 -----
 

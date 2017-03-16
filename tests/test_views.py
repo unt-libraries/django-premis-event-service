@@ -458,7 +458,6 @@ class TestAppEvent:
         views.app_event(request)
         assert models.Event.objects.count() == 1
 
-    @pytest.mark.xfail(reason='Call to updateObjectFromXML fails unexpectedly.')
     def test_put_returns_ok(self, event_xml, rf):
         identifier = event_xml.identifier
         factories.EventFactory.create(event_identifier=identifier)
@@ -473,7 +472,6 @@ class TestAppEvent:
 
         assert response.status_code == 200
 
-    @pytest.mark.xfail(reason='Call to updateObjectFromXML fails unexpectedly.')
     def test_put_response_content_type(self, event_xml, rf):
         identifier = event_xml.identifier
         factories.EventFactory.create(event_identifier=identifier)

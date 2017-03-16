@@ -33,6 +33,21 @@ translateDict["linking_agent_identifier_value"] = [
     "linkingAgentIdentifier", "linkingAgentIdentifierValue"
 ]
 
+xpath_map = collections.OrderedDict()
+xpath_map['@namespaces'] = PREMIS_NSMAP
+xpath_map["event_identifier_type"] = 'premis:eventIdentifier/eventIdentifierType'
+xpath_map["event_identifier"] = 'premis:eventIdentifier/premis:eventIdentifierValue'
+xpath_map["event_type"] = 'premis:eventType'
+xpath_map["event_date_time"] = 'premis:eventDateTime'
+xpath_map["event_detail"] = 'premis:eventDetail'
+xpath_map["event_outcome"] = 'premis:eventOutcomeInformation/premis:eventOutcome'
+xpath_map["event_outcome_detail"] = 'premis:eventOutcomeInformation' + \
+        '/premis:eventOutcomeDetail/premis:eventOutcomeDetailNote'
+xpath_map["linking_agent_identifier_type"] = 'premis:linkingAgentIdentifier' + \
+        '/premis:linkingAgentIdentifierType'
+xpath_map["linking_agent_identifier_value"] = 'premis:linkingAgentIdentifier' + \
+        '/premis:linkingAgentIdentifierValue'
+
 
 class DuplicateEventError(Exception):
     pass

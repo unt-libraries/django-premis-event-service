@@ -11,41 +11,41 @@ from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from premis_event_service import settings
 import collections
 
-PREMIS_NAMESPACE = "info:lc/xmlns/premis-v2"
-PREMIS = "{%s}" % PREMIS_NAMESPACE
-PREMIS_NSMAP = {"premis": PREMIS_NAMESPACE}
-PES_AGENT_ID_TYPE = "PES:Agent"
+PREMIS_NAMESPACE = 'info:lc/xmlns/premis-v2'
+PREMIS = '{%s}' % PREMIS_NAMESPACE
+PREMIS_NSMAP = {'premis': PREMIS_NAMESPACE}
+PES_AGENT_ID_TYPE = 'PES:Agent'
 
 translateDict = collections.OrderedDict()
-translateDict["event_identifier_type"] = ["eventIdentifier", "eventIdentifierType"]
-translateDict["event_identifier"] = ["eventIdentifier", "eventIdentifierValue"]
-translateDict["event_type"] = ["eventType"]
-translateDict["event_date_time"] = ["eventDateTime"]
-translateDict["event_detail"] = ["eventDetail"]
-translateDict["event_outcome"] = ["eventOutcomeInformation", "eventOutcome"]
-translateDict["event_outcome_detail"] = [
-    "eventOutcomeInformation", "eventOutcomeDetail", "eventOutcomeDetailNote"
+translateDict['event_identifier_type'] = ['eventIdentifier', 'eventIdentifierType']
+translateDict['event_identifier'] = ['eventIdentifier', 'eventIdentifierValue']
+translateDict['event_type'] = ['eventType']
+translateDict['event_date_time'] = ['eventDateTime']
+translateDict['event_detail'] = ['eventDetail']
+translateDict['event_outcome'] = ['eventOutcomeInformation', 'eventOutcome']
+translateDict['event_outcome_detail'] = [
+    'eventOutcomeInformation', 'eventOutcomeDetail', 'eventOutcomeDetailNote'
 ]
-translateDict["linking_agent_identifier_type"] = [
-    "linkingAgentIdentifier", "linkingAgentIdentifierType"
+translateDict['linking_agent_identifier_type'] = [
+    'linkingAgentIdentifier', 'linkingAgentIdentifierType'
 ]
-translateDict["linking_agent_identifier_value"] = [
-    "linkingAgentIdentifier", "linkingAgentIdentifierValue"
+translateDict['linking_agent_identifier_value'] = [
+    'linkingAgentIdentifier', 'linkingAgentIdentifierValue'
 ]
 
 xpath_map = collections.OrderedDict()
 xpath_map['@namespaces'] = PREMIS_NSMAP
-xpath_map["event_identifier_type"] = 'premis:eventIdentifier/eventIdentifierType'
-xpath_map["event_identifier"] = 'premis:eventIdentifier/premis:eventIdentifierValue'
-xpath_map["event_type"] = 'premis:eventType'
-xpath_map["event_date_time"] = 'premis:eventDateTime'
-xpath_map["event_detail"] = 'premis:eventDetail'
-xpath_map["event_outcome"] = 'premis:eventOutcomeInformation/premis:eventOutcome'
-xpath_map["event_outcome_detail"] = 'premis:eventOutcomeInformation' + \
+xpath_map['event_identifier_type'] = 'premis:eventIdentifier/eventIdentifierType'
+xpath_map['event_identifier'] = 'premis:eventIdentifier/premis:eventIdentifierValue'
+xpath_map['event_type'] = 'premis:eventType'
+xpath_map['event_date_time'] = 'premis:eventDateTime'
+xpath_map['event_detail'] = 'premis:eventDetail'
+xpath_map['event_outcome'] = 'premis:eventOutcomeInformation/premis:eventOutcome'
+xpath_map['event_outcome_detail'] = 'premis:eventOutcomeInformation' + \
         '/premis:eventOutcomeDetail/premis:eventOutcomeDetailNote'
-xpath_map["linking_agent_identifier_type"] = 'premis:linkingAgentIdentifier' + \
+xpath_map['linking_agent_identifier_type'] = 'premis:linkingAgentIdentifier' + \
         '/premis:linkingAgentIdentifierType'
-xpath_map["linking_agent_identifier_value"] = 'premis:linkingAgentIdentifier' + \
+xpath_map['linking_agent_identifier_value'] = 'premis:linkingAgentIdentifier' + \
         '/premis:linkingAgentIdentifierValue'
 
 

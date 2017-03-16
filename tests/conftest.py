@@ -47,8 +47,8 @@ class EventTestXML(object):
             </entry>
         """
         if isinstance(self.attributes['event_date_time'], datetime.datetime):
-            self.attributes["event_date_time"] = xsDateTime_format(
-                self.attributes["event_date_time"]
+            self.attributes['event_date_time'] = xsDateTime_format(
+                self.attributes['event_date_time']
             )
         return xml.format(
                 linking_objects=self._linking_objects_xml(),

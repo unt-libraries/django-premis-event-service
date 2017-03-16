@@ -1,6 +1,8 @@
 import pytest
 import os
 from lxml import etree
+import datetime
+
 from codalib.xsdatetime import xsDateTime_format
 
 from . import factories
@@ -44,9 +46,10 @@ class EventTestXML(object):
               </content>
             </entry>
         """
-        self.attributes["event_date_time"] = xsDateTime_format(
-            self.attributes["event_date_time"]
-        )
+        if isinstance(self.attributes['event_date_time'], datetime.datetime):
+            self.attributes["event_date_time"] = xsDateTime_format(
+                self.attributes["event_date_time"]
+            )
         return xml.format(
                 linking_objects=self._linking_objects_xml(),
                 **self.attributes)

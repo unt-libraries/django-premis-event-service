@@ -21,16 +21,15 @@ from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
 from codalib.xsdatetime import xsDateTime_parse
 from .forms import EventSearchForm
 from .models import Event, Agent, AGENT_TYPE_CHOICES
-from .presentation import (premisEventXMLToObject, premisEventXMLgetObject,
-                           premisAgentXMLToObject, premisAgentXMLgetObject,
-                           objectToPremisEventXML, objectToPremisAgentXML,
-                           objectToAgentXML, translateDict, DuplicateEventError,
-                           PREMIS_NSMAP)
+from .presentation import (premisEventXMLToObject, premisAgentXMLToObject,
+                           premisAgentXMLgetObject, objectToPremisEventXML,
+                           objectToPremisAgentXML, objectToAgentXML,
+                           DuplicateEventError, PREMIS_NSMAP, xpath_map)
 from settings import ARK_NAAN
 
 ARK_ID_REGEX = re.compile(r'ark:/'+str(ARK_NAAN)+r'/\w.*')
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
-EVENT_UPDATE_TRANSLATION_DICT = translateDict
+EVENT_UPDATE_TRANSLATION_DICT = xpath_map
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
 EVENT_SEARCH_PER_PAGE = 20
@@ -626,13 +625,14 @@ def app_event(request, identifier=None):
                 content_type='text/plain',
                 status=400
             )
-        updatedEvent = updateObjectFromXML(
-            xmlObject=xmlDoc,
-            XMLToObjectFunc=premisEventXMLgetObject,
-            topLevelName="event",
-            idKey="event_identifier",
-            updateList=EVENT_UPDATE_TRANSLATION_DICT,
-        )
+        event = Event.objects.get(event_identifier=identifier)
+        if not event:
+            return HttpResponse(
+                'Event not found',
+                content_type='text/plain',
+                status=404
+            )
+        updatedEvent = updateObjectFromXML(xmlDoc, event, EVENT_UPDATE_TRANSLATION_DICT)
         # If XML identifier and resource ID don't match, bail.
         if updatedEvent.event_identifier != identifier:
             return HttpResponse(

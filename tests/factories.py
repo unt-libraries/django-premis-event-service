@@ -12,9 +12,9 @@ UUID_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID'
 
 URL_TYPE = 'http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL'
 
-EVENT_TYPES = [value for value, _ in settings.EVENT_TYPE_CHOICES]
+EVENT_TYPES = [value for value, _ in settings.EVENT_TYPE_CHOICES if value]
 
-EVENT_OUTCOMES = [value for value, _ in settings.EVENT_OUTCOME_CHOICES]
+EVENT_OUTCOMES = [value for value, _ in settings.EVENT_OUTCOME_CHOICES if value]
 
 AGENTS = [
     'http://example.com/agent/codareplicationverification',

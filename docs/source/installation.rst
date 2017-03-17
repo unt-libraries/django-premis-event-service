@@ -32,7 +32,7 @@ Install
 
 1. Install the package. ::
 
-    $ pip install django-premis-event-service
+    $ pip install git+https://github.com/unt-libraries/django-premis-event-service@v1.2.1
 
 
 2. Add ``premis_event_service`` to your ``INSTALLED_APPS``. Be sure to add ``django.contrib.admin`` if it is not already present. ::

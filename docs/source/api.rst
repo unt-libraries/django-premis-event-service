@@ -23,6 +23,13 @@ entry's "content" tag. There is a lot more to AtomPub than that, but for the
 purpose of this document, it is helpful to just view the Atom entry as an 
 "envelope" for the PREMIS XML.
 
+A Note on Dates
+---------------
+
+Unless otherwise noted, all datetimes mentioned below *must* be formatted
+as ``xsDateTime`` compliant strings. The output of the ``datetime.isoformat``
+method in Python is compatible.
+
 API URL Structure
 =================
 
@@ -134,48 +141,30 @@ to deal with the problem at some point, but right now we just want to log an
 event that will accurately reflect the results of the script. So, we create 
 a PREMIS event XML tree::
 
+
+    <?xml version="1.0"?>
     <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
-        <premis:eventType>
-            validateObject
-        </premis:eventType>
-        <premis:linkingAgentIdentifier>
-            <premis:linkingAgentIdentifierValue>
-                validateObjectScript
-            </premis:linkingAgentIdentifierValue>
-            <premis:linkingAgentIdentifierType>
-                Program
-            </premis:linkingAgentIdentifierType>
-        </premis:linkingAgentIdentifier>
         <premis:eventIdentifier>
-            <premis:eventIdentifierType>
-                TEMP
-            </premis:eventIdentifierType>
-            <premis:eventIdentifierValue>
-                TEMP
-            </premis:eventIdentifierValue>
+            <premis:eventIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID</premis:eventIdentifierType>
+            <premis:eventIdentifierValue>9e42cbd3cc3b4dfc888522036bbc4491</premis:eventIdentifierValue>
         </premis:eventIdentifier>
-        <premis:eventDetail>Validation of object
-            object_123
-        </premis:eventDetail>
+        <premis:eventType>http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck</premis:eventType>
+        <premis:eventDateTime>2017-05-13T14:14:55Z</premis:eventDateTime>
+        <premis:eventDetail>There is no muse of philosophy, nor is there one of translation. </premis:eventDetail>
         <premis:eventOutcomeInformation>
+            <premis:eventOutcome>http://purl.org/net/untl/vocabularies/eventOutcomes/#success</premis:eventOutcome>
             <premis:eventOutcomeDetail>
-                Generated sum for object_123/data/pic_002.tif does not match stored value
+                <premis:eventOutcomeDetailNote>Total time for verification: 0:00:01.839590</premis:eventOutcomeDetailNote>
             </premis:eventOutcomeDetail>
-            <premis:eventOutcome>
-                Failure
-            </premis:eventOutcome>
         </premis:eventOutcomeInformation>
-        <premis:eventDateTime>
-            2011-01-27T16:39:49
-        </premis:eventDateTime>
+        <premis:linkingAgentIdentifier>
+            <premis:linkingAgentIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL</premis:linkingAgentIdentifierType>
+            <premis:linkingAgentIdentifierValue>http://localhost:8787/agent/codaMigrationVerification</premis:linkingAgentIdentifierValue>
+        </premis:linkingAgentIdentifier>
         <premis:linkingObjectIdentifier>
-            <premis:linkingObjectIdentifierType>
-                Local Identifier
-            </premis:linkingObjectIdentifierType>
-            <premis:linkingObjectIdentifierValue>
-                object_123
-            </premis:linkingObjectIdentifierValue>
-            <premis:linkingObjectRole />
+            <premis:linkingObjectIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#ARK</premis:linkingObjectIdentifierType>
+            <premis:linkingObjectIdentifierValue>ark:/67531/coda10kx</premis:linkingObjectIdentifierValue>
+            <premis:linkingObjectRole/>
         </premis:linkingObjectIdentifier>
     </premis:event>
 
@@ -197,7 +186,7 @@ Atom entry, so the following Atom wrapper XML tree is created::
             <name>Object Verification Script</name>
         </author>
         <content type="application/xml">
-            <premis:event xmlns:premis="http://www.loc.gov/standards/premis/v1">
+            <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
                 ...
             </premis:event>
         </content>
@@ -217,7 +206,7 @@ return document, also wrapped in an Atom entry. It will look something like::
     <entry xmlns="http://www.w3.org/2005/Atom">
         <title>bfa2cf2c2a4f11e089b3005056935974</title>
         <id>bfa2cf2c2a4f11e089b3-005056935974</id>
-        <updated>2011-01-27T16:40:30Z</updated>
+        <updated>2017-01-27T16:40:30Z</updated>
         <author>
             <name>Object Verification Script</name>
         </author>

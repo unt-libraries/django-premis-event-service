@@ -13,7 +13,7 @@ Dependencies
 ============
 
 - Python 2.7.x
-- Django 1.8
+- Django 1.8 - 1.10
 - libxml2-dev libxslt-dev
 - Django Admin - ``django.contrib.admin``
 
@@ -32,7 +32,7 @@ Install
 
 1. Install the package. ::
 
-    $ pip install git+https://github.com/unt-libraries/django-premis-event-service@v1.2.1
+    $ pip install git+https://github.com/unt-libraries/django-premis-event-service@v1.2.2
 
 
 2. Add ``premis_event_service`` to your ``INSTALLED_APPS``. Be sure to add ``django.contrib.admin`` if it is not already present. ::

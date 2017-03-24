@@ -64,7 +64,7 @@ def test_humanAgent_with_invalid_identifier(rf):
 def test_humanAgent_returns_all_agents(client):
     factories.AgentFactory.create_batch(30)
     response = client.get(
-            reverse('premis_event_service.views.humanAgent'))
+            reverse('agent-list'))
     view_context = response.context[-1]
     assert len(view_context['agents']) == models.Agent.objects.count()
 

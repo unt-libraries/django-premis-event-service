@@ -166,7 +166,7 @@ a PREMIS event XML tree::
             </premis:eventOutcome>
         </premis:eventOutcomeInformation>
         <premis:eventDateTime>
-            2011-01-27 16:39:49
+            2011-01-27T16:39:49
         </premis:eventDateTime>
         <premis:linkingObjectIdentifier>
             <premis:linkingObjectIdentifierType>
@@ -192,7 +192,7 @@ Atom entry, so the following Atom wrapper XML tree is created::
     <entry xmlns="http://www.w3.org/2005/Atom">
         <title>PREMIS event entry for object_123</title>
         <id>PREMIS event entry for object_123</id>
-        <updated>2011-­‐01-­‐27T16:40:30Z</updated>
+        <updated>2011‐01‐27T16:40:30Z</updated>
         <author>
             <name>Object Verification Script</name>
         </author>

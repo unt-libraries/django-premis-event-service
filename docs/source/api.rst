@@ -23,6 +23,13 @@ entry's "content" tag. There is a lot more to AtomPub than that, but for the
 purpose of this document, it is helpful to just view the Atom entry as an 
 "envelope" for the PREMIS XML.
 
+PREMIS
+------
+
+The PREMIS Event Service makes every effort to conform to the `PREMIS v.2
+specification`_. Versions 2.* of the spec are *not* backwards compatible with
+versions before the 2.0 milestone.
+
 A Note on Dates
 ---------------
 
@@ -121,49 +128,52 @@ Example
 .. highlight:: xml
    :linenothreshold: 5
 
-Imagine that we have just completed a mass server-to-server data copy, and 
-as part of that migrated data we have a directory called ``object_123/`` which 
-contains a collection of files that represents a migrated digital object. 
-This digital object conveniently enough, has the localidentifier (for our 
-system) of ``object_123``.
-
-We have a script ``validate_object`` that we can run 
-on our objects to make certain that the files match a previously stored 
-fixity digest and are intact after this migration. In this case, we wish to 
-log an event of the validation in order to properly track our actions. To begin 
-with, we run the ``validate_object`` script on our directory and wait for it to 
-run.
-
-Let's say that it runs and comes back with an 
-error: ``Validation of object_123/ failed Details: Generated sum for 
-object_123/data/pic_002.tif does not match stored value``. Obviously, we have 
-to deal with the problem at some point, but right now we just want to log an 
-event that will accurately reflect the results of the script. So, we create 
-a PREMIS event XML tree::
+The example below is a somewhat plausible one, using a fixity check event during a migration
+as a scenario.::
 
 
     <?xml version="1.0"?>
     <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
         <premis:eventIdentifier>
-            <premis:eventIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID</premis:eventIdentifierType>
-            <premis:eventIdentifierValue>9e42cbd3cc3b4dfc888522036bbc4491</premis:eventIdentifierValue>
+            <premis:eventIdentifierType>
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID
+            </premis:eventIdentifierType>
+            <premis:eventIdentifierValue>
+                9e42cbd3cc3b4dfc888522036bbc4491
+            </premis:eventIdentifierValue>
         </premis:eventIdentifier>
-        <premis:eventType>http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck</premis:eventType>
+        <premis:eventType>
+            http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck
+        </premis:eventType>
         <premis:eventDateTime>2017-05-13T14:14:55Z</premis:eventDateTime>
-        <premis:eventDetail>There is no muse of philosophy, nor is there one of translation. </premis:eventDetail>
+        <premis:eventDetail>
+            There is no muse of philosophy, nor is there one of translation.
+        </premis:eventDetail>
         <premis:eventOutcomeInformation>
-            <premis:eventOutcome>http://purl.org/net/untl/vocabularies/eventOutcomes/#success</premis:eventOutcome>
+            <premis:eventOutcome>
+                http://purl.org/net/untl/vocabularies/eventOutcomes/#success
+            </premis:eventOutcome>
             <premis:eventOutcomeDetail>
-                <premis:eventOutcomeDetailNote>Total time for verification: 0:00:01.839590</premis:eventOutcomeDetailNote>
+                <premis:eventOutcomeDetailNote>
+                    Total time for verification: 0:00:01.839590
+                </premis:eventOutcomeDetailNote>
             </premis:eventOutcomeDetail>
         </premis:eventOutcomeInformation>
         <premis:linkingAgentIdentifier>
-            <premis:linkingAgentIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL</premis:linkingAgentIdentifierType>
-            <premis:linkingAgentIdentifierValue>http://localhost:8787/agent/codaMigrationVerification</premis:linkingAgentIdentifierValue>
+            <premis:linkingAgentIdentifierType>
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL
+            </premis:linkingAgentIdentifierType>
+            <premis:linkingAgentIdentifierValue>
+                http://localhost:8787/agent/codaMigrationVerification
+            </premis:linkingAgentIdentifierValue>
         </premis:linkingAgentIdentifier>
         <premis:linkingObjectIdentifier>
-            <premis:linkingObjectIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#ARK</premis:linkingObjectIdentifierType>
-            <premis:linkingObjectIdentifierValue>ark:/67531/coda10kx</premis:linkingObjectIdentifierValue>
+            <premis:linkingObjectIdentifierType>
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#ARK
+            </premis:linkingObjectIdentifierType>
+            <premis:linkingObjectIdentifierValue>
+                ark:/67531/coda10kx
+            </premis:linkingObjectIdentifierValue>
             <premis:linkingObjectRole/>
         </premis:linkingObjectIdentifier>
     </premis:event>

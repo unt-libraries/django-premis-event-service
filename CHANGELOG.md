@@ -1,3 +1,8 @@
+1.2.2
+-----
+
+* Removed deprecated calls to make compatible w/ Django 1.10
+
 1.2.1
 -----
 

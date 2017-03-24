@@ -12,8 +12,7 @@ from django.core.exceptions import FieldError
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseNotFound)
 from django.db.utils import IntegrityError
-from django.shortcuts import render, render_to_response, get_object_or_404
-from django.template.context import RequestContext
+from django.shortcuts import render, get_object_or_404
 
 from codalib import APP_AUTHOR as CODALIB_APP_AUTHOR
 from codalib.bagatom import (makeObjectFeed, addObjectFromXML,
@@ -87,13 +86,13 @@ def humanEvent(request, identifier=None):
     """
 
     event_object = get_object_or_404(Event, event_identifier=identifier)
-    return render_to_response(
+    return render(
+        request,
         'premis_event_service/event.html',
         {
             'record': event_object,
             'maintenance_message': MAINTENANCE_MSG,
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 
@@ -351,14 +350,14 @@ def recent_event_list(request):
                    .order_by('-event_date_time')[:10])
 
     # render to the template
-    return render_to_response(
+    return render(
+        request,
         'premis_event_service/recent_event_list.html',
         {
             'entries': events,
             'num_events': Event.objects.count(),
             'maintenance_message': MAINTENANCE_MSG,
-        },
-        context_instance=RequestContext(request),
+        }
     )
 
 
@@ -403,14 +402,14 @@ def humanAgent(request, identifier=None):
         a['agent_type'] = [
             tup for tup in AGENT_TYPE_CHOICES if tup[0] == a['agent_type']
         ][0][0]
-    return render_to_response(
+    return render(
+        request,
         'premis_event_service/agent.html',
         {
             'agents': agents,
             'num_agents': Agent.objects.count(),
             'maintenance_message': MAINTENANCE_MSG,
-        },
-        context_instance=RequestContext(request),
+        }
     )
 
 

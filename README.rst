@@ -10,7 +10,7 @@ structured, centralized, and searchable manner.
 Purpose
 -------
 
-The purpose of this microservice is to provide a straightforward way to send 
+The purpose of this application is to provide a straightforward way to send 
 PREMIS-formatted events to a central location to be stored and retrieved. In 
 this fashion, it can serve as an event logger for any number of services that 
 happen to wish to use it. PREMIS is chosen as the underlying format for events 
@@ -20,7 +20,7 @@ Dependencies
 ------------
 
 * Python 2.6+ (not Python 3)
-* Django (tested on 1.6.1; at least 1.3 or higher required)
+* Django (tested on 1.7-1.10; 1.3 or higher required)
 * lxml (requires libxml2-dev to be installed on your system)
 
 
@@ -60,34 +60,110 @@ by a number of developers over the years including
 * Stephen Eisenhauer   
 * Mark Phillips
 * Damon Kelley
+* Reed Underwood
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 
 Developing
 ----------
+There are two (supported) ways to develop the PREMIS event service Django app. One is natively using an SQLite backend. The other is using a MySQL backend for storage inside a Docker container.
 
-To take advantage of the dev environment that is already configured, you need to have Docker and Docker Compose installed.
+Developing Natively Using SQLite_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _SQLite: https://sqlite.org/
+
+Clone the repository
+""""""""""""""""""""
+
+.. code-block :: sh
+
+  $ git clone https://github.com/unt-libraries/django-premis-event-service.git # check the repo for the latest official release if you don't want the development version at HEAD on the master branch
+  $ cd django-premis-event-service
+
+Create a virtualenv_ environment
+""""""""""""""""""""""""""""""""
+
+.. _virtualenv: https://virtualenv.pypa.io/en/stable/
+
+.. code-block :: sh
+
+    $ mkvirtualenv premis-event-service # to create and enter the virtualenv
+    (premis-event-service) $ deactivate # to exit the virtualenv
+    $ workon premis-event-service # to reactivate the virtualenv
+
+
+Install the requirements using pip_
+"""""""""""""""""""""""""""""""""""
+
+.. _pip: https://pip.pypa.io/en/stable/
+
+.. code-block :: sh
+
+    (premis-event-service) $ pip install -r requirements.txt # install dependencies from text file
+
+
+Run the tests using tox_
+""""""""""""""""""""""""
+
+.. _tox: https://tox.readthedocs.io/en/latest/
+
+.. code-block :: sh
+
+    (premis-event-service) $ tox
+
+
+Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.7-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
+
+Start the development server
+""""""""""""""""""""""""""""
+
+.. code-block :: sh
+
+    (premis-event-service) $ python manage.py runserver 9999
+
+
+This will start the development server listening locally on port 9999. You may want to change the port number, passed as the first argument to the ``runserver`` command.
+
+
+View the web UI in a browser
+""""""""""""""""""""""""""""
+
+Navigate to ``http://localhost:9999`` (or whatever port you chose) to see the UI of the app.
+
+
+Developing Using Docker and MySQL as a Backend
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Install Docker_
+"""""""""""""""
 
 .. _Docker: https://docs.docker.com
 
+On Debian-derived Linux distros, you can use ``apt-get`` to install. If you're on a different OS, check the Docker site for instructions.
+
+
 Install Docker Compose
+""""""""""""""""""""""
 
 .. code-block :: sh
 
   $ pip install docker-compose
 
+Alternatively, you may want to install ``docker-compose`` using your system's package manager.
 
-Clone the repository.
+
+Clone the repository
+""""""""""""""""""""
 
 .. code-block :: sh
 
-  $ git clone https://github.com/unt-libraries/django-premis-event-service.git
+  $ git clone https://github.com/unt-libraries/django-premis-event-service.git # check the repo for the latest official release if you don't want the development version at HEAD on the master branch
   $ cd django-premis-event-service
 
 
-Start the app and run the migrations.
+Starting the app
+""""""""""""""""
 
 .. code-block :: sh
 
@@ -111,36 +187,26 @@ However, if the requirements files change, it is important that you rebuild the 
   $ docker-compose rm app
 
   # rebuild the app container
-  $ docker-compose build app
+  $ docker-compose build app # under some circumstances, you may need to use the --no-cache switch
 
   # start the app
-  $ docker-compose up -d
+  $ docker-compose up -d db app
+
+
+Viewing the logs
+""""""""""""""""
+
+.. code-block :: sh
+
+    $ docker-compose logs -f
+
 
 Running the Tests
------------------
+"""""""""""""""""
+
 To run the tests via Tox, use this command.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm app tox
+  $ docker-compose run --rm app test 
 
-
-To run the tests only with the development environment.
-
-.. code-block :: sh
-
-  $ docker-compose run --rm app py.test
-
-
-Running Locally, Outside of Docker
-----------------------------------
-
-The event service can also run outside of the Docker container environment using SQLite as a backend. Simply run the app using manage.py as is the convention with Django apps:
-
-.. code-block :: sh
-
-  # start the app
-  $ python manage.py runserver 127.0.0.1:8000
-
-  # or run the tests using tox
-  $ tox

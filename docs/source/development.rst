@@ -11,23 +11,26 @@ Project Structure
 The PREMIS Event Service is structured as a common Python project, providing a
 Python package named `premis_event_service` which is a Django app::
 
-    premis_event_service/ # The Django app itself. Technically a Python package.
-        admin.py          ## Customizes the Django admin interface
-        coda/             ## Some supporting modules we need for some tasks
-            anvl.py
-            bagatom.py
-            __init__.py   ### Marks this directory as a valid Python package
-            util.py
-        forms.py          ## Form processing code
-        helpy.py
-        __init__.py       ## Marks this directory as a valid Python package
-        models.py         ## Database model definitions
-        populator.py
-        presentation.py
-        settings.py       ## Wrapper for project settings file with custom defaults
-        templates/        ## HTML templates
-        urls.py           ## URL routing patterns
-        views.py          ## View generation code
+    premis_event_service/
+    ├── admin.py          ## Customizes the Django admin interface
+    ├── forms.py          ## Form definitions and validation code
+    ├── __init__.py       ## Makes this directory a Python package
+    ├── migrations        ## Django database migrations
+    │   ├── 0001_initial.py
+    │   ├── 0002_add_event_ordinal.py
+    │   └── __init__.py
+    ├── models.py         ## Data models, using Django ORM
+    ├── presentation.py   ## Business logic
+    ├── settings.py       ## App-specific settings
+    ├── templates
+    │   └── premis_event_service
+    │       ├── agent.html
+    │       ├── base.html
+    │       ├── event.html
+    │       ├── recent_event_list.html
+    │       └── search.html
+    ├── urls.py           ## App-specific url patterns/routes
+    └── views.py          ## Route handlers which generate human- and machine-readable views
 
 If you're not sure where to look for something, `urls.py` is usually the best
 place to start.  There you'll find a list of every URL pattern handled by the

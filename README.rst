@@ -115,6 +115,15 @@ Run the tests using tox_
 
 Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.7-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
 
+
+Apply the migrations
+""""""""""""""""""""
+
+.. code-block :: sh
+
+    (premis-event-service) $ python manage.py migrate
+
+
 Start the development server
 """"""""""""""""""""""""""""
 

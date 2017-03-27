@@ -110,5 +110,5 @@ looks like the following::
 
 As you can see from the above example, the agent's identifier above 
 corresponds with the agent in the event example. You are able to create and 
-register agents through the administrative panel on the PREMIS microservice; 
+register agents through the administrative panel on the PREMIS service; 
 see the :doc:`administration` section to learn how.

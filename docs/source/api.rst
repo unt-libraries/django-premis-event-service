@@ -129,7 +129,7 @@ Example
    :linenothreshold: 5
 
 The example below is a somewhat plausible one, using a fixity check event during a migration
-as a scenario.::
+as a scenario::
 
 
     <?xml version="1.0"?>
@@ -213,49 +213,68 @@ the XML. If it finds a valid XML PREMIS event document, it will assign the
 event an identifier, index the values and save them, and then generate a 
 return document, also wrapped in an Atom entry. It will look something like::
 
-    <entry xmlns="http://www.w3.org/2005/Atom">
-        <title>bfa2cf2c2a4f11e089b3005056935974</title>
-        <id>bfa2cf2c2a4f11e089b3-005056935974</id>
-        <updated>2017-01-27T16:40:30Z</updated>
-        <author>
-            <name>Object Verification Script</name>
-        </author>
+    <?xml version="1.0"?>
+        <entry xmlns="http://www.w3.org/2005/Atom">
+        <title>9e42cbd3cc3b4dfc888522036bbc4491</title>
+        <id>http://localhost:8000/APP/event/9e42cbd3cc3b4dfc888522036bbc4492/</id>
+        <updated>2017-03-27T09:15:31.382106-05:00</updated>
         <content type="application/xml">
-            <premis:event xmlns:premis="http://www.loc.gov/standards/premis/v1">
-                <premis:eventType>validateObject</premis:eventType>
-                <premis:linkingAgentIdentifier>
-                    <premis:linkingAgentIdentifierValue>
-                        validateObjectScript
-                    </premis:linkingAgentIdentifierValue>
-                    <premis:linkingAgentIdentifierType>
-                        Program
-                    </premis:linkingAgentIdentifierType>
-                </premis:linkingAgentIdentifier>
+            <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
                 <premis:eventIdentifier>
                     <premis:eventIdentifierType>
-                        UUID
+                        http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID
                     </premis:eventIdentifierType>
                     <premis:eventIdentifierValue>
-                        bfa2cf2c2a4f11e089b3-005056935974
+                        9e42cbd3cc3b4dfc888522036bbc4491
                     </premis:eventIdentifierValue>
                 </premis:eventIdentifier>
-                ...
+                <premis:eventType>
+                    http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck
+                </premis:eventType>
+                <premis:eventDateTime>
+                    2017-05-13T09:14:55-05:00
+                </premis:eventDateTime>
+                <premis:eventDetail>
+                    There is no muse of philosophy, nor is there one of translation.
+                </premis:eventDetail>
+                <premis:eventOutcomeInformation>
+                    <premis:eventOutcome>
+                        http://purl.org/net/untl/vocabularies/eventOutcomes/#success
+                    </premis:eventOutcome>
+                    <premis:eventOutcomeDetail>
+                        <premis:eventOutcomeDetailNote>
+                            Total time for verification: 0:00:01.839590
+                        </premis:eventOutcomeDetailNote>
+                    </premis:eventOutcomeDetail>
+                </premis:eventOutcomeInformation>
+                <premis:linkingAgentIdentifier>
+                    <premis:linkingAgentIdentifierType>
+                        http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL
+                    </premis:linkingAgentIdentifierType>
+                    <premis:linkingAgentIdentifierValue>
+                        http://localhost:8787/agent/codaMigrationVerification
+                    </premis:linkingAgentIdentifierValue>
+                </premis:linkingAgentIdentifier>
+                <premis:linkingObjectIdentifier>
+                    <premis:linkingObjectIdentifierType>
+                        http://purl.org/net/untl/vocabularies/identifier-qualifiers/#ARK
+                    </premis:linkingObjectIdentifierType>
+                    <premis:linkingObjectIdentifierValue>
+                        ark:/67531/coda10kx
+                    </premis:linkingObjectIdentifierValue>
+                    <premis:linkingObjectRole/>
+                </premis:linkingObjectIdentifier>
             </premis:event>
         </content>
     </entry>
 
-As you can see, the identifier has been changed to a UUID, which, in this 
-case, is ``bfa2cf2c2a4f11e089b3-­‐005056935974``. This identifier is unique 
-and will be what the microservice will use to refer to that individual event 
-in the future.
-
 If the POST is successful, the updated record will be returned, along with a 
-status of "200". If the status is something else, there was an error, and 
+status of 201. If the status is something else, there was an error, and 
 the event cannot be considered to have been reliably recorded.
 
 Later, when we (or, perhaps, another script) wish to review the event to 
 find out what went wrong with the file validation, we would access it by 
 sending an HTTP GET request to 
-``/APP/event/bfa2cf2c2a4f11e089b3-005056935974``, which would return an Atom 
+``/APP/event/9e42cbd3cc3b4dfc888522036bbc4491``, which would return an Atom 
 entry containing the final event record, which we could then analyze and use 
 for whatever purposes desired.

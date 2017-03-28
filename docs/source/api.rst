@@ -30,12 +30,16 @@ The PREMIS Event Service makes every effort to conform to the `PREMIS v.2
 specification`_. Versions 2.* of the spec are *not* backwards compatible with
 versions before the 2.0 milestone.
 
+.. _premis v.2 specification: https://www.loc.gov/standards/premis/v2/premis-v2-3.xsd
+
 A Note on Dates
 ---------------
 
-Unless otherwise noted, all datetimes mentioned below *must* be formatted
+Unless otherwise noted, all datetimes mentioned below *must* be formatted_
 as ``xsDateTime`` compliant strings. The output of the ``datetime.isoformat``
 method in Python is compatible.
+
+.. _formatted: https://www.w3.org/TR/xmlschema-2/#dateTime
 
 API URL Structure
 =================
@@ -61,18 +65,14 @@ Accepts parameters:
 
 * start - This is the index of the first record that you want...it starts indexing at 1.
 * count - This is the number of records that you want returned.
-* start_date - This is a date (or partial date ) in ISO8601 format that indicates the earliest
-record that you want.
+* start_date - This is a date (or partial date ) in ISO8601 format that indicates the earliest record that you want.
 * end_date - This is a date that indicates the latest record that you want.
-* type - This is a string identifying a type identifier (or partial identifier) that you want to
-filter events by
+* type - This is a string identifying a type identifier (or partial identifier) that you want to filter events by
 * outcome - This is a string identifying an outcome identifier (partial matching is supported)
-* link_object_id - This is an identifier that specifies that we want events pertaining to a
-particular object
-* orderdir - This defaults to 'ascending'. Specifying 'descending' will return the records in
-reverse order.
-* orderby - This parameter specifies what field to order the records by. The valid fields are
-currently: event_date_time (default), event_identifier, event_type, event_outcome
+* link_object_id - This is an identifier that specifies that we want events pertaining to a particular object
+* orderdir - This defaults to 'ascending'. Specifying 'descending' will return the records in reverse order.
+* orderby - This parameter specifies what field to order the records by. The valid fields are currently: event_date_time (default), event_identifier, event_type, event_outcome
+
 
 For the human-viewable feeds, the parameters are the same, except, instead of using a
 'start' parameter, it uses a 'page' parameter, because of the way it paginates the output (see

@@ -11,50 +11,52 @@ Events
 
 A standard PREMIS event encoded as XML looks something like the following::
 
+    <?xml version="1.0"?>
     <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
-        <premis:eventType>
-            http://purl.org/net/meta/vocabularies/preservationEvents/#MigrateSuccess
-        </premis:eventType>
-        <premis:linkingAgentIdentifier>
-            <premis:linkingAgentIdentifierValue>
-                http://metaarchive.org/agent/metaMigrateSuccess
-            </premis:linkingAgentIdentifierValue>
-            <premis:linkingAgentIdentifierType>
-                http://purl.org/net/meta/vocabularies/identifier-qualifiers/#URL
-            </premis:linkingAgentIdentifierType>
-        </premis:linkingAgentIdentifier>
         <premis:eventIdentifier>
             <premis:eventIdentifierType>
-                http://purl.org/net/meta/vocabularies/identifier-qualifiers/#UUID
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID
             </premis:eventIdentifierType>
             <premis:eventIdentifierValue>
-                e8ee3b1a8c9e4a5daf0a1e0446383d90
+                9e42cbd3cc3b4dfc888522036bbc4491
             </premis:eventIdentifierValue>
         </premis:eventIdentifier>
+        <premis:eventType>
+            http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck
+        </premis:eventType>
+        <premis:eventDateTime>2017-05-13T14:14:55Z</premis:eventDateTime>
         <premis:eventDetail>
-            Verification of data at /data3/meta-r1-003_dropbox/meta106w
+            There is no muse of philosophy, nor is there one of translation.
         </premis:eventDetail>
         <premis:eventOutcomeInformation>
-            <premis:eventOutcomeDetail>
-                Checking content after cache server migration
-            </premis:eventOutcomeDetail>
             <premis:eventOutcome>
-                http://purl.org/net/meta/vocabularies/eventOutcomes/#success
+                http://purl.org/net/untl/vocabularies/eventOutcomes/#success
             </premis:eventOutcome>
+            <premis:eventOutcomeDetail>
+                <premis:eventOutcomeDetailNote>
+                    Total time for verification: 0:00:01.839590
+                </premis:eventOutcomeDetailNote>
+            </premis:eventOutcomeDetail>
         </premis:eventOutcomeInformation>
-        <premis:eventDateTime>
-            2011-01-25 16:39:49
-        </premis:eventDateTime>
+        <premis:linkingAgentIdentifier>
+            <premis:linkingAgentIdentifierType>
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL
+            </premis:linkingAgentIdentifierType>
+            <premis:linkingAgentIdentifierValue>
+                http://localhost:8787/agent/codaMigrationVerification
+            </premis:linkingAgentIdentifierValue>
+        </premis:linkingAgentIdentifier>
         <premis:linkingObjectIdentifier>
             <premis:linkingObjectIdentifierType>
-                http://purl.org/net/meta/vocabularies/identifier-qualifiers/#ARK
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#ARK
             </premis:linkingObjectIdentifierType>
             <premis:linkingObjectIdentifierValue>
-                ark:/67531/meta106w
+                ark:/67531/coda10kx
             </premis:linkingObjectIdentifierValue>
             <premis:linkingObjectRole/>
         </premis:linkingObjectIdentifier>
     </premis:event>
+
 
 This is a lot at first glance, but the pieces are more or less logical. The 
 relevant things that a given PREMIS event record keeps track of are the 
@@ -95,15 +97,15 @@ looks like the following::
     <?xml version="1.0"?>
     <premis:agent xmlns:premis="info:lc/xmlns/premis-v2">
         <premis:agentIdentifier>
-            <premis:agentIdentifierValue>
-                MigrateSuccess
-            </premis:agentIdentifierValue>
             <premis:agentIdentifierType>
-                FDsys:agent
+                http://purl.org/net/untl/vocabularies/identifier-qualifiers/#URL
             </premis:agentIdentifierType>
+            <premis:agentIdentifierValue>
+                http://localhost:8787/agent/codaMigrationVerification
+            </premis:agentIdentifierValue>
         </premis:agentIdentifier>
         <premis:agentName>
-            http://institution.edu/agent/metaMigrateSuccess
+            codaMigrationVerification
         </premis:agentName>
         <premis:agentType>softw</premis:agentType>
     </premis:agent>

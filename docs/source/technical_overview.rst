@@ -114,3 +114,5 @@ As you can see from the above example, the agent's identifier above
 corresponds with the agent in the event example. You are able to create and 
 register agents through the administrative panel on the PREMIS service; 
 see the :doc:`administration` section to learn how.
+
+Note that there is no schematic relationship between Agent objects and Event objects in the application's database tables. Events may be linked to any Agent identifier and are not limited in any way to Agent items created in administrative interface.

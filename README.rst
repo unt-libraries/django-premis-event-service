@@ -138,7 +138,7 @@ This will start the development server listening locally on port 9999. You may w
 View the web UI in a browser
 """"""""""""""""""""""""""""
 
-Navigate to ``http://localhost:9999`` (or whatever port you chose) to see the UI of the app.
+Navigate to ``http://localhost:9999/event/`` (or whatever port you chose) to see the UI of the app.
 
 
 Developing Using Docker and MySQL as a Backend
@@ -183,6 +183,12 @@ Starting the app
   $ docker-compose run manage createsuperuser
 
 
+View the web UI in a browser
+""""""""""""""""""""""""""""
+
+Navigate to ``http://localhost:8000/event/`` to see the UI of the app. The port can be changed by editing the ``docker-compose.yml`` file.
+
+
 The code is in a volume that is shared between your workstation and the app container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
 
 However, if the requirements files change, it is important that you rebuild the app container for those packages to be installed. This is something that could happen when switching between feature branches, or when pulling updates from the remote.
@@ -196,7 +202,7 @@ However, if the requirements files change, it is important that you rebuild the 
   $ docker-compose rm app
 
   # rebuild the app container
-  $ docker-compose build app # under some circumstances, you may need to use the --no-cache switch
+  $ docker-compose build app # under some circumstances, you may need to use the --no-cache switch, e.g. upstream changes to packages the app requires
 
   # start the app
   $ docker-compose up -d db app

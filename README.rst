@@ -19,7 +19,7 @@ due to its widespread use in the digital libraries world.
 Dependencies
 ------------
 
-* Python 2.6+ (not Python 3)
+* Python 2.7+ (not Python 3)
 * Django (tested on 1.7-1.10; 1.3 or higher required)
 * lxml (requires libxml2-dev to be installed on your system)
 

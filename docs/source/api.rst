@@ -189,9 +189,9 @@ Now, in order to send the event to the Event Service, it must be wrapped in an
 Atom entry, so the following Atom wrapper XML tree is created::
 
     <entry xmlns="http://www.w3.org/2005/Atom">
-        <title>PREMIS event entry for object_123</title>
-        <id>PREMIS event entry for object_123</id>
-        <updated>2011‐01‐27T16:40:30Z</updated>
+        <title>9e42cbd3cc3b4dfc888522036bbc4491</title>
+        <id>http://localhost:9999/APP/event/9e42cbd3cc3b4dfc888522036bbc4491/</id>
+        <updated>2017-05-13T14:14:55Z</updated>
         <author>
             <name>Object Verification Script</name>
         </author>

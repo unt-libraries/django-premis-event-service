@@ -12,14 +12,12 @@ prepare your Event Service for use.
 Manage User Accounts
 ====================
 
-At this point, you might only have one user account in your system (which is 
-the superuser account created when you ran ``python manage.py syncdb`` during 
-installation). 
+To create an admin account, run ``python manage.py createsuperuser`` and follow the prompts.
 
 To manage or create other user accounts, do the following:
 
 1. Visit the Django admin interface (``http://[host]/admin/``) in a web browser.
-2. Log in using your superuser account (if you haven't already).
+2. Log in using your superuser account.
 3. Click **Users**. This takes you to the list of Users.
 4. Click the **Add user** button near the top-right corner of the page.
 5. Fill and submit the form.

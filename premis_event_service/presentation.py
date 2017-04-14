@@ -5,8 +5,13 @@ from urlparse import urlparse
 from lxml import etree
 from django.shortcuts import get_object_or_404
 
-from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
-from codalib.xsdatetime import xsDateTime_parse, xsDateTime_format, localize_datetime
+from codalib.bagatom import (getValueByName,
+                             getNodeByName,
+                             getNodesByName,
+                             updateObjectFromXML)
+from codalib.xsdatetime import (xsDateTime_parse,
+                                xsDateTime_format,
+                                localize_datetime)
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from premis_event_service import settings
 import collections
@@ -35,7 +40,7 @@ translateDict['linking_agent_identifier_value'] = [
 
 xpath_map = collections.OrderedDict()
 xpath_map['@namespaces'] = PREMIS_NSMAP
-xpath_map['event_identifier_type'] = 'premis:eventIdentifier/eventIdentifierType'
+xpath_map['event_identifier_type'] = 'premis:eventIdentifier/premis:eventIdentifierType'
 xpath_map['event_identifier'] = 'premis:eventIdentifier/premis:eventIdentifierValue'
 xpath_map['event_type'] = 'premis:eventType'
 xpath_map['event_date_time'] = 'premis:eventDateTime'
@@ -62,9 +67,7 @@ def premisEventXMLToObject(eventXML):
     Event XML -> create Event object
     """
 
-    newEventObject = Event()
-    for fieldName, chain in translateDict.iteritems():
-        doSimpleXMLAssignment(newEventObject, fieldName, eventXML, chain)
+    newEventObject = updateObjectFromXML(eventXML, Event(), xpath_map)
     linkingObjectIDNodes = getNodesByName(eventXML, "linkingObjectIdentifier")
     try:
         Event.objects.get(event_identifier=newEventObject.event_identifier)

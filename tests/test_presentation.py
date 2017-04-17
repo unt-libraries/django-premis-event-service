@@ -48,6 +48,22 @@ class TestPremisEventXMLToObject:
         event = presentation.premisEventXMLToObject(tree)
         assert isinstance(event, models.Event)
 
+    def test_returns_event_without_some_elements(self):
+        # The event XML is valid but lacks some elements.
+        obj_xml = """<?xml version="1.0"?>
+            <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
+                <premis:eventIdentifier>
+                    <premis:eventIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID</premis:eventIdentifierType>
+                    <premis:eventIdentifierValue>1a81d172ce8f465fbcb52d146485f882</premis:eventIdentifierValue>
+                </premis:eventIdentifier>
+                <premis:eventType>http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck</premis:eventType>
+                <premis:eventDateTime>2017-05-13T09:14:55-05:00</premis:eventDateTime>
+            </premis:event>
+        """
+        tree = etree.fromstring(obj_xml)
+        event = presentation.premisEventXMLToObject(tree)
+        assert isinstance(event, models.Event)
+
     def test_sets_event_type(self, event_xml):
         tree = etree.fromstring(event_xml.obj_xml)
         event = presentation.premisEventXMLToObject(tree)

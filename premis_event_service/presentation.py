@@ -304,22 +304,3 @@ def objectToPremisAgentXML(agentObject, webRoot):
     agentType.text = [tup for tup in AGENT_TYPE_CHOICES if
                       tup[0] == agentObject.agent_type][0][1]
     return agentXML
-
-
-def doSimpleXMLAssignment(recordObject, fieldName, node, chain):
-    """
-    """
-
-    if not isinstance(chain, list) and not isinstance(chain, tuple):
-        chain = [chain]
-    currentNode = getNodeByName(node, chain[0])
-    chain = chain[1:]
-    for i in range(len(chain)):
-        chainItem = chain[i]
-        currentNode = getNodeByName(currentNode, chainItem)
-    if currentNode is not None and currentNode.text:
-        value = currentNode.text.strip()
-    else:
-        value = None
-    if value:
-        setattr(recordObject, fieldName, value)

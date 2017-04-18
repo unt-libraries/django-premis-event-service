@@ -48,6 +48,22 @@ class TestPremisEventXMLToObject:
         event = presentation.premisEventXMLToObject(tree)
         assert isinstance(event, models.Event)
 
+    def test_returns_event_without_some_elements(self):
+        # The event XML is valid but lacks some elements.
+        obj_xml = """<?xml version="1.0"?>
+            <premis:event xmlns:premis="info:lc/xmlns/premis-v2">
+                <premis:eventIdentifier>
+                    <premis:eventIdentifierType>http://purl.org/net/untl/vocabularies/identifier-qualifiers/#UUID</premis:eventIdentifierType>
+                    <premis:eventIdentifierValue>1a81d172ce8f465fbcb52d146485f882</premis:eventIdentifierValue>
+                </premis:eventIdentifier>
+                <premis:eventType>http://purl.org/net/untl/vocabularies/preservationEvents/#fixityCheck</premis:eventType>
+                <premis:eventDateTime>2017-05-13T09:14:55-05:00</premis:eventDateTime>
+            </premis:event>
+        """
+        tree = etree.fromstring(obj_xml)
+        event = presentation.premisEventXMLToObject(tree)
+        assert isinstance(event, models.Event)
+
     def test_sets_event_type(self, event_xml):
         tree = etree.fromstring(event_xml.obj_xml)
         event = presentation.premisEventXMLToObject(tree)
@@ -624,104 +640,3 @@ class TestObjectToPremisAgentXML:
         agent = factories.AgentFactory()
         agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
         premis_schema.assert_(agent_xml)
-
-
-class TestDoSimpleXMLAssignment:
-
-    @pytest.fixture
-    def record_obj(self):
-        class Record(object):
-            value = None
-        return Record()
-
-    def test_attribute_not_set_when_element_value_is_none(self, record_obj):
-        tree = etree.fromstring(
-            """<root>
-                <element/>
-            </root>
-            """
-        )
-
-        chain = ['element']
-
-        record_obj.value = 10
-        presentation.doSimpleXMLAssignment(record_obj, 'd', tree, chain)
-        assert record_obj.value == 10
-
-    def test_without_nested_elements(self, record_obj):
-        tree = etree.fromstring(
-            """<root>
-                <element>1</element>
-            </root>
-            """
-        )
-
-        chain = ['element']
-
-        # Since the function mutates the object, we will verify that the
-        # attribute is the expected value before the function call.
-        assert record_obj.value is None
-        presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
-        assert record_obj.value == '1'
-
-    def test_chain_is_name_of_element(self, record_obj):
-        tree = etree.fromstring(
-            """<root>
-                <element>1</element>
-            </root>
-            """
-        )
-
-        chain = 'element'
-
-        assert record_obj.value is None
-        presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
-        assert record_obj.value == '1'
-
-    def test_with_one_nested_element(self, record_obj):
-        tree = etree.fromstring(
-            """<root>
-                <element>
-                    <subelement>1</subelement>
-                </element>
-            </root>
-            """
-        )
-
-        chain = ['element', 'subelement']
-
-        assert record_obj.value is None
-        presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
-        assert record_obj.value == '1'
-
-    def test_with_two_nested_elements(self, record_obj):
-        tree = etree.fromstring(
-            """<root>
-                <element>
-                    <subelement>
-                        <subsubelement>1</subsubelement>
-                    </subelement>
-                </element>
-            </root>
-            """
-        )
-
-        chain = ['element', 'subelement', 'subsubelement']
-
-        assert record_obj.value is None
-        presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
-        assert record_obj.value == '1'
-
-    def test_element_text_is_stripped(self, record_obj):
-        tree = etree.fromstring(
-            """<root>
-                <element>     1     </element>
-            </root>
-            """
-        )
-
-        chain = ['element']
-
-        assert record_obj.value is None
-        presentation.doSimpleXMLAssignment(record_obj, 'value', tree, chain)
-        assert record_obj.value == '1'

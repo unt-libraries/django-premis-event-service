@@ -5,8 +5,13 @@ from urlparse import urlparse
 from lxml import etree
 from django.shortcuts import get_object_or_404
 
-from codalib.bagatom import getValueByName, getNodeByName, getNodesByName
-from codalib.xsdatetime import xsDateTime_parse, xsDateTime_format, localize_datetime
+from codalib.bagatom import (getValueByName,
+                             getNodeByName,
+                             getNodesByName,
+                             updateObjectFromXML)
+from codalib.xsdatetime import (xsDateTime_parse,
+                                xsDateTime_format,
+                                localize_datetime)
 from .models import Event, Agent, LinkObject, AGENT_TYPE_CHOICES
 from premis_event_service import settings
 import collections
@@ -35,7 +40,7 @@ translateDict['linking_agent_identifier_value'] = [
 
 xpath_map = collections.OrderedDict()
 xpath_map['@namespaces'] = PREMIS_NSMAP
-xpath_map['event_identifier_type'] = 'premis:eventIdentifier/eventIdentifierType'
+xpath_map['event_identifier_type'] = 'premis:eventIdentifier/premis:eventIdentifierType'
 xpath_map['event_identifier'] = 'premis:eventIdentifier/premis:eventIdentifierValue'
 xpath_map['event_type'] = 'premis:eventType'
 xpath_map['event_date_time'] = 'premis:eventDateTime'
@@ -62,9 +67,7 @@ def premisEventXMLToObject(eventXML):
     Event XML -> create Event object
     """
 
-    newEventObject = Event()
-    for fieldName, chain in translateDict.iteritems():
-        doSimpleXMLAssignment(newEventObject, fieldName, eventXML, chain)
+    newEventObject = updateObjectFromXML(eventXML, Event(), xpath_map)
     linkingObjectIDNodes = getNodesByName(eventXML, "linkingObjectIdentifier")
     try:
         Event.objects.get(event_identifier=newEventObject.event_identifier)
@@ -301,22 +304,3 @@ def objectToPremisAgentXML(agentObject, webRoot):
     agentType.text = [tup for tup in AGENT_TYPE_CHOICES if
                       tup[0] == agentObject.agent_type][0][1]
     return agentXML
-
-
-def doSimpleXMLAssignment(recordObject, fieldName, node, chain):
-    """
-    """
-
-    if not isinstance(chain, list) and not isinstance(chain, tuple):
-        chain = [chain]
-    currentNode = getNodeByName(node, chain[0])
-    chain = chain[1:]
-    for i in range(len(chain)):
-        chainItem = chain[i]
-        currentNode = getNodeByName(currentNode, chainItem)
-    if currentNode is not None and currentNode.text:
-        value = currentNode.text.strip()
-    else:
-        value = None
-    if value:
-        setattr(recordObject, fieldName, value)

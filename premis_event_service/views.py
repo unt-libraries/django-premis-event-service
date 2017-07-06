@@ -235,7 +235,7 @@ def json_event_search(request):
     paginated_entries = paginate_events(valid, request, per_page=EVENT_SEARCH_PER_PAGE)
     args = {}
     args.update(valid)
-    args = {k:v for k,v in args.items() if v is not None}
+    args = {k: v for k, v in args.items() if v is not None}
     events = paginated_entries['events']
     total_events = Event.objects.all().count()
     if events.count() is not 0:

@@ -1,3 +1,10 @@
+1.2.3
+-----
+
+* Fix paging for event search results using linked object id as filter
+* Gracefully fail on empty search result set using linked object id as filter
+
+
 1.2.2
 -----
 

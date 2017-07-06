@@ -101,7 +101,10 @@ def last_page_ordinal(query_set, per_page=20):
     # or use a step in the slice. And if you don't
     # evaluate the queryset, you can't get the
     # ordinal of the last item in the result set.
-    evt = query_set.order_by('ordinal')[0:per_page:1][-1]
+    try:
+        evt = query_set.order_by('ordinal')[0:per_page:1][-1]
+    except:
+        return 0
     return evt.ordinal
 
 

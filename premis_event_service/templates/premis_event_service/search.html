@@ -75,13 +75,13 @@
     <div class="pagination pagination-centered">
         <ul>
             {% if page != 1 %}
-                <li><a href="?page=1&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}">first</a></li>
+                <li><a href="?page=1&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linked_object_id|urlencode }}">first</a></li>
             {% else %}
                 <li class="disabled"><span>first</span></li>
             {% endif %}
 
             {% if page > 1 %}
-            <li><a href="?page={{ previous_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ prev_page_ord }}">prev</a></li>
+            <li><a href="?page={{ previous_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linked_object_id|urlencode }}&amp;min_ordinal={{ prev_page_ord }}">prev</a></li>
             {% else %}
                 <li class="disabled"><span>prev</span></li>
             {% endif %}
@@ -92,7 +92,7 @@
 
                 {% else %}
                     <li>
-                        <a href="?page={{ thispage }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ page_min_ord }}">
+                        <a href="?page={{ thispage }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linked_object_id|urlencode }}&amp;min_ordinal={{ page_min_ord }}">
                             {{ thispage }}
                         </a>
                     </li>
@@ -100,13 +100,13 @@
             {% endfor %}
 
             {% if page < max_page %}
-            <li><a href="?page={{ next_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ next_page_ord }}">next</a></li>
+            <li><a href="?page={{ next_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linked_object_id|urlencode }}&amp;min_ordinal={{ next_page_ord }}">next</a></li>
             {% else %}
                 <li class="disabled"><span>next</span></li>
             {% endif %}
 
             {% if page != max_page %}
-            <li><a href="?page={{ max_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linking_object_id|urlencode }}&amp;min_ordinal={{ last_page_ordinal }}">last</a></li>
+            <li><a href="?page={{ max_page }}&amp;event_outcome={{ request.GET.event_outcome|urlencode }}&amp;event_type={{ request.GET.event_type|urlencode }}&amp;start_date={{ request.GET.start_date|urlencode }}&amp;end_date={{ request.GET.end_date|urlencode }}&amp;linked_object_id={{ request.GET.linked_object_id|urlencode }}&amp;min_ordinal={{ last_page_ordinal }}">last</a></li>
             {% else %}
                 <li class="disabled"><span>last</span></li>
             {% endif %}

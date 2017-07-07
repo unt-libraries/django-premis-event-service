@@ -575,7 +575,6 @@ def app_event(request, identifier=None):
             except FieldError:
                 # If order_by fails, revert to natural order.
                 events = unordered_events
-        debug_list = []
         endTime = datetime.now()
         if request.GET:
             page = int(request.GET['page']) if request.GET.get('page') else 1
@@ -583,7 +582,7 @@ def app_event(request, identifier=None):
             page = 1
         try:
             atomFeed = makeObjectFeed(
-                paginator=Paginator(events, 20),
+                paginator=Paginator(events, 200),
                 objectToXMLFunction=objectToPremisEventXML,
                 feedId=request.path[1:],
                 webRoot='http://%s' % request.META.get('HTTP_HOST'),
@@ -600,12 +599,6 @@ def app_event(request, identifier=None):
                 status=400,
                 content_type='text/plain'
             )
-        comment = etree.Comment(
-            "\n".join(debug_list) +
-            "\nTime prior to filtering is %s, time after filtering is %s" %
-            (startTime, endTime)
-        )
-        atomFeed.append(comment)
         atomFeedText = XML_HEADER % etree.tostring(atomFeed, pretty_print=True)
         resp = HttpResponse(atomFeedText, content_type="application/atom+xml")
         resp.status_code = 200

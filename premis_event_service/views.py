@@ -580,7 +580,7 @@ def app_event(request, identifier=None):
             page = 1
         try:
             atomFeed = makeObjectFeed(
-                paginator=Paginator(events, 200),
+                paginator=Paginator(events, EVENT_SEARCH_PER_PAGE),
                 objectToXMLFunction=objectToPremisEventXML,
                 feedId=request.path[1:],
                 webRoot='http://%s' % request.META.get('HTTP_HOST'),

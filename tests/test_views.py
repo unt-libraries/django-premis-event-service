@@ -776,7 +776,9 @@ class TestJsonEventSearch:
         request = rf.get('/')
         response = views.json_event_search(request)
         data = json.loads(response.content)
-        assert len(data) == 0
+        assert data.get('feed') is not None
+        assert data.get('feed', {}).get('entry') is not None
+        assert not len(data.get('feed', {}).get('entry'))
         assert response.status_code == 200
 
     def test_results_per_page(self, rf):

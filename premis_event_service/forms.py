@@ -27,5 +27,5 @@ class EventSearchForm(forms.Form):
 
     linked_object_id = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Linked Object ID', 'class': 'input-medium'}),
-        max_length=20,
+        max_length=64,
         required=False)

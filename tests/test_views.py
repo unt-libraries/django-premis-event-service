@@ -782,11 +782,12 @@ class TestJsonEventSearch:
         assert response.status_code == 200
 
     def test_results_per_page(self, rf):
-        factories.EventFactory.create_batch(30)
+        per_page = self.RESULTS_PER_PAGE
+        factories.EventFactory.create_batch(per_page*4)
         request = rf.get('/')
         response = views.json_event_search(request)
         data = json.loads(response.content)
-        assert len(data['feed']['entry']) == min(self.RESULTS_PER_PAGE, 30)
+        assert len(data['feed']['entry']) == per_page
 
     def test_opensearch_query(self, rf):
         factories.EventFactory.create_batch(10)

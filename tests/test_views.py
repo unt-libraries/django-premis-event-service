@@ -402,7 +402,7 @@ class TestAppAgent:
 class TestAppEvent:
     """Tests for views.app_event."""
     CONTENT_TYPE = 'application/atom+xml'
-    RESULTS_PER_PAGE = 20
+    RESULTS_PER_PAGE = views.EVENT_SEARCH_PER_PAGE
 
     def response_has_event(self, response, event):
         """True if the event is the only event in the response content."""

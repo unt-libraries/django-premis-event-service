@@ -533,7 +533,6 @@ def app_event(request, identifier=None):
     elif request.method == 'GET' and not identifier:
         # negotiate the details of our feed here
         events = Event.objects.all()
-        startTime = datetime.now()
         # parse the request get variables and filter the search
         if request.GET.get('start_date'):
             start_date = datetime.strptime(
@@ -575,7 +574,6 @@ def app_event(request, identifier=None):
             except FieldError:
                 # If order_by fails, revert to natural order.
                 events = unordered_events
-        endTime = datetime.now()
         if request.GET:
             page = int(request.GET['page']) if request.GET.get('page') else 1
         else:

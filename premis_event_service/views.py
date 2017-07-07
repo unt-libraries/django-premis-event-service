@@ -194,7 +194,8 @@ def paginate_events(valid, request, per_page=20):
         'page_max_ordinal': page_max_ord, 'page_min_ordinal': page_min_ord,
         'last_page_ordinal': last_page_ord, 'page': page, 'max_page': max_page,
         'per_page': per_page, 'next_page': page+1, 'previous_page': page-1,
-        'next_page_ord': next_page_ord, 'prev_page_ord': prev_page_ord
+        'next_page_ord': next_page_ord, 'prev_page_ord': prev_page_ord,
+        'total_events': total_events
     }
     return context
 
@@ -229,111 +230,108 @@ def json_event_search(request):
             status=400,
             content_type="text/plain"
         )
-    # make a results list to pass to the view
-    event_json = []
     # paginate
-    paginated_entries = paginate_events(valid, request, per_page=EVENT_SEARCH_PER_PAGE)
+    paginated = paginate_events(
+        valid, request, per_page=EVENT_SEARCH_PER_PAGE
+    )
     args = {}
     args.update(valid)
     args = {k: v for k, v in args.items() if v is not None}
-    events = paginated_entries['events']
-    total_events = Event.objects.all().count()
-    if events.count() is not 0:
-        # prepare a results set and then append each event to it as a dict
-        rel_links = []
-        entries = []
-        # we will ALWAYS have a self, first and last relative link
-        args['page'] = paginated_entries['page']
-        current_page_args = args.copy()
-        args['page'] = 1
-        first_page_args = args.copy()
-        args['page'] = paginated_entries['max_page']
-        last_page_args = args.copy()
-        # store links for adjacent events relative to the current event
-        rel_links.extend(
+    events = paginated['events']
+    total_events = paginated.get('total_events', 0)
+    # prepare a results set and then append each event to it as a dict
+    rel_links = []
+    entries = []
+    # we will ALWAYS have a self, first and last relative link
+    args_first, args_cur, args_last = (args.copy() for _ in range(3))
+    args_first['page'] = 1
+    args_cur['page'] = paginated['page']
+    args_last['page'] = paginated['max_page'] or 1
+    # store links for adjacent events relative to the current event
+    rel_links.extend(
+        [
+            {
+                'rel': 'self',
+                'href': "http://%s%s?%s" % (
+                    request.META.get('HTTP_HOST'),
+                    request.path,
+                    urllib.urlencode(args_cur)
+                )
+            },
+            {
+                'rel': 'first',
+                'href': "http://%s%s?%s" % (
+                    request.META.get('HTTP_HOST'),
+                    request.path,
+                    urllib.urlencode(args_first)
+                )
+            },
+            {
+                'rel': 'last',
+                'href': "http://%s%s?%s" % (
+                    request.META.get('HTTP_HOST'),
+                    request.path,
+                    urllib.urlencode(args_last)
+                )
+            },
+        ]
+    )
+    # if we are past the first event, we can always add a previous event
+    if paginated['page'] > 1:
+        args['page'] = args_cur['page'] - 1
+        rel_links.append(
+            {
+                'rel': 'previous',
+                'href': "http://%s%s?%s" % (
+                    request.META.get('HTTP_HOST'),
+                    request.path,
+                    urllib.urlencode(args)
+                )
+            },
+        )
+    # if our event is not the last in the list, we can add a next event
+    if paginated['page'] < paginated['max_page']:
+        args['page'] = args_cur['page'] + 1
+        rel_links.append(
+            {
+                'rel': 'next',
+                'href': "http://%s%s?%s" % (
+                    request.META.get('HTTP_HOST'),
+                    request.path,
+                    urllib.urlencode(args)
+                )
+            },
+        )
+    for entry in events:
+        linked_objects = ", ".join(
+            entry.linking_objects.values_list(
+                'object_identifier',
+                flat=True
+            )
+        )
+        entries.extend(
             [
                 {
-                    'rel': 'self',
-                    'href': "http://%s%s?%s" % (
-                        request.META.get('HTTP_HOST'),
-                        request.path,
-                        urllib.urlencode(current_page_args)
-                    )
+                    'linked_objects': linked_objects,
+                    'identifier': entry.event_identifier,
+                    'event_type': entry.event_type,
+                    'outcome': entry.event_outcome,
+                    'date': str(entry.event_date_time),
                 },
-                {
-                    'rel': 'first',
-                    'href': "http://%s%s?%s" % (
-                        request.META.get('HTTP_HOST'),
-                        request.path,
-                        urllib.urlencode(first_page_args)
-                    )
-                },
-                {
-                    'rel': 'last',
-                    'href': "http://%s%s?%s" % (
-                        request.META.get('HTTP_HOST'),
-                        request.path,
-                        urllib.urlencode(last_page_args)
-                    )
-                },
-            ]
+            ],
         )
-        # if we are past the first event, we can always add a previous event
-        if paginated_entries['page'] > 1:
-            args['page'] = current_page_args['page'] - 1
-            rel_links.append(
-                {
-                    'rel': 'previous',
-                    'href': "http://%s%s?%s" % (
-                        request.META.get('HTTP_HOST'),
-                        request.path,
-                        urllib.urlencode(args)
-                    )
-                },
-            )
-        # if our event is not the last in the list, we can add a next event
-        if paginated_entries['page'] < paginated_entries['max_page']:
-            args['page'] = current_page_args['page'] + 1
-            rel_links.append(
-                {
-                    'rel': 'next',
-                    'href': "http://%s%s?%s" % (
-                        request.META.get('HTTP_HOST'),
-                        request.path,
-                        urllib.urlencode(args)
-                    )
-                },
-            )
-        for entry in events:
-            linked_objects = ", ".join(
-                entry.linking_objects.values_list(
-                    'object_identifier',
-                    flat=True
-                )
-            )
-            entries.extend(
-                [
-                    {
-                        'linked_objects': linked_objects,
-                        'identifier': entry.event_identifier,
-                        'event_type': entry.event_type,
-                        'outcome': entry.event_outcome,
-                        'date': str(entry.event_date_time),
-                    },
-                ],
-            )
-        event_json = {
-            'feed': {
-                'entry': entries,
-                'link': rel_links,
-                'opensearch:Query': request.GET,
-                "opensearch:itemsPerPage":
-                    paginated_entries['per_page'],
-                "opensearch:startIndex": "1",
-                "opensearch:totalResults": total_events,
-                "title": "Premis Event Search"
-            }
+    event_json = {
+        'feed': {
+            'entry': entries,
+            'link': rel_links,
+            'opensearch:Query': request.GET,
+            "opensearch:itemsPerPage":
+                paginated['per_page'],
+            "opensearch:startIndex": "1",
+            "opensearch:totalResults": total_events,
+            "title": "Premis Event Search"
         }
+    }
     response = HttpResponse(content_type='application/json')
     json.dump(
         event_json,

@@ -770,7 +770,7 @@ class TestJsonEventSearch:
         assert response.get('Content-Type') == self.CONTENT_TYPE
 
     def test_no_results(self, rf):
-        """Check that response content when there are no Events
+        """Check the response content when there are no Events
         in the database.
         """
         request = rf.get('/')

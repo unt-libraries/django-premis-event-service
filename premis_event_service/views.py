@@ -31,7 +31,7 @@ MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = xpath_map
 XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
 
-EVENT_SEARCH_PER_PAGE = 20
+EVENT_SEARCH_PER_PAGE = 200
 
 
 def get_request_body(request):

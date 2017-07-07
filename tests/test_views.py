@@ -682,7 +682,7 @@ class TestAppEvent:
 
 class TestEventSearch:
     """Tests for views.event_search."""
-    RESULTS_PER_PAGE = 20
+    RESULTS_PER_PAGE = views.EVENT_SEARCH_PER_PAGE
 
     def response_has_event(self, response, event):
         """True if the event is the only Event in the response context."""
@@ -734,7 +734,7 @@ class TestEventSearch:
 
 class TestJsonEventSearch:
     """Tests for views.json_event_search."""
-    RESULTS_PER_PAGE = 20
+    RESULTS_PER_PAGE = views.EVENT_SEARCH_PER_PAGE
     CONTENT_TYPE = 'application/json'
     REL_SELF = 'self'
     REL_FIRST = 'first'
@@ -786,7 +786,7 @@ class TestJsonEventSearch:
         request = rf.get('/')
         response = views.json_event_search(request)
         data = json.loads(response.content)
-        assert len(data['feed']['entry']) == self.RESULTS_PER_PAGE
+        assert len(data['feed']['entry']) == min(self.RESULTS_PER_PAGE, 30)
 
     def test_opensearch_query(self, rf):
         factories.EventFactory.create_batch(10)

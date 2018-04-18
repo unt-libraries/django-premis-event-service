@@ -1,3 +1,9 @@
+1.2.5
+-----
+
+* Removed bare excepts for flake8 ([#89](
+https://github.com/unt-libraries/django-premis-event-service/pull/89))
+
 1.2.4
 -----
 

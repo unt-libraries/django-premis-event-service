@@ -14,7 +14,7 @@ install_requires = [
 
 setup(
     name="django-premis-event-service",
-    version="1.2.4",
+    version="1.2.5",
     packages=find_packages(exclude=["tests", ]),
     include_package_data=True,
     license="BSD",

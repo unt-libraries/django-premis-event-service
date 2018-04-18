@@ -103,7 +103,7 @@ def last_page_ordinal(query_set, per_page=20):
     # ordinal of the last item in the result set.
     try:
         evt = query_set.order_by('ordinal')[0:per_page:1][-1]
-    except:
+    except Exception:
         return 0
     return evt.ordinal
 
@@ -684,7 +684,7 @@ def app_event(request, identifier=None):
         # attempt to retrieve record -- error if unable
         try:
             event_object = Event.objects.get(event_identifier=identifier)
-        except:
+        except Exception:
             return HttpResponseNotFound(
                 "Unable to Delete. There is no event for identifier %s.\n"
                 % identifier
@@ -751,7 +751,7 @@ def app_agent(request, identifier=None):
             entry_etree = etree.XML(request_body)
             try:
                 agent_object = premisAgentXMLgetObject(entry_etree)
-            except:
+            except Exception:
                 pass
             else:
                 return HttpResponse(

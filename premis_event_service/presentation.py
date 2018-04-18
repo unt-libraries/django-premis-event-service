@@ -80,7 +80,7 @@ def premisEventXMLToObject(eventXML):
     # create our own before we save.
     try:
         uuid.UUID(newEventObject.event_identifier)
-    except Exception, e:
+    except Exception:
         newEventObject.event_identifier = uuid.uuid4().hex
     if not isinstance(newEventObject.event_date_time, datetime):
         newEventObject.event_date_time = xsDateTime_parse(

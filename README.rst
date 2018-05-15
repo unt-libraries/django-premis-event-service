@@ -10,10 +10,10 @@ structured, centralized, and searchable manner.
 Purpose
 -------
 
-The purpose of this application is to provide a straightforward way to send 
-PREMIS-formatted events to a central location to be stored and retrieved. In 
-this fashion, it can serve as an event logger for any number of services that 
-happen to wish to use it. PREMIS is chosen as the underlying format for events 
+The purpose of this application is to provide a straightforward way to send
+PREMIS-formatted events to a central location to be stored and retrieved. In
+this fashion, it can serve as an event logger for any number of services that
+happen to wish to use it. PREMIS is chosen as the underlying format for events
 due to its widespread use in the digital libraries world.
 
 Dependencies
@@ -22,6 +22,7 @@ Dependencies
 * Python 2.7+ (not Python 3)
 * Django (tested on 1.7-1.10; 1.3 or higher required)
 * lxml (requires libxml2-dev to be installed on your system)
+* pipenv
 
 
 Documentation
@@ -31,9 +32,9 @@ Documentation, including installation instructions, can be viewed online at:
 
 http://premis-event-service.readthedocs.org/
 
-The documentation is also browsable locally from within the ``docs`` 
-directory of this repository. You can read the source files in plain text 
-from the ``docs/source`` directory, or generate your own local copy of the 
+The documentation is also browsable locally from within the ``docs``
+directory of this repository. You can read the source files in plain text
+from the ``docs/source`` directory, or generate your own local copy of the
 HTML files by doing the following:
 
 1. Make sure Sphinx is installed (``pip install sphinx``)
@@ -51,16 +52,17 @@ See LICENSE.
 Acknowledgements
 ----------------
 
-The Premis Event Service was developed at the UNT Libraries and has been worked on 
+The Premis Event Service was developed at the UNT Libraries and has been worked on
 by a number of developers over the years including
 
-* Kurt Nordstrom   
-* Joey Liechty   
-* Lauren Ko   
-* Stephen Eisenhauer   
+* Kurt Nordstrom
+* Joey Liechty
+* Lauren Ko
+* Stephen Eisenhauer
 * Mark Phillips
 * Damon Kelley
 * Reed Underwood
+* Andromeda Yelton (MIT)
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 
@@ -81,27 +83,23 @@ Clone the repository
   $ git clone https://github.com/unt-libraries/django-premis-event-service.git # check the repo for the latest official release if you don't want the development version at HEAD on the master branch
   $ cd django-premis-event-service
 
-Create a virtualenv_ environment
-""""""""""""""""""""""""""""""""
 
-.. _virtualenv: https://virtualenv.pypa.io/en/stable/
+Install the requirements using pipenv_
+""""""""""""""""""""""""""""""""""""""
 
-.. code-block :: sh
-
-    $ mkvirtualenv premis-event-service # to create and enter the virtualenv
-    (premis-event-service) $ deactivate # to exit the virtualenv
-    $ workon premis-event-service # to reactivate the virtualenv
-
-
-Install the requirements using pip_
-"""""""""""""""""""""""""""""""""""
-
-.. _pip: https://pip.pypa.io/en/stable/
+.. _pipenv: https://pipenv.readthedocs.io/en/latest/
 
 .. code-block :: sh
 
-    (premis-event-service) $ pip install -r requirements.txt # install dependencies from text file
+    (premis-event-service) $ pipenv --python 2.7.15 (to create the virtualenv)
+    (premis-event-service) $ pipenv install --dev
+    (premis-event-service) $ pipenv shell (to enter the virtualenv)
+    (premis-event-service) $ exit (to leave the virtualenv)
 
+If your Python 2.7 has a different minor version number than 15, you can
+specify that and it may still work. However, if you're using OS X Sierra or
+later, you will need to specify 2.7.15, because a change in Mac handling of
+OpenSSL broke pip for earlier versions of Python.
 
 Run the tests using tox_
 """"""""""""""""""""""""
@@ -223,5 +221,4 @@ To run the tests via Tox, use this command.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm app test 
-
+  $ docker-compose run --rm app test

@@ -1,4 +1,4 @@
-lxml==3.0.0
+lxml
 codalib==1.0.3
 MySQL-python
 sqlparse

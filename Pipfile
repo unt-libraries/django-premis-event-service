@@ -1,21 +1,15 @@
 [[source]]
-
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 lxml = "~=3.3.0"
 codalib = "==1.0.3"
 sqlparse = "*"
-django = "~=1.8.0"
 mysql-python = "*"
 
-
 [dev-packages]
-
 django-debug-toolbar = "*"
 tox = "*"
 pytest = "==2.7.3"
@@ -25,7 +19,5 @@ factory-boy = "==2.5.2"
 "flake8" = "*"
 pipenv = "*"
 
-
 [requires]
-
 python_version = "2.7"

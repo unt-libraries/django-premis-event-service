@@ -97,9 +97,12 @@ Install the requirements using pipenv_
     (premis-event-service) $ exit (to leave the virtualenv)
 
 If your Python 2.7 has a different minor version number than 15, you can
-specify that and it may still work. However, if you're using OS X Sierra or
+specify that and it should still work. However, if you're using OS X Sierra or
 later, you will need to specify 2.7.15, because a change in Mac handling of
 OpenSSL broke pip for earlier versions of Python.
+
+If you need to generate a requirements.txt file, you can do so with ``pipenv lock -r``.
+
 
 Run the tests using tox_
 """"""""""""""""""""""""

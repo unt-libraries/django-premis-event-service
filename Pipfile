@@ -8,7 +8,7 @@ lxml = "~=3.3.0"
 codalib = "==1.0.3"
 sqlparse = "*"
 mysql-python = "*"
-django = "~=1.10.0"
+Django = "~=1.8"
 
 [dev-packages]
 django-debug-toolbar = "*"
@@ -18,7 +18,6 @@ pytest-django = "==2.9.1"
 mock = "==1.3.0"
 factory-boy = "==2.5.2"
 "flake8" = "*"
-pipenv = "*"
 
 [requires]
 python_version = "2.7"

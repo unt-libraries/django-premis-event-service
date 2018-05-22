@@ -224,4 +224,4 @@ To run the tests via Tox, use this command.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm app test
+  $ docker-compose run --rm test

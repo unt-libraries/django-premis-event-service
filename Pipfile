@@ -13,9 +13,9 @@ Django = "~=1.8"
 [dev-packages]
 django-debug-toolbar = "*"
 tox = "*"
-pytest = "==2.5.1"
+pytest = "==3.5.1"
 pytest-django = "==2.9.1"
-mock = "==2.0.0"
+mock = "==1.3.0"
 factory-boy = "==2.5.2"
 "flake8" = "*"
 

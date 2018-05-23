@@ -33,10 +33,10 @@ services:
     test:
         extends:
             service: base
-        entrypoint: tox -c /app/tox.mysql.ini
         environment:
             - DJANGO_SETTINGS_MODULE=tests.settings
             - PES_BACKEND=mysql
+        entrypoint: tox -c /app/tox.ini
         links:
             - db
         depends_on:

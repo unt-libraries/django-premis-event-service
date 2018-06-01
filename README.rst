@@ -91,17 +91,18 @@ Install the requirements using pipenv_
 
 .. code-block :: sh
 
-    (premis-event-service) $ pipenv --python 2.7.15 (to create the virtualenv)
-    (premis-event-service) $ pipenv install --dev
-    (premis-event-service) $ pipenv shell (to enter the virtualenv)
-    (premis-event-service) $ exit (to leave the virtualenv)
+    $ pipenv --python 2.7 # (to create the virtualenv)
+    $ pipenv install --dev
+    $ pipenv shell # (to enter the virtualenv)
+    $ exit # (to leave the virtualenv)
 
-If your Python 2.7 has a different minor version number than 15, you can
-specify that and it should still work. However, if you're using OS X Sierra or
-later, you will need to specify 2.7.15, because a change in Mac handling of
-OpenSSL broke pip for earlier versions of Python.
+If you're using OS X Sierra or later, you will need to specify 2.7.15, because
+a change in Mac handling of OpenSSL broke pip for earlier versions of Python.
+(This will show up as an error saying you have the wrong version of TLS when
+you try to use pip/pipenv.)
 
-If you need to generate a requirements.txt file, you can do so with ``pipenv lock -r``.
+If you need to generate a requirements.txt file, you can do so with
+``pipenv lock -r > requirements.txt``.
 
 
 Run the tests using tox_
@@ -111,7 +112,7 @@ Run the tests using tox_
 
 .. code-block :: sh
 
-    (premis-event-service) $ tox
+    $ tox
 
 
 Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.7-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
@@ -122,7 +123,7 @@ Apply the migrations
 
 .. code-block :: sh
 
-    (premis-event-service) $ python manage.py migrate
+    $ python manage.py migrate
 
 
 Start the development server
@@ -130,7 +131,7 @@ Start the development server
 
 .. code-block :: sh
 
-    (premis-event-service) $ python manage.py runserver 9999
+    $ python manage.py runserver 9999
 
 
 This will start the development server listening locally on port 9999. You may want to change the port number, passed as the first argument to the ``runserver`` command.

@@ -20,7 +20,7 @@ Dependencies
 ------------
 
 * Python 2.7+ (not Python 3)
-* Django (tested on 1.7-1.10; 1.3 or higher required)
+* Django (tested on 1.8-1.10; 1.3 or higher required)
 * lxml (requires libxml2-dev to be installed on your system)
 * pipenv
 
@@ -115,7 +115,7 @@ Run the tests using tox_
     $ tox
 
 
-Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.7-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
+Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.8-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
 
 
 Apply the migrations
@@ -193,7 +193,7 @@ Navigate to ``http://localhost:8000/event/`` to see the UI of the app. The port 
 
 The code is in a volume that is shared between your workstation and the app container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
 
-However, if the requirements files change, it is important that you rebuild the app container for those packages to be installed. This is something that could happen when switching between feature branches, or when pulling updates from the remote.
+However, if the Pipfile.lock changes, it is important that you rebuild the app container for those packages to be installed. This is something that could happen when switching between feature branches; when installing new dependencies during development; or when pulling updates from the remote.
 
 .. code-block :: sh
 

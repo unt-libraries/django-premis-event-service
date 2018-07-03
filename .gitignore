@@ -6,6 +6,8 @@ dist/
 build/
 __pycache__/
 .tox/
+.venv/
+.pytest_cache/
 
 db.sqlite3
 docs/build/

@@ -10,18 +10,19 @@ structured, centralized, and searchable manner.
 Purpose
 -------
 
-The purpose of this application is to provide a straightforward way to send 
-PREMIS-formatted events to a central location to be stored and retrieved. In 
-this fashion, it can serve as an event logger for any number of services that 
-happen to wish to use it. PREMIS is chosen as the underlying format for events 
+The purpose of this application is to provide a straightforward way to send
+PREMIS-formatted events to a central location to be stored and retrieved. In
+this fashion, it can serve as an event logger for any number of services that
+happen to wish to use it. PREMIS is chosen as the underlying format for events
 due to its widespread use in the digital libraries world.
 
 Dependencies
 ------------
 
 * Python 2.7+ (not Python 3)
-* Django (tested on 1.7-1.10; 1.3 or higher required)
+* Django (tested on 1.8-1.10; 1.3 or higher required)
 * lxml (requires libxml2-dev to be installed on your system)
+* pipenv
 
 
 Documentation
@@ -31,9 +32,9 @@ Documentation, including installation instructions, can be viewed online at:
 
 http://premis-event-service.readthedocs.org/
 
-The documentation is also browsable locally from within the ``docs`` 
-directory of this repository. You can read the source files in plain text 
-from the ``docs/source`` directory, or generate your own local copy of the 
+The documentation is also browsable locally from within the ``docs``
+directory of this repository. You can read the source files in plain text
+from the ``docs/source`` directory, or generate your own local copy of the
 HTML files by doing the following:
 
 1. Make sure Sphinx is installed (``pip install sphinx``)
@@ -51,16 +52,17 @@ See LICENSE.
 Acknowledgements
 ----------------
 
-The Premis Event Service was developed at the UNT Libraries and has been worked on 
+The Premis Event Service was developed at the UNT Libraries and has been worked on
 by a number of developers over the years including
 
-* Kurt Nordstrom   
-* Joey Liechty   
-* Lauren Ko   
-* Stephen Eisenhauer   
+* Kurt Nordstrom
+* Joey Liechty
+* Lauren Ko
+* Stephen Eisenhauer
 * Mark Phillips
 * Damon Kelley
 * Reed Underwood
+* Andromeda Yelton (MIT)
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 
@@ -81,26 +83,26 @@ Clone the repository
   $ git clone https://github.com/unt-libraries/django-premis-event-service.git # check the repo for the latest official release if you don't want the development version at HEAD on the master branch
   $ cd django-premis-event-service
 
-Create a virtualenv_ environment
-""""""""""""""""""""""""""""""""
 
-.. _virtualenv: https://virtualenv.pypa.io/en/stable/
+Install the requirements using pipenv_
+""""""""""""""""""""""""""""""""""""""
 
-.. code-block :: sh
-
-    $ mkvirtualenv premis-event-service # to create and enter the virtualenv
-    (premis-event-service) $ deactivate # to exit the virtualenv
-    $ workon premis-event-service # to reactivate the virtualenv
-
-
-Install the requirements using pip_
-"""""""""""""""""""""""""""""""""""
-
-.. _pip: https://pip.pypa.io/en/stable/
+.. _pipenv: https://pipenv.readthedocs.io/en/latest/
 
 .. code-block :: sh
 
-    (premis-event-service) $ pip install -r requirements.txt # install dependencies from text file
+    $ pipenv --python 2.7 # (to create the virtualenv)
+    $ pipenv install --dev
+    $ pipenv shell # (to enter the virtualenv)
+    $ exit # (to leave the virtualenv)
+
+If you're using OS X Sierra or later, you will need to specify 2.7.15, because
+a change in Mac handling of OpenSSL broke pip for earlier versions of Python.
+(This will show up as an error saying you have the wrong version of TLS when
+you try to use pip/pipenv.)
+
+If you need to generate a requirements.txt file, you can do so with
+``pipenv lock -r > requirements.txt``.
 
 
 Run the tests using tox_
@@ -110,10 +112,10 @@ Run the tests using tox_
 
 .. code-block :: sh
 
-    (premis-event-service) $ tox
+    $ tox
 
 
-Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.7-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
+Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.8-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
 
 
 Apply the migrations
@@ -121,7 +123,7 @@ Apply the migrations
 
 .. code-block :: sh
 
-    (premis-event-service) $ python manage.py migrate
+    $ python manage.py migrate
 
 
 Start the development server
@@ -129,7 +131,7 @@ Start the development server
 
 .. code-block :: sh
 
-    (premis-event-service) $ python manage.py runserver 9999
+    $ python manage.py runserver 9999
 
 
 This will start the development server listening locally on port 9999. You may want to change the port number, passed as the first argument to the ``runserver`` command.
@@ -191,7 +193,7 @@ Navigate to ``http://localhost:8000/event/`` to see the UI of the app. The port 
 
 The code is in a volume that is shared between your workstation and the app container, which means any edits you make on your workstation will also be reflected in the Docker container. No need to rebuild the container to pick up changes in the code.
 
-However, if the requirements files change, it is important that you rebuild the app container for those packages to be installed. This is something that could happen when switching between feature branches, or when pulling updates from the remote.
+However, if the Pipfile.lock changes, it is important that you rebuild the app container for those packages to be installed. This is something that could happen when switching between feature branches; when installing new dependencies during development; or when pulling updates from the remote.
 
 .. code-block :: sh
 
@@ -223,5 +225,4 @@ To run the tests via Tox, use this command.
 
 .. code-block :: sh
 
-  $ docker-compose run --rm app test 
-
+  $ docker-compose run --rm test

@@ -9,6 +9,7 @@ codalib = "==1.0.3"
 sqlparse = "*"
 mysql-python = "*"
 Django = "~=1.8.0"
+pytz = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

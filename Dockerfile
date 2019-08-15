@@ -1,5 +1,5 @@
 # vim: set ft=conf
-FROM python:2.7
+FROM python:2.7-stretch
 
 RUN echo "US/Central" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata

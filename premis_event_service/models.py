@@ -251,8 +251,9 @@ class EventLinkObject(models.Model):
         auto_created = True
 
     event_id = models.ForeignKey(
-        Event, to_field='event_identifier', db_column='event_id'
+        Event, to_field='event_identifier', db_column='event_id', on_delete=models.CASCADE
     )
     linkobject_id = models.ForeignKey(
-        LinkObject, to_field='object_identifier', db_column='linkobject_id'
+        LinkObject, to_field='object_identifier', db_column='linkobject_id',
+        on_delete=models.CASCADE
     )

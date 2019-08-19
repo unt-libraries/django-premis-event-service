@@ -4,7 +4,6 @@ python: 2.7
 env:
   - TOX_ENV=py27-django19
   - TOX_ENV=py27-django110
-  - TOX_ENV=py27-django111
   - TOX_ENV=py27-djangomaster
   - TOX_ENV=flake8
 matrix:

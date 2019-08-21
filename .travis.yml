@@ -4,11 +4,7 @@ python: 2.7
 env:
   - TOX_ENV=py27-django19
   - TOX_ENV=py27-django110
-  - TOX_ENV=py27-djangomaster
   - TOX_ENV=flake8
-matrix:
-  allow_failures:
-    - env: TOX_ENV=py27-djangomaster
 install:
   - pip install tox
 script:

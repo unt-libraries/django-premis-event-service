@@ -116,7 +116,7 @@ Run the tests using tox_
     $ tox
 
 
-Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.9, 1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
+Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.9, 1.10.
 
 
 Apply the migrations
@@ -182,7 +182,8 @@ Starting the app
   # start the app
   $ docker-compose up -d db app
 
-  # Apply the migrations
+  # If you make changes to the models, create and apply a migrations
+  $ docker-compose run manage makemigrations
   $ docker-compose run manage migrate
 
   # optional: add a superuser in order to login to the admin interface

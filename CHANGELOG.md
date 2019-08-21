@@ -1,3 +1,9 @@
+1.2.6
+------
+
+* Support Django 1.9 
+* Drop support for < 1.9
+
 1.2.5
 -----
 

@@ -182,7 +182,7 @@ Starting the app
   # start the app
   $ docker-compose up -d db app
 
-  # If you make changes to the models, create and apply a migrations
+  # If you make changes to the models, create and apply a migration
   $ docker-compose run manage makemigrations
   $ docker-compose run manage migrate
 

@@ -20,7 +20,7 @@ Dependencies
 ------------
 
 * Python 2.7+ (not Python 3)
-* Django 1.9
+* Django 1.10
 * lxml (requires libxml2-dev to be installed on your system)
 * pipenv
 

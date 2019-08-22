@@ -8,6 +8,7 @@ __pycache__/
 .tox/
 .venv/
 .pytest_cache/
+.idea/
 
 db.sqlite3
 docs/build/

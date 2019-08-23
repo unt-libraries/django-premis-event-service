@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     'premis_event_service',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -31,7 +31,7 @@ MIDDLEWARE_CLASSES = [
 # For debug toolbar
 if os.getenv('PES_DEBUG_TOOLBAR'):
     INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: True
     }

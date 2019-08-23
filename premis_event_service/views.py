@@ -6,7 +6,7 @@ import urllib
 
 from lxml import etree
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage
 from django.core.exceptions import FieldError
 from django.http import (HttpResponse, HttpResponseBadRequest,

@@ -4,7 +4,7 @@ import random
 from lxml import objectify
 import pytest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.utils.http import urlquote
 from datetime import datetime

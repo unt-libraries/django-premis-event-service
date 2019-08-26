@@ -20,7 +20,7 @@ Dependencies
 ------------
 
 * Python 2.7+ (not Python 3)
-* Django 1.10
+* Django 1.11
 * lxml (requires libxml2-dev to be installed on your system)
 * pipenv
 
@@ -114,10 +114,6 @@ Run the tests using tox_
 .. code-block :: sh
 
     $ tox
-
-
-Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.9, 1.10.
-
 
 Apply the migrations
 """"""""""""""""""""

@@ -2,7 +2,7 @@ language: python
 sudo: false
 python: 2.7
 env:
-  - TOX_ENV=py27-django110
+  - TOX_ENV=py27-django111
   - TOX_ENV=flake8
 install:
   - pip install tox

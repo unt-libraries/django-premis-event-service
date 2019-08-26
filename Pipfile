@@ -8,8 +8,7 @@ lxml = "~=3.3.0"
 codalib = "==1.0.3"
 sqlparse = "*"
 mysql-python = "*"
-Django = "~=1.10.0"
-pytz = "*"
+Django = "~=1.11.0"
 
 [dev-packages]
 django-debug-toolbar = "<=1.9"

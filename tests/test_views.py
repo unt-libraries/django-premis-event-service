@@ -4,7 +4,7 @@ import random
 from lxml import objectify
 import pytest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.utils.http import urlquote
 from datetime import datetime
@@ -686,7 +686,7 @@ class TestEventSearch:
 
     def response_has_event(self, response, event):
         """True if the event is the only Event in the response context."""
-        paginated_entries = response.context[-1]['events']
+        paginated_entries = response.context['events']
         filtered_entry = paginated_entries[0]
 
         if not len(paginated_entries) == 1:
@@ -712,7 +712,7 @@ class TestEventSearch:
         url = reverse('event-search')
         response = client.get(url)
 
-        context = response.context[-1]
+        context = response.context
         assert len(context['events']) == self.RESULTS_PER_PAGE
 
     def test_filtering_results(self, client):

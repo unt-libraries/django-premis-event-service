@@ -20,7 +20,7 @@ Dependencies
 ------------
 
 * Python 2.7+ (not Python 3)
-* Django (tested on 1.8-1.10; 1.3 or higher required)
+* Django 1.11
 * lxml (requires libxml2-dev to be installed on your system)
 * pipenv
 
@@ -63,6 +63,7 @@ by a number of developers over the years including
 * Damon Kelley
 * Reed Underwood
 * Andromeda Yelton (MIT)
+* Madhulika Bayyavarapu
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 
@@ -113,10 +114,6 @@ Run the tests using tox_
 .. code-block :: sh
 
     $ tox
-
-
-Note that the tests will be run in multiple environments, most importantly in distinct environments for Django major versions 1.8-1.10. Tests will also be run against the Django master branch, which is a development branch and prone to failure. These failures are ignored by the PREMIS Event Service testing configuration, and you can likely ignore them as well, particularly if you are using one of the other Django major versions against which the tests should pass.
-
 
 Apply the migrations
 """"""""""""""""""""
@@ -180,6 +177,10 @@ Starting the app
 
   # start the app
   $ docker-compose up -d db app
+
+  # If you make changes to the models, create and apply a migration
+  $ docker-compose run manage makemigrations
+  $ docker-compose run manage migrate
 
   # optional: add a superuser in order to login to the admin interface
   $ docker-compose run manage createsuperuser

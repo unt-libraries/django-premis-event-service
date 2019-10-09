@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
                 name='event_identifier',
                 field=models.CharField(
                     help_text=(
-                        b'Unique identifier for an event. '
+                        'Unique identifier for an event. '
                         'example: urn:uuid:12345678-1234-5678-1234-567812345678'
                     ),
                     unique=True,

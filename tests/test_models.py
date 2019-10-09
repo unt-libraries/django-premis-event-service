@@ -7,28 +7,13 @@ from . import factories
 
 class TestAgent:
 
-    def test_unicode(self):
-        agent = factories.AgentFactory.build()
-        assert agent.agent_name == unicode(agent)
-
     def test_get_absolute_url(self):
         agent = factories.AgentFactory.build()
         url = '/agent/{0}/'.format(agent.agent_identifier)
         assert agent.get_absolute_url() == url
 
 
-class TestLinkObject:
-
-    def test_unicode(self):
-        link_object = factories.LinkObjectFactory.build()
-        assert link_object.object_identifier == unicode(link_object)
-
-
 class TestEvent:
-
-    def test_unicode(self):
-        event = factories.EventFactory.build()
-        assert event.event_identifier == unicode(event)
 
     @pytest.mark.django_db
     def test_link_objects_string_with_link_objects(self):

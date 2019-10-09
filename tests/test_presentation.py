@@ -41,7 +41,7 @@ class TestPremisEventXMLToObject:
         assert isinstance(exml, etree._Element)
         assert isinstance(premis_schema, etree.XMLSchema)
         # validate event fixture doc against premis v2.3 XSD
-        premis_schema.assert_(exml)
+        premis_schema.assertValid(exml)
 
     def test_returns_event(self, event_xml):
         tree = etree.fromstring(event_xml.obj_xml)
@@ -232,7 +232,7 @@ class TestPremisAgentXMLToObject:
         assert isinstance(axml, etree._Element)
         assert isinstance(premis_schema, etree.XMLSchema)
         # validate agent fixture doc against premis v2.3 XSD
-        premis_schema.assert_(axml)
+        premis_schema.assertValid(axml)
 
     def test_returns_agent(self, agent_xml):
         agent = presentation.premisAgentXMLToObject(agent_xml.obj_xml)
@@ -279,7 +279,7 @@ class TestPremisAgentXMLToObject:
             presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
 
         expected_message = "Unable to set 'agent_identifier'"
-        assert expected_message in str(e), 'The exception message matches'
+        assert expected_message in str(e.value), 'The exception message matches'
 
     def test_sets_agent_type(self, agent_xml):
         agent = presentation.premisAgentXMLToObject(agent_xml.obj_xml)
@@ -294,7 +294,7 @@ class TestPremisAgentXMLToObject:
             presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
 
         expected_message = "Unable to set 'agent_type'"
-        assert expected_message in str(e), 'The exception message matches'
+        assert expected_message in str(e.value), 'The exception message matches'
 
     def test_sets_agent_name(self, agent_xml):
         agent = presentation.premisAgentXMLToObject(agent_xml.obj_xml)
@@ -309,7 +309,7 @@ class TestPremisAgentXMLToObject:
             presentation.premisAgentXMLToObject(etree.tostring(xml_obj))
 
         expected_message = "Unable to set 'agent_name'"
-        assert expected_message in str(e), 'The exception message matches'
+        assert expected_message in str(e.value), 'The exception message matches'
 
     def test_sets_agent_note(self, agent_xml):
         agent = presentation.premisAgentXMLToObject(agent_xml.obj_xml)
@@ -332,7 +332,7 @@ class TestPremisEventXMLGetObjects:
         assert isinstance(exml, etree._Element)
         assert isinstance(premis_schema, etree.XMLSchema)
         # validate event fixture doc against premis v2.3 XSD
-        premis_schema.assert_(exml)
+        premis_schema.assertValid(exml)
 
     def test_returns_correct_event_object(self, event_xml):
         tree = etree.fromstring(event_xml.entry_xml)
@@ -528,7 +528,7 @@ class TestObjectToPremisEventXML:
     def test_validate_eventxml(self, premis_schema):
         event = factories.EventFactory()
         event_xml = presentation.objectToPremisEventXML(event)
-        premis_schema.assert_(event_xml)
+        premis_schema.assertValid(event_xml)
 
 
 @pytest.mark.django_db
@@ -583,7 +583,7 @@ class TestObjectToAgentXML:
     def test_validate_agentxml(self, premis_schema):
         agent = factories.AgentFactory()
         agent_xml = presentation.objectToAgentXML(agent)
-        premis_schema.assert_(agent_xml)
+        premis_schema.assertValid(agent_xml)
 
 
 @pytest.mark.django_db

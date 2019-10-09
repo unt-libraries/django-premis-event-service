@@ -1,7 +1,7 @@
 import os
 
 from django.conf.urls import include, url
-import settings
+from . import settings
 
 from django.contrib import admin
 admin.autodiscover()

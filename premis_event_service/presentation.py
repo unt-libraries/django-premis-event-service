@@ -1,6 +1,6 @@
 from datetime import datetime
 import uuid
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from lxml import etree
 from django.shortcuts import get_object_or_404
@@ -72,7 +72,7 @@ def premisEventXMLToObject(eventXML):
     try:
         Event.objects.get(event_identifier=newEventObject.event_identifier)
         raise DuplicateEventError(newEventObject.event_identifier)
-    except Event.DoesNotExist as e:
+    except Event.DoesNotExist:
         pass
     except DuplicateEventError as e:
         raise e
@@ -131,25 +131,25 @@ def premisAgentXMLToObject(agentXML):
             namespaces=PREMIS_NSMAP
         )[0].text.strip()
         agent_object.agent_identifier = agent_identifier
-    except Exception, e:
+    except Exception as e:
         raise Exception("Unable to set 'agent_identifier' attribute: %s" % e)
     try:
         agent_object.agent_name = agent_root.xpath(
             "//premis:agentName", namespaces=PREMIS_NSMAP
         )[0].text.strip()
-    except Exception, e:
+    except Exception as e:
         raise Exception("Unable to set 'agent_name' attribute: %s" % e)
     try:
         agent_object.agent_type = agent_root.xpath(
             "//premis:agentType", namespaces=PREMIS_NSMAP
         )[0].text.strip()
-    except Exception, e:
+    except Exception as e:
         raise Exception("Unable to set 'agent_type' attribute: %s" % e)
     try:
         agent_object.agent_note = agent_root.xpath(
                 "//premis:agentNote", namespaces=PREMIS_NSMAP
         )[0].text.strip()
-    except Exception, e:
+    except Exception:
         pass
     return agent_object
 
@@ -211,7 +211,7 @@ def objectToPremisEventXML(eventObject):
     """
 
     eventXML = etree.Element("%sevent" % PREMIS, nsmap=PREMIS_NSMAP)
-    for fieldName, chain in translateDict.iteritems():
+    for fieldName, chain in translateDict.items():
         if not hasattr(eventObject, fieldName):
             continue
         baseName = chain[0]

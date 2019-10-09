@@ -121,7 +121,7 @@ class EventManager(models.Manager):
     def searchunfilt(self, max_ordinal=None):
         if not max_ordinal:
             max_ordinal = self.get_queryset().all().aggregate(models.Max('ordinal'))
-            max_ordinal = max_ordinal.values()[0]
+            max_ordinal = list(max_ordinal.values())[0]
             if max_ordinal:
                 max_ordinal += 1
             # This should never happen in practice. But with test factories, etc.,

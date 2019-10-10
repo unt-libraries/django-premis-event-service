@@ -9,6 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 install_requires = [
     'lxml >= 3.0.0',
+    'codalib'
 ]
 
 dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib@py3', ]

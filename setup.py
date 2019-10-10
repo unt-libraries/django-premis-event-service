@@ -9,8 +9,9 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 install_requires = [
     'lxml >= 3.0.0',
-    'codalib @ git+https://github.com/unt-libraries/codalib@py3'
 ]
+
+dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib@py3', ]
 
 setup(
     name="django-premis-event-service",

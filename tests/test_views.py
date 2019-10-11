@@ -129,7 +129,7 @@ def test_json_agent_payload(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.json_agent(request, agent.agent_identifier)
-    payload = json.loads(response.content)
+    payload = json.loads(response.content.decode('utf-8'))
 
     assert agent.get_absolute_url() in payload['id']
     assert payload['type'] == agent.agent_type

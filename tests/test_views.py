@@ -741,7 +741,7 @@ class TestJsonEventSearch:
 
     def response_has_entry(self, response, event):
         """True if the event is the only Event in the response content."""
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         entries = data['feed']['entry']
         filtered_entry = entries[0]
 
@@ -752,7 +752,7 @@ class TestJsonEventSearch:
         return True
 
     def response_includes_event(self, response, event):
-        events = json.loads(response.content)['feed']['entry']
+        events = json.loads(response.content.decode('utf-8'))['feed']['entry']
         event_ids = [e['identifier'] for e in events]
         return event.event_identifier in event_ids
 
@@ -772,7 +772,7 @@ class TestJsonEventSearch:
         """
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         assert data.get('feed') is not None
         assert data.get('feed', {}).get('entry') is not None
         assert not len(data.get('feed', {}).get('entry'))
@@ -783,14 +783,14 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(per_page*4)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         assert len(data['feed']['entry']) == per_page
 
     def test_opensearch_query(self, rf):
         factories.EventFactory.create_batch(10)
         request = rf.get('/fakefield=true')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:Query'] == request.GET
 
@@ -798,7 +798,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(10)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:itemsPerPage'] == self.RESULTS_PER_PAGE
 
@@ -806,7 +806,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(10)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:startIndex'] == '1'
 
@@ -815,7 +815,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(num_events)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:totalResults'] == num_events
 
@@ -824,7 +824,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(num_events)
         request = rf.get('/?page=2')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert len(data['feed']['link']) == 5
 

@@ -182,8 +182,8 @@ def test_eventXML(rf):
     request = rf.get('/')
     response = views.eventXML(request)
     assert response.status_code == 200
-    assert "So you would like XML for the event with identifier" in \
-           response.content.decode('utf-8')
+    assert b"So you would like XML for the event with identifier" in \
+           response.content
 
 
 def test_findEvent_returns_ok(rf):
@@ -366,7 +366,7 @@ class TestAppAgent:
     def test_head_without_identifier(self, rf):
         request = rf.head('/')
         response = views.app_agent(request)
-        assert response.content.decode('utf-8') == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_without_identifier(self, rf):
@@ -384,7 +384,7 @@ class TestAppAgent:
         agent = factories.AgentFactory.create()
         request = rf.head('/')
         response = views.app_agent(request, agent.agent_identifier)
-        assert response.content.decode('utf-8') == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_with_identifier(self, rf):
@@ -642,7 +642,7 @@ class TestAppEvent:
     def test_head_without_identifier(self, rf):
         request = rf.head('/')
         response = views.app_event(request)
-        assert response.content.decode('utf-8') == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_without_identifier(self, rf):
@@ -660,7 +660,7 @@ class TestAppEvent:
         event = factories.EventFactory.create()
         request = rf.head('/')
         response = views.app_event(request, event.event_identifier)
-        assert response.content.decode('utf-8') == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_with_identifier(self, rf):

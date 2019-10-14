@@ -29,7 +29,7 @@ from .settings import ARK_NAAN
 ARK_ID_REGEX = re.compile(r'ark:/'+str(ARK_NAAN)+r'/\w.*')
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = xpath_map
-XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
+XML_HEADER = b"<?xml version=\"1.0\"?>\n%s"
 
 EVENT_SEARCH_PER_PAGE = 200
 
@@ -521,7 +521,7 @@ def app_event(request, identifier=None):
             ),
             title=newEvent.event_identifier,
         )
-        atomText = XML_HEADER.encode() % etree.tostring(atomXML, pretty_print=True)
+        atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
         resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 201
         resp['Location'] = 'http://%s/APP/event/%s/' % (
@@ -597,7 +597,7 @@ def app_event(request, identifier=None):
                 status=400,
                 content_type='text/plain'
             )
-        atomFeedText = XML_HEADER.encode() % etree.tostring(atomFeed, pretty_print=True)
+        atomFeedText = XML_HEADER % etree.tostring(atomFeed, pretty_print=True)
         resp = HttpResponse(atomFeedText, content_type="application/atom+xml")
         resp.status_code = 200
         return resp

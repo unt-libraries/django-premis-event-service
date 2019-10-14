@@ -182,7 +182,8 @@ def test_eventXML(rf):
     request = rf.get('/')
     response = views.eventXML(request)
     assert response.status_code == 200
-    assert "So you would like XML for the event with identifier" in response.content.decode('utf-8')
+    assert "So you would like XML for the event with identifier" in \
+           response.content.decode('utf-8')
 
 
 def test_findEvent_returns_ok(rf):

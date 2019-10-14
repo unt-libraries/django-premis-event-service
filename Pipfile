@@ -7,7 +7,7 @@ name = "pypi"
 lxml = "~=4.2.0"
 codalib = {editable=true, ref='py3', git='https://github.com/unt-libraries/codalib'}
 sqlparse = "*"
-pymysql = ">=0.8.1"
+mysqlclient = "~=1.3.14"
 Django = "~=1.11.0"
 
 [dev-packages]

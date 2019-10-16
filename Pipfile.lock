@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4b78f4d818c794a7ea46b6cd0b8c251df6ac63c294c59ab882e06e5660df9db2"
+            "sha256": "636db1c0e427bc44d3420dbaa74746f8024ea43bac2a61a07367d584eb968ba7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -17,7 +17,6 @@
     },
     "default": {
         "codalib": {
-            "editable": true,
             "git": "https://github.com/unt-libraries/codalib",
             "ref": "175bbd4204c831093bee79051458fd44a2b1ddc5"
         },
@@ -88,13 +87,6 @@
             ],
             "index": "pypi",
             "version": "==0.3.0"
-        },
-        "tzlocal": {
-            "hashes": [
-                "sha256:11c9f16e0a633b4b60e1eede97d8a46340d042e67b670b290ca526576e039048",
-                "sha256:949b9dd5ba4be17190a80c0268167d7e6c92c62b30026cf9764caf3e308e5590"
-            ],
-            "version": "==2.0.0"
         }
     },
     "develop": {
@@ -107,10 +99,10 @@
         },
         "attrs": {
             "hashes": [
-                "sha256:ec20e7a4825331c1b5ebf261d111e16fa9612c1f7a5e1f884f12bd53a664dfd2",
-                "sha256:f913492e1663d3c36f502e5e9ba6cd13cf19d7fab50aa13239e420fef95e1396"
+                "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c",
+                "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"
             ],
-            "version": "==19.2.0"
+            "version": "==19.3.0"
         },
         "django": {
             "hashes": [
@@ -291,10 +283,10 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:680af46846662bb38c5504b78bad9ed9e4f3ba2d54f54ba42494fdf94337fe30",
-                "sha256:f78d81b62d3147396ac33fc9d77579ddc42cc2a98dd9ea38886f616b33bc7fb2"
+                "sha256:3e3597e89c73df9313f5566e8fc582bd7037938d15b05329c232ec57a11a7ad5",
+                "sha256:5d370508bf32e522d79096e8cbea3499d47e624ac7e11e9089f9397a0b3318df"
             ],
-            "version": "==16.7.5"
+            "version": "==16.7.6"
         },
         "wcwidth": {
             "hashes": [

@@ -36,6 +36,9 @@ class Agent(models.Model):
         help_text="Optional note about agent."
     )
 
+    def __str__(self):
+        return self.agent_name
+
     def get_absolute_url(self):
         return reverse('agent-detail', args=[self.agent_identifier])
 
@@ -63,6 +66,9 @@ class LinkObject(models.Model):
         help_text="A high-level characterization of the role of the object.",
         null=True
     )
+
+    def __str__(self):
+        return self.object_identifier
 
 
 class EventManager(models.Manager):
@@ -205,6 +211,9 @@ class Event(models.Model):
         through='EventLinkObject',
         through_fields=('event_id', 'linkobject_id')
     )
+
+    def __str__(self):
+        return self.event_identifier
 
     class Meta:
         ordering = ["event_added"]

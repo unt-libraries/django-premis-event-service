@@ -19,14 +19,14 @@ class TestAgent:
 
 class TestLinkObject:
 
-    def test_unicode(self):
+    def test_str(self):
         link_object = factories.LinkObjectFactory.build()
         assert link_object.object_identifier == str(link_object)
 
 
 class TestEvent:
 
-    def test_unicode(self):
+    def test_str(self):
         event = factories.EventFactory.build()
         assert event.event_identifier == str(event)
 

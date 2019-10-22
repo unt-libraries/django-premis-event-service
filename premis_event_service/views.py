@@ -2,7 +2,7 @@ import re
 import math
 from datetime import datetime
 import json
-import urllib
+import urllib.parse
 
 from lxml import etree
 from django.conf import settings
@@ -24,12 +24,12 @@ from .presentation import (premisEventXMLToObject, premisAgentXMLToObject,
                            premisAgentXMLgetObject, objectToPremisEventXML,
                            objectToPremisAgentXML, objectToAgentXML,
                            DuplicateEventError, PREMIS_NSMAP, xpath_map)
-from settings import ARK_NAAN
+from .settings import ARK_NAAN
 
 ARK_ID_REGEX = re.compile(r'ark:/'+str(ARK_NAAN)+r'/\w.*')
 MAINTENANCE_MSG = settings.MAINTENANCE_MSG
 EVENT_UPDATE_TRANSLATION_DICT = xpath_map
-XML_HEADER = "<?xml version=\"1.0\"?>\n%s"
+XML_HEADER = b"<?xml version=\"1.0\"?>\n%s"
 
 EVENT_SEARCH_PER_PAGE = 200
 
@@ -126,14 +126,14 @@ def get_page_offsets(query_set, page, page_range, page_lims, per_page=20):
         ordinals = [evt.ordinal for ei, evt in enumerate(offset_qs) if ei and not ei % per_page]
         ordinals = ordinals[::-1]
     offsets_lo = [p for p in page_range if p < page]
-    offsets_lo = zip(offsets_lo, ordinals)
+    offsets_lo = list(zip(offsets_lo, ordinals))
     limit = (pN-page+1) * per_page if pN > page else 1
     ordinals = []
     if limit:
         offset_qs = query_set.filter(ordinal__lte=page_max_ord).order_by('-ordinal')[0:limit]
         ordinals = [evt.ordinal for ei, evt in enumerate(offset_qs) if not ei % per_page]
     offsets_hi = [p for p in page_range if p >= page]
-    offsets_hi = zip(offsets_hi, ordinals)
+    offsets_hi = list(zip(offsets_hi, ordinals))
     return tuple(offsets_lo+offsets_hi)
 
 
@@ -255,7 +255,7 @@ def json_event_search(request):
                 'href': "http://%s%s?%s" % (
                     request.META.get('HTTP_HOST'),
                     request.path,
-                    urllib.urlencode(args_cur)
+                    urllib.parse.urlencode(args_cur)
                 )
             },
             {
@@ -263,7 +263,7 @@ def json_event_search(request):
                 'href': "http://%s%s?%s" % (
                     request.META.get('HTTP_HOST'),
                     request.path,
-                    urllib.urlencode(args_first)
+                    urllib.parse.urlencode(args_first)
                 )
             },
             {
@@ -271,7 +271,7 @@ def json_event_search(request):
                 'href': "http://%s%s?%s" % (
                     request.META.get('HTTP_HOST'),
                     request.path,
-                    urllib.urlencode(args_last)
+                    urllib.parse.urlencode(args_last)
                 )
             },
         ]
@@ -285,7 +285,7 @@ def json_event_search(request):
                 'href': "http://%s%s?%s" % (
                     request.META.get('HTTP_HOST'),
                     request.path,
-                    urllib.urlencode(args)
+                    urllib.parse.urlencode(args)
                 )
             },
         )
@@ -298,7 +298,7 @@ def json_event_search(request):
                 'href': "http://%s%s?%s" % (
                     request.META.get('HTTP_HOST'),
                     request.path,
-                    urllib.urlencode(args)
+                    urllib.parse.urlencode(args)
                 )
             },
         )

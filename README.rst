@@ -19,7 +19,7 @@ due to its widespread use in the digital libraries world.
 Dependencies
 ------------
 
-* Python 2.7+ (not Python 3)
+* Python 3
 * Django 1.11
 * lxml (requires libxml2-dev to be installed on your system)
 * pipenv
@@ -92,15 +92,10 @@ Install the requirements using pipenv_
 
 .. code-block :: sh
 
-    $ pipenv --python 2.7 # (to create the virtualenv)
+    $ pipenv --python 3.7 # (to create the virtualenv)
     $ pipenv install --dev
     $ pipenv shell # (to enter the virtualenv)
     $ exit # (to leave the virtualenv)
-
-If you're using OS X Sierra or later, you will need to specify 2.7.15, because
-a change in Mac handling of OpenSSL broke pip for earlier versions of Python.
-(This will show up as an error saying you have the wrong version of TLS when
-you try to use pip/pipenv.)
 
 If you need to generate a requirements.txt file, you can do so with
 ``pipenv lock -r > requirements.txt``.

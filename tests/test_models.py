@@ -7,9 +7,9 @@ from . import factories
 
 class TestAgent:
 
-    def test_unicode(self):
+    def test_str(self):
         agent = factories.AgentFactory.build()
-        assert agent.agent_name == unicode(agent)
+        assert agent.agent_name == str(agent)
 
     def test_get_absolute_url(self):
         agent = factories.AgentFactory.build()
@@ -19,16 +19,16 @@ class TestAgent:
 
 class TestLinkObject:
 
-    def test_unicode(self):
+    def test_str(self):
         link_object = factories.LinkObjectFactory.build()
-        assert link_object.object_identifier == unicode(link_object)
+        assert link_object.object_identifier == str(link_object)
 
 
 class TestEvent:
 
-    def test_unicode(self):
+    def test_str(self):
         event = factories.EventFactory.build()
-        assert event.event_identifier == unicode(event)
+        assert event.event_identifier == str(event)
 
     @pytest.mark.django_db
     def test_link_objects_string_with_link_objects(self):

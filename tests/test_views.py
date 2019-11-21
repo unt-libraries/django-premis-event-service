@@ -459,6 +459,20 @@ class TestAppEvent:
         views.app_event(request)
         assert models.Event.objects.count() == 1
 
+    def test_post_DuplicateEventError(self, event_xml, rf):
+        request = rf.post(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
+        # Try to POST the same event twice.
+        views.app_event(request)
+        response = views.app_event(request)
+        assert response.status_code == 409
+        expected_response = "An event with id='{}' exists.".format(event_xml.identifier)
+        assert expected_response in response.content.decode('utf-8')
+
     def test_put_returns_ok(self, event_xml, rf):
         identifier = event_xml.identifier
         factories.EventFactory.create(event_identifier=identifier)

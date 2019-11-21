@@ -507,7 +507,7 @@ def app_event(request, identifier=None):
             )
         except DuplicateEventError as e:
             return HttpResponse(
-                "An event with id='{}' exists.".format(e.message),
+                "An event with id='{}' exists.".format(e),
                 status=409, content_type="text/plain"
             )
         if type(newEvent) == HttpResponse:

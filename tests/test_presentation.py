@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from mock import patch
+from unittest.mock import patch
 from lxml import etree, objectify
 import pytest
 

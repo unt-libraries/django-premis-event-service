@@ -1,7 +1,8 @@
-x.x.x
+2.0.0
 ------
 
-* Support Django 1.11
+* Upgraded to Python 3
+* Added Django 1.11 support
 * Dropped support for Django 1.7-1.10
 * Changed the base image in Dockerfile from python:2.7 to python:2.7-stretch
 * Used pipenv to manage requirements

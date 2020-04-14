@@ -16,7 +16,7 @@ dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib@mast
 
 setup(
     name="django-premis-event-service",
-    version="1.2.5",
+    version="2.0.0",
     packages=find_packages(exclude=["tests", ]),
     include_package_data=True,
     license="BSD",

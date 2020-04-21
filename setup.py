@@ -12,7 +12,7 @@ install_requires = [
     'codalib'
 ]
 
-dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib@master']
+dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib']
 
 setup(
     name="django-premis-event-service",

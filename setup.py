@@ -12,11 +12,11 @@ install_requires = [
     'codalib'
 ]
 
-dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib@py3', ]
+dependency_links = ['codalib @ git+https://github.com/unt-libraries/codalib']
 
 setup(
     name="django-premis-event-service",
-    version="1.2.5",
+    version="2.0.0",
     packages=find_packages(exclude=["tests", ]),
     include_package_data=True,
     license="BSD",
@@ -34,7 +34,6 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",

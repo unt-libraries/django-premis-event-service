@@ -129,7 +129,7 @@ def test_json_agent_payload(rf):
     agent = factories.AgentFactory.create()
     request = rf.get('/')
     response = views.json_agent(request, agent.agent_identifier)
-    payload = json.loads(response.content)
+    payload = json.loads(response.content.decode('utf-8'))
 
     assert agent.get_absolute_url() in payload['id']
     assert payload['type'] == agent.agent_type
@@ -182,7 +182,8 @@ def test_eventXML(rf):
     request = rf.get('/')
     response = views.eventXML(request)
     assert response.status_code == 200
-    assert "So you would like XML for the event with identifier" in response.content
+    assert b"So you would like XML for the event with identifier" in \
+           response.content
 
 
 def test_findEvent_returns_ok(rf):
@@ -231,8 +232,8 @@ def test_findEvent_finds_multiple_events(rf):
     new_event, old_event = sorted([event1, event2], key=lambda e: e.event_date_time)
 
     # Check that only the oldest event is present in the xml content.
-    assert old_event.event_identifier in response.content
-    assert new_event.event_identifier not in response.content
+    assert old_event.event_identifier in response.content.decode('utf-8')
+    assert new_event.event_identifier not in response.content.decode('utf-8')
 
 
 class TestAppAgent:
@@ -269,7 +270,7 @@ class TestAppAgent:
         response = views.app_agent(request)
 
         identifier = agent_xml.identifier
-        assert identifier in response.content
+        assert identifier in response.content.decode('utf-8')
 
     @pytest.mark.xfail(reason='POST request without body raises uncaught exception.')
     def test_post_without_body_is_handled(self, rf):
@@ -341,8 +342,8 @@ class TestAppAgent:
 
         updated_agent = models.Agent.objects.get(agent_identifier=identifier)
 
-        assert updated_agent.agent_name in response.content
-        assert updated_agent.agent_type in response.content
+        assert updated_agent.agent_name in response.content.decode('utf-8')
+        assert updated_agent.agent_type in response.content.decode('utf-8')
 
     def test_get_with_identifier_returns_ok(self, rf):
         agent = factories.AgentFactory.create()
@@ -360,12 +361,12 @@ class TestAppAgent:
         agent = factories.AgentFactory.create()
         request = rf.get('/')
         response = views.app_agent(request, agent.agent_identifier)
-        assert agent.agent_identifier in response.content
+        assert agent.agent_identifier in response.content.decode('utf-8')
 
     def test_head_without_identifier(self, rf):
         request = rf.head('/')
         response = views.app_agent(request)
-        assert response.content == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_without_identifier(self, rf):
@@ -383,7 +384,7 @@ class TestAppAgent:
         agent = factories.AgentFactory.create()
         request = rf.head('/')
         response = views.app_agent(request, agent.agent_identifier)
-        assert response.content == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_with_identifier(self, rf):
@@ -409,12 +410,12 @@ class TestAppEvent:
         xml = objectify.fromstring(response.content)
         if len(xml.entry) != 1:
             return False
-        if event.event_identifier not in response.content:
+        if event.event_identifier not in response.content.decode('utf-8'):
             return False
         return True
 
     def response_includes_event(self, response, event):
-        return event.event_identifier in response.content
+        return event.event_identifier in response.content.decode('utf-8')
 
     def test_post_returns_created(self, event_xml, rf):
         request = rf.post(
@@ -445,7 +446,7 @@ class TestAppEvent:
 
         response = views.app_event(request)
         identifier = event_xml.identifier
-        assert identifier in response.content
+        assert identifier in response.content.decode('utf-8')
 
     def test_post_creates_event(self, event_xml, rf):
         assert models.Event.objects.count() == 0
@@ -457,6 +458,20 @@ class TestAppEvent:
 
         views.app_event(request)
         assert models.Event.objects.count() == 1
+
+    def test_post_DuplicateEventError(self, event_xml, rf):
+        request = rf.post(
+            '/',
+            event_xml.entry_xml,
+            content_type='application/xml',
+            HTTP_HOST='example.com')
+
+        # Try to POST the same event twice.
+        views.app_event(request)
+        response = views.app_event(request)
+        assert response.status_code == 409
+        expected_response = "An event with id='{}' exists.".format(event_xml.identifier)
+        assert expected_response in response.content.decode('utf-8')
 
     def test_put_returns_ok(self, event_xml, rf):
         identifier = event_xml.identifier
@@ -496,8 +511,7 @@ class TestAppEvent:
         factories.EventFactory.create_batch(self.RESULTS_PER_PAGE * 2)
         request = rf.get('/')
         response = views.app_event(request)
-        xml = objectify.fromstring(response.content)
-
+        xml = objectify.fromstring(response.content.decode('utf-8'))
         assert len(xml.entry) == self.RESULTS_PER_PAGE
 
     @pytest.mark.xfail(reason='Global name DATE_FORMAT is not defined.')
@@ -528,7 +542,6 @@ class TestAppEvent:
         url = '/?link_object_id={0}'.format(linking_object.object_identifier)
         request = rf.get(url)
         response = views.app_event(request)
-
         assert self.response_has_event(response, event)
 
     def test_list_filtering_by_event_outcome(self, rf):
@@ -575,8 +588,7 @@ class TestAppEvent:
         # Pure Python vs the Django ORM sort items with matching keys differently.
         request = rf.get('?orderby=event_identifier&orderdir=descending')
         response = views.app_event(request)
-
-        list_events = objectify.fromstring(response.content).entry
+        list_events = objectify.fromstring(response.content.decode('utf-8')).entry
         ordered_event_ids = [f.title for f in list_events]
         event_ids = [f.event_identifier for f in events]
 
@@ -610,7 +622,7 @@ class TestAppEvent:
         event = factories.EventFactory.create()
         request = rf.get('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
-        assert event.event_identifier in response.content
+        assert event.event_identifier in response.content.decode('utf-8')
 
     def test_delete_returns_ok(self, rf):
         event = factories.EventFactory.create()
@@ -633,7 +645,7 @@ class TestAppEvent:
         event = factories.EventFactory.create()
         request = rf.delete('/', HTTP_HOST='example.com')
         response = views.app_event(request, event.event_identifier)
-        assert event.event_identifier in response.content
+        assert event.event_identifier in response.content.decode('utf-8')
 
     def test_delete_removes_event(self, rf):
         event = factories.EventFactory.create()
@@ -644,7 +656,7 @@ class TestAppEvent:
     def test_head_without_identifier(self, rf):
         request = rf.head('/')
         response = views.app_event(request)
-        assert response.content == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_without_identifier(self, rf):
@@ -662,7 +674,7 @@ class TestAppEvent:
         event = factories.EventFactory.create()
         request = rf.head('/')
         response = views.app_event(request, event.event_identifier)
-        assert response.content == '', 'The message body must be empty'
+        assert response.content == b'', b'The message body must be empty'
         assert response.status_code == 200
 
     def test_head_and_get_headers_match_with_identifier(self, rf):
@@ -744,7 +756,7 @@ class TestJsonEventSearch:
 
     def response_has_entry(self, response, event):
         """True if the event is the only Event in the response content."""
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         entries = data['feed']['entry']
         filtered_entry = entries[0]
 
@@ -755,7 +767,7 @@ class TestJsonEventSearch:
         return True
 
     def response_includes_event(self, response, event):
-        events = json.loads(response.content)['feed']['entry']
+        events = json.loads(response.content.decode('utf-8'))['feed']['entry']
         event_ids = [e['identifier'] for e in events]
         return event.event_identifier in event_ids
 
@@ -775,7 +787,7 @@ class TestJsonEventSearch:
         """
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         assert data.get('feed') is not None
         assert data.get('feed', {}).get('entry') is not None
         assert not len(data.get('feed', {}).get('entry'))
@@ -786,14 +798,14 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(per_page*4)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
         assert len(data['feed']['entry']) == per_page
 
     def test_opensearch_query(self, rf):
         factories.EventFactory.create_batch(10)
         request = rf.get('/fakefield=true')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:Query'] == request.GET
 
@@ -801,7 +813,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(10)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:itemsPerPage'] == self.RESULTS_PER_PAGE
 
@@ -809,7 +821,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(10)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:startIndex'] == '1'
 
@@ -818,7 +830,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(num_events)
         request = rf.get('/')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert data['feed']['opensearch:totalResults'] == num_events
 
@@ -827,7 +839,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(num_events)
         request = rf.get('/?page=2')
         response = views.json_event_search(request)
-        data = json.loads(response.content)
+        data = json.loads(response.content.decode('utf-8'))
 
         assert len(data['feed']['link']) == 5
 

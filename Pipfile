@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 lxml = "~=4.2.0"
-codalib = {git = 'https://github.com/unt-libraries/codalib', editable=true}
+codalib = {git = 'https://github.com/unt-libraries/codalib', editable = true}
 sqlparse = "*"
 mysqlclient = "~=1.3.14"
 Django = "~=1.11.28"

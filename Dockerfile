@@ -17,7 +17,7 @@ RUN apt-get update -qq && apt-get install -y mysql-client netcat
 
 RUN pip install -U pip setuptools
 RUN pip install pipenv
-RUN pipenv install --dev --system --deploy --ignore-pipfile
+RUN pipenv install --dev --deploy --ignore-pipfile
 
 ADD wait-for-mysqld.sh /wait-for-mysqld.sh
 ADD appstart.sh /appstart.sh

@@ -36,7 +36,7 @@ services:
         environment:
             - DJANGO_SETTINGS_MODULE=tests.settings
             - PES_BACKEND=mysql
-        entrypoint: tox -c /app/tox.ini
+        entrypoint: pipenv run tox -c /app/tox.ini --skip-missing-interpreters true
         links:
             - db
         depends_on:
@@ -48,7 +48,7 @@ services:
         environment:
             - DJANGO_SETTINGS_MODULE=tests.settings
             - PES_BACKEND=mysql
-        entrypoint: /app/manage.py
+        entrypoint: pipenv run /app/manage.py
         links:
             - db
         depends_on:

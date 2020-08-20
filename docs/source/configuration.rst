@@ -34,10 +34,10 @@ Mandatory Configuration
         'django.core.context_processors.request',
     )
 
-3. In your ``MIDDLEWARE_CLASSES`` setting, remove or comment out the
+3. In your ``MIDDLEWARE`` setting, remove or comment out the
    ``CsrfViewMiddleware`` entry::
 
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         ...
         #'django.middleware.csrf.CsrfViewMiddleware',
         ...

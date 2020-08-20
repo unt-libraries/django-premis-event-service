@@ -2,6 +2,8 @@
 ------
 
 * Upgraded to Python 3
+* Added Djago 2.2 support
+* Dropped support for Django 1.11
 
 1.2.5
 -----

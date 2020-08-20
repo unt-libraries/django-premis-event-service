@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -10,9 +10,8 @@ urlpatterns = [
     path('event/', views.recent_event_list, name='event-list'),
     path('event/search/', views.event_search, name='event-search'),
     path('event/search.json', views.json_event_search, name='event-search-json'),
-#    path('event/find/<linked_identifier>/<event_type>/',
-    path('event/find/(?P<linked_identifier>.+?)/(?P<event_type>.+?)?/$',
-         views.findEvent, name='find-event'),
+    re_path('event/find/(?P<linked_identifier>.+?)/(?P<event_type>.+?)?/$',
+            views.findEvent, name='find-event'),
     path('event/<identifier>/', views.humanEvent, name='event-detail'),
     path('agent/', views.humanAgent, name='agent-list'),
     path('agent/<identifier>.xml', views.agentXML, name='agent-detail-xml'),

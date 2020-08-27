@@ -557,7 +557,7 @@ class TestAppEvent:
     def test_list_filtering_by_event_type(self, rf):
         factories.EventFactory.create_batch(10)
 
-        event_type = random.choice(EVENT_TYPE_CHOICES)
+        event_type = random.choice(EVENT_TYPE_CHOICES)[0]
         event = factories.EventFactory.create(event_type=event_type)
 
         request = rf.get('?event_type={0}'.format(urlquote(event_type)))

@@ -10,7 +10,7 @@ urlpatterns = [
     path('event/', views.recent_event_list, name='event-list'),
     path('event/search/', views.event_search, name='event-search'),
     path('event/search.json', views.json_event_search, name='event-search-json'),
-    re_path('event/find/(?P<linked_identifier>.+?)/(?P<event_type>.+?)?/$',
+    re_path(r'^event/find/(?P<linked_identifier>.+?)/(?P<event_type>.+?)?/$',
             views.findEvent, name='find-event'),
     path('event/<identifier>/', views.humanEvent, name='event-detail'),
     path('agent/', views.humanAgent, name='agent-list'),

@@ -222,7 +222,10 @@ def json_event_search(request):
         for field, field_errors in form.errors.as_data().items():
             errors.append('%s:' % field)
             for field_error in field_errors:
-                message = field_error.message % field_error.params
+                if field_error.params is None:
+                    message = field_error.message
+                else:
+                    message = field_error.message % field_error.params
                 errors.append('\t%s: %s' % (field_error.code, message))
         errors = '\n'.join(errors)
         return HttpResponse(

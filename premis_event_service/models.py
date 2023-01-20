@@ -1,3 +1,4 @@
+import uuid
 from django.urls import reverse
 from django.db import models
 
@@ -9,6 +10,10 @@ AGENT_TYPE_CHOICES = [
     ('Event', 'Event'),
     ('Software', 'Software'),
 ]
+
+
+def get_event_identifier_default():
+    return uuid.uuid4().hex
 
 
 class Agent(models.Model):
@@ -148,6 +153,7 @@ class Event(models.Model):
         "urn:uuid:12345678-1234-5678-1234-567812345678"
     event_identifier = models.CharField(
         max_length=64,
+        default=get_event_identifier_default,
         editable=False,
         help_text=help_text,
         unique=True,

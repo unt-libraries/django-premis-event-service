@@ -56,7 +56,8 @@ if os.getenv('PES_BACKEND') == 'mysql':
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'OPTIONS': {
-                'init_command': 'SET storage_engine=MyISAM'
+                'init_command': 'SET default_storage_engine=MyISAM; \
+                SET sql_mode=STRICT_TRANS_TABLES;'
             }
         }
     }

@@ -1,0 +1,15 @@
+name: Test django-premis-event-service
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+
+  tests:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Start the app
+        run: docker-compose up -d db app
+      - name: Run the tests and flake8
+        run: docker-compose run --rm test

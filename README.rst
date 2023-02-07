@@ -1,8 +1,8 @@
 PREMIS Event Service
 ====================
 
-.. image:: https://travis-ci.org/unt-libraries/django-premis-event-service.svg?branch=master
-    :target: https://travis-ci.org/unt-libraries/django-premis-event-service
+.. image:: https://github.com/unt-libraries/django-premis-event-service/actions/workflows/test.yml/badge.svg?branch=master
+    :target: https://github.com/unt-libraries/django-premis-event-service/actions
 
 PREMIS Event Service is a Django application for managing PREMIS Events in a
 structured, centralized, and searchable manner.
@@ -64,6 +64,7 @@ by a number of developers over the years including
 * Reed Underwood
 * Andromeda Yelton (MIT)
 * Madhulika Bayyavarapu
+* Gracie Flores-Hays
 
 If you have questions about the project feel free to contact Mark Phillips at mark.phillips@unt.edu
 
@@ -217,8 +218,34 @@ Viewing the logs
 Running the Tests
 """""""""""""""""
 
-To run the tests via Tox, use this command.
+To run the tests via Tox, use this command. If you are using podman-compose, swap the word docker 
+with podman (see ``Developing with Podman and Podman-Compose`` below).
 
 .. code-block :: sh
 
   $ docker-compose run --rm test
+
+
+Developing with Podman and Podman-Compose
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install or Enable Podman_
+"""""""""""""""""""""""""
+
+.. _Podman: https://podman.io/getting-started/installation
+
+Install Podman-Compose_
+"""""""""""""""""""""""
+
+.. _Podman-Compose: https://github.com/containers/podman-compose
+
+.. code-block :: sh
+
+  $ sudo dnf install podman-compose
+
+You will follow the same steps as above, starting with ``Clone the repository``. For all of the 
+docker steps, you will have to replace the word ``docker`` with ``podman``.
+
+If you have SELinux, you may need to temporarily add ``:Z`` to the base volumes in the 
+``docker-compose.yml``. It will look like ``.:/app/:Z``. You may also need to use ``sudo`` for 
+your podman-compose commands.

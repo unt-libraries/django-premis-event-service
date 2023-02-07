@@ -3,6 +3,8 @@
 
 * Added Django 2.2 support
 * Dropped support for Django 1.11
+* Replaced Travis with Github Actions
+* Dropped support for Python 3.6
 
 2.0.0
 ------

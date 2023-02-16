@@ -3,10 +3,10 @@ import random
 
 from lxml import objectify
 import pytest
+from urllib.parse import quote
 
 from django.urls import reverse
 from django.http import Http404
-from django.utils.http import urlquote
 from datetime import datetime
 
 from premis_event_service import views, models
@@ -560,7 +560,7 @@ class TestAppEvent:
         event_type = random.choice(EVENT_TYPE_CHOICES)[0]
         event = factories.EventFactory.create(event_type=event_type)
 
-        request = rf.get('?event_type={0}'.format(urlquote(event_type)))
+        request = rf.get('?event_type={0}'.format(quote(event_type)))
         response = views.app_event(request)
         assert self.response_includes_event(response, event)
 
@@ -892,7 +892,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(10)
         event = factories.EventFactory.create(event_outcome=event_outcome)
 
-        request = rf.get('/?event_outcome={0}'.format(urlquote(event_outcome)))
+        request = rf.get('/?event_outcome={0}'.format(quote(event_outcome)))
         response = views.json_event_search(request)
 
         assert self.response_includes_event(response, event)
@@ -902,7 +902,7 @@ class TestJsonEventSearch:
         factories.EventFactory.create_batch(10)
         event = factories.EventFactory.create(event_type=event_type)
 
-        request = rf.get('/?event_type={0}'.format(urlquote(event_type)))
+        request = rf.get('/?event_type={0}'.format(quote(event_type)))
         response = views.json_event_search(request)
 
         assert self.response_includes_event(response, event)

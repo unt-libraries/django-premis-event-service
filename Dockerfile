@@ -1,5 +1,5 @@
 # vim: set ft=conf
-FROM python:3.7-stretch
+FROM python:3.9
 
 RUN echo "US/Central" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
@@ -13,7 +13,7 @@ WORKDIR /app
 ADD Pipfile /app/
 ADD Pipfile.lock /app/
 
-RUN apt-get update -qq && apt-get install -y mysql-client netcat
+RUN apt-get update -qq && apt-get install -y default-mysql-client netcat
 
 RUN pip install -U pip setuptools
 RUN pip install pipenv

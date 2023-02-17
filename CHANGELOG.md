@@ -1,3 +1,11 @@
+4.0.0
+-----
+
+* Upgraded to Django 4.1
+* Added Python 3.9 support
+* Dropped Django 2.2 support
+* Dropped Python 3.7 support
+
 3.0.0
 -----
 

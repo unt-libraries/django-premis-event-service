@@ -96,13 +96,13 @@ if os.getenv('PES_DBDEBUG') == 'on':
         }
     }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 ROOT_URLCONF = 'tests.urls'
 
 LANGUAGE_CODE = 'en-us'
 
 USE_I18N = True
-
-USE_L10N = True
 
 STATIC_URL = '/static/'
 

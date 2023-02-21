@@ -93,7 +93,7 @@ Install the requirements using pipenv_
 
 .. code-block :: sh
 
-    $ pipenv --python 3.7 # (to create the virtualenv)
+    $ pipenv --python 3.9 # (to create the virtualenv)
     $ pipenv install --dev
     $ pipenv shell # (to enter the virtualenv)
     $ exit # (to leave the virtualenv)

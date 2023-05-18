@@ -20,7 +20,7 @@ Dependencies
 ------------
 
 * Python 3
-* Django 2.2
+* Django 4.1
 * lxml (requires libxml2-dev to be installed on your system)
 * pipenv
 
@@ -93,7 +93,7 @@ Install the requirements using pipenv_
 
 .. code-block :: sh
 
-    $ pipenv --python 3.7 # (to create the virtualenv)
+    $ pipenv --python 3.9 # (to create the virtualenv)
     $ pipenv install --dev
     $ pipenv shell # (to enter the virtualenv)
     $ exit # (to leave the virtualenv)

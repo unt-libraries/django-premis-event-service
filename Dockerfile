@@ -13,7 +13,7 @@ WORKDIR /app
 ADD Pipfile /app/
 ADD Pipfile.lock /app/
 
-RUN apt-get update -qq && apt-get install -y default-mysql-client netcat
+RUN apt-get update -qq && apt-get install -y default-mysql-client netcat-openbsd
 
 RUN pip install -U pip setuptools
 RUN pip install pipenv

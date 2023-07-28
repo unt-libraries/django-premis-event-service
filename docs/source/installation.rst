@@ -13,7 +13,7 @@ Dependencies
 ============
 
 - Python 3.9
-- Django 4.1
+- Django 4.2
 - libxml2-dev libxslt-dev
 - Django Admin - ``django.contrib.admin``
 

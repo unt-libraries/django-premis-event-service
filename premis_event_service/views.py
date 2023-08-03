@@ -513,7 +513,7 @@ def app_event(request, identifier=None):
                 "An event with id='{}' exists.".format(e),
                 status=409, content_type="text/plain"
             )
-        if type(newEvent) == HttpResponse:
+        if isinstance(newEvent, HttpResponse):
             return newEvent
         eventObjectXML = objectToPremisEventXML(newEvent)
         atomXML = wrapAtom(

@@ -47,27 +47,27 @@ def app(request):
     collections = [
         {
             "title": "node",
-            "href": "http://%s/APP/node/" % request.META.get('HTTP_HOST'),
+            "href": "%s://%s/APP/node/" % (request.scheme, request.META.get('HTTP_HOST')),
             "accept": "application/atom+xml;type=entry"
         },
         {
             "title": "bag",
-            "href": "http://%s/APP/bag/" % request.META.get('HTTP_HOST'),
+            "href": "%s://%s/APP/bag/" % (request.scheme, request.META.get('HTTP_HOST')),
             "accept": "application/atom+xml;type=entry"
         },
         {
             "title": "event",
-            "href": "http://%s/APP/event/" % request.META.get('HTTP_HOST'),
+            "href": "%s://%s/APP/event/" % (request.scheme, request.META.get('HTTP_HOST')),
             "accept": "application/atom+xml;type=entry"
         },
         {
             "title": "agent",
-            "href": "http://%s/APP/agent/" % request.META.get('HTTP_HOST'),
+            "href": "%s://%s/APP/agent/" % (request.scheme, request.META.get('HTTP_HOST')),
             "accept": "application/atom+xml;type=entry"
         },
         {
             "title": "queue",
-            "href": "http://%s/APP/queue/" % request.META.get('HTTP_HOST'),
+            "href": "%s://%s/APP/queue/" % (request.scheme, request.META.get('HTTP_HOST')),
             "accept": "application/atom+xml;type=entry"
         },
     ]
@@ -255,7 +255,8 @@ def json_event_search(request):
         [
             {
                 'rel': 'self',
-                'href': "http://%s%s?%s" % (
+                'href': "%s://%s%s?%s" % (
+                    request.scheme,
                     request.META.get('HTTP_HOST'),
                     request.path,
                     urllib.parse.urlencode(args_cur)
@@ -263,7 +264,8 @@ def json_event_search(request):
             },
             {
                 'rel': 'first',
-                'href': "http://%s%s?%s" % (
+                'href': "%s://%s%s?%s" % (
+                    request.scheme,
                     request.META.get('HTTP_HOST'),
                     request.path,
                     urllib.parse.urlencode(args_first)
@@ -271,7 +273,8 @@ def json_event_search(request):
             },
             {
                 'rel': 'last',
-                'href': "http://%s%s?%s" % (
+                'href': "%s://%s%s?%s" % (
+                    request.scheme,
                     request.META.get('HTTP_HOST'),
                     request.path,
                     urllib.parse.urlencode(args_last)
@@ -285,7 +288,8 @@ def json_event_search(request):
         rel_links.append(
             {
                 'rel': 'previous',
-                'href': "http://%s%s?%s" % (
+                'href': "%s://%s%s?%s" % (
+                    request.scheme,
                     request.META.get('HTTP_HOST'),
                     request.path,
                     urllib.parse.urlencode(args)
@@ -298,7 +302,8 @@ def json_event_search(request):
         rel_links.append(
             {
                 'rel': 'next',
-                'href': "http://%s%s?%s" % (
+                'href': "%s://%s%s?%s" % (
+                    request.scheme,
                     request.META.get('HTTP_HOST'),
                     request.path,
                     urllib.parse.urlencode(args)
@@ -378,7 +383,7 @@ def json_agent(request, identifier=None):
     response = HttpResponse(content_type='application/json')
     # construct the dictionary with values from aggregates
     jsonDict = {
-        'id': "http://%s%s" % (request.get_host(), a.get_absolute_url()),
+        'id': "%s://%s%s" % (request.scheme, request.get_host(), a.get_absolute_url()),
         'type': [c for c in AGENT_TYPE_CHOICES if c[0] == a.agent_type][0][1],
         'name': a.agent_name,
         'note': a.agent_note,
@@ -469,7 +474,7 @@ def agentXML(request, identifier):
             )
         returnXML = objectToPremisAgentXML(
             agentObject,
-            webRoot=request.get_host() + '/',
+            webRoot=request.scheme + '://' + request.get_host() + '/',
         )
         returnText = XML_HEADER % etree.tostring(returnXML, pretty_print=True)
         content_type = "application/xml"
@@ -518,7 +523,8 @@ def app_event(request, identifier=None):
         eventObjectXML = objectToPremisEventXML(newEvent)
         atomXML = wrapAtom(
             xml=eventObjectXML,
-            id='http://%s/APP/event/%s/' % (
+            id='%s://%s/APP/event/%s/' % (
+                request.scheme,
                 request.META['HTTP_HOST'],
                 newEvent.event_identifier
             ),
@@ -527,7 +533,8 @@ def app_event(request, identifier=None):
         atomText = XML_HEADER % etree.tostring(atomXML, pretty_print=True)
         resp = HttpResponse(atomText, content_type="application/atom+xml")
         resp.status_code = 201
-        resp['Location'] = 'http://%s/APP/event/%s/' % (
+        resp['Location'] = '%s://%s/APP/event/%s/' % (
+            request.scheme,
             request.META['HTTP_HOST'],
             newEvent.event_identifier
         )
@@ -586,7 +593,7 @@ def app_event(request, identifier=None):
                 paginator=Paginator(events, EVENT_SEARCH_PER_PAGE),
                 objectToXMLFunction=objectToPremisEventXML,
                 feedId=request.path[1:],
-                webRoot='http://%s' % request.META.get('HTTP_HOST'),
+                webRoot='%s://%s' % (request.scheme, request.META.get('HTTP_HOST')),
                 title="Event Entry Feed",
                 idAttr="event_identifier",
                 nameAttr="event_identifier",
@@ -664,8 +671,8 @@ def app_event(request, identifier=None):
         )
         atomXML = wrapAtom(
             xml=eventObjectXML,
-            id='http://%s/APP/event/%s/' % (
-                request.META['HTTP_HOST'], identifier
+            id='%s://%s/APP/event/%s/' % (
+                request.scheme, request.META['HTTP_HOST'], identifier
             ),
             title=identifier,
             alt=althref,
@@ -698,8 +705,8 @@ def app_event(request, identifier=None):
         event_object.delete()
         atomXML = wrapAtom(
             xml=eventObjectXML,
-            id='http://%s/APP/event/%s/' % (
-                request.META['HTTP_HOST'], identifier
+            id='%s://%s/APP/event/%s/' % (
+                request.scheme, request.META['HTTP_HOST'], identifier
             ),
             title=identifier,
         )
@@ -732,7 +739,7 @@ def app_agent(request, identifier=None):
                     paginator=Paginator(Agent.objects.all(), 20),
                     objectToXMLFunction=objectToAgentXML,
                     feedId=requestString[1:],
-                    webRoot="http://%s" % request.META.get('HTTP_HOST'),
+                    webRoot="%s://%s" % (request.scheme, request.META.get('HTTP_HOST')),
                     title="Agent Entry Feed",
                     idAttr="agent_identifier",
                     nameAttr="agent_name",

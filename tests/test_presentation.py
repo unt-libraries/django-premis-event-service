@@ -591,17 +591,17 @@ class TestObjectToPremisAgentXML:
 
     def test_returns_Element(self):
         agent = factories.AgentFactory()
-        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         assert isinstance(agent_xml, etree._Element)
 
     def test_root_namespace(self):
         agent = factories.AgentFactory()
-        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         assert has_premis_namespace(agent_xml)
 
     def test_agent_identifier_value(self):
         agent = factories.AgentFactory()
-        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        tree = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         agent_xml = etree_to_objectify(tree)
 
         element = agent_xml.agentIdentifier.agentIdentifierValue
@@ -611,7 +611,7 @@ class TestObjectToPremisAgentXML:
 
     def test_agent_identifier_type(self):
         agent = factories.AgentFactory()
-        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        tree = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         agent_xml = etree_to_objectify(tree)
 
         element = agent_xml.agentIdentifier.agentIdentifierType
@@ -620,7 +620,7 @@ class TestObjectToPremisAgentXML:
 
     def test_agent_name(self):
         agent = factories.AgentFactory()
-        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        tree = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         agent_xml = etree_to_objectify(tree)
 
         element = agent_xml.agentName
@@ -629,7 +629,7 @@ class TestObjectToPremisAgentXML:
 
     def test_agent_type(self):
         agent = factories.AgentFactory()
-        tree = presentation.objectToPremisAgentXML(agent, 'example.com')
+        tree = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         agent_xml = etree_to_objectify(tree)
 
         element = agent_xml.agentType
@@ -638,5 +638,5 @@ class TestObjectToPremisAgentXML:
 
     def test_validate_agentxml(self, premis_schema):
         agent = factories.AgentFactory()
-        agent_xml = presentation.objectToPremisAgentXML(agent, 'example.com')
+        agent_xml = presentation.objectToPremisAgentXML(agent, 'http://example.com')
         premis_schema.assert_(agent_xml)

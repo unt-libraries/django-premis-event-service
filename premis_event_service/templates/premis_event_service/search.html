@@ -53,7 +53,7 @@
         {% for event in events %}
             <tr>
                 <td>
-                    <i class="icon-tag"></i> <a href='http://{{ request.META.HTTP_HOST }}/event/{{ event.event_identifier }}'>{{ event.event_identifier }}</a>
+                    <i class="icon-tag"></i> <a href='{{ request.scheme }}://{{ request.META.HTTP_HOST }}/event/{{ event.event_identifier }}'>{{ event.event_identifier }}</a>
                 </td>
                 <td>
                     <i class="icon-calendar"></i> {{ event.event_date_time }}
@@ -62,7 +62,7 @@
                     <i class="icon-asterisk"></i> {{ event.event_type }}
                 </td>
                 <td>
-                    {% for lo in event.linking_objects.all %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+                    {% for lo in event.linking_objects.all %}<i class="icon-link"></i> <a href='{{ request.scheme }}://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
                 </td>
                 <td>
                     <span title="{{ event.event_outcome }}" class="disabled btn btn-block btn-mini btn-{{ event.is_good|yesno:"success,danger" }}">{{ event.event_outcome|slice:"53:" }}</span>

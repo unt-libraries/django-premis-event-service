@@ -50,11 +50,11 @@
 	<tr>
 		<th>Linked Objects</th>
 		<td>
-			{% for lo in record.linking_objects.values %}<i class="icon-link"></i> <a href='http://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
+			{% for lo in record.linking_objects.values %}<i class="icon-link"></i> <a href='{{ request.scheme }}://{{ request.META.HTTP_HOST }}/bag/{{ lo.object_identifier }}'>{{ lo.object_identifier }}</a>{% endfor %}
 		</td>
 	</tr>
 </table>
-<a class="btn btn-success btn-large" href="http://{{ request.META.HTTP_HOST }}/APP/event/{{ record.event_identifier }}/">
+<a class="btn btn-success btn-large" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/APP/event/{{ record.event_identifier }}/">
 	ATOMPUB <i class="icon-rss"></i>
 </a>
 {% endblock %}

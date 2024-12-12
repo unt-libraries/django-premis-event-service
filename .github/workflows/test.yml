@@ -10,6 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Start the app
-        run: docker-compose up -d db app
+        run: docker compose up -d db app
       - name: Run the tests and flake8
-        run: docker-compose run --rm test
+        run: docker compose run --rm test

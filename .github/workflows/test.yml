@@ -12,4 +12,4 @@ jobs:
       - name: Start the app
         run: docker compose up -d db web
       - name: Run the tests and ruff
-        run: docker compose run --rm tox
+        run: docker compose run --rm web tox

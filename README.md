@@ -121,11 +121,8 @@ $ cd django-premis-event-service
 ### Starting the app
 
 ```sh
-# start the app (this will spin two containers: db and web)
+# start the app this will spin two containers: db and web, as well as run migrations
 $ docker compose up -d
-
-# apply the most recent migration
-$ docker compose run --rm web python manage.py migrate
 
 # optional: add a superuser in order to login to the admin interface
 $ docker compose run --rm web python manage.py createsuperuser

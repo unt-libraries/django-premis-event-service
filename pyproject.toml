@@ -7,39 +7,41 @@ name = "django-premis-event-service"
 description = "A Django application for storing and querying PREMIS Events"
 version = "4.0.0"
 authors = [
-    { name = "University of North Texas Libraries"}
+    { name = "University of North Texas Libraries" }
 ]
-license = {file = "LICENSE.txt"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = "~=3.9"
 classifiers = [
-  "Environment :: Web Environment",
-        "Framework :: Django",
-        "Intended Audience :: System Administrators",
-        "Natural Language :: English",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.9",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
 ]
 dependencies = [
-    "lxml~=4.9.1",
+    "lxml==4.9.4",
     "codalib @ git+https://github.com/unt-libraries/codalib.git",
     "sqlparse",
-    "mysqlclient~=2.0.1",
-    "Django~=4.2.0"
+    "mysqlclient==2.2.4",
+    "Django==4.2.16",
 ]
 
 [project.urls]
 homepage = "https://github.com/unt-libraries/django-premis-event-service"
+documentation = "https://django-premis-event-service.readthedocs.io/"
 
 [project.optional-dependencies]
 test = [
-    "django-debug-toolbar~=3.8.0",
-    "tox>=3.13.0",
-    "pytest-django>=3.4.6",
-    "pytest>=7.2.0",
-    "factory-boy==2.5.2",
+    "django-debug-toolbar==4.3.0",
+    "tox>=4.15.0",
+    "pytest-django>=4.8",
+    "pytest==7.4.4",
+    "factory-boy==3.3.0",
     "ruff>=0.15.0"
 ]
 

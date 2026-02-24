@@ -28,7 +28,7 @@ dependencies = [
     "codalib @ git+https://github.com/unt-libraries/codalib.git",
     "sqlparse",
     "mysqlclient==2.2.4",
-    "Django==4.2.16",
+    "Django~=4.2.16",
 ]
 
 [project.urls]
@@ -37,11 +37,11 @@ documentation = "https://django-premis-event-service.readthedocs.io/"
 
 [project.optional-dependencies]
 test = [
-    "django-debug-toolbar==4.3.0",
+    "django-debug-toolbar~=3.8.0",
     "tox>=4.15.0",
-    "pytest-django>=4.8",
+    "pytest-django>=3.4.6",
     "pytest==7.4.4",
-    "factory-boy==3.3.0",
+    "factory-boy==2.5.2",
     "ruff>=0.15.0"
 ]
 

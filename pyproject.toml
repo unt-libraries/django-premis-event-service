@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-premis-event-service"
+description = "A Django application for storing and querying PREMIS Events"
+version = "4.0.0"
+authors = [
+    { name = "University of North Texas Libraries" }
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = "~=3.9.25"
+keywords = ["django", "PREMIS", "preservation"]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+]
+dependencies = [
+    "lxml==4.9.4",
+    "codalib @ git+https://github.com/unt-libraries/codalib.git",
+    "sqlparse",
+    "mysqlclient==2.2.4",
+    "Django~=4.2.16",
+]
+
+[project.urls]
+homepage = "https://github.com/unt-libraries/django-premis-event-service"
+documentation = "https://django-premis-event-service.readthedocs.io/"
+
+[project.optional-dependencies]
+test = [
+    "django-debug-toolbar~=3.8.0",
+    "tox>=4.15.0",
+    "pytest-django>=3.4.6",
+    "pytest==7.4.4",
+    "factory-boy==2.5.2",
+    "ruff>=0.15.0"
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+
+[tool.ruff]
+line-length = 99
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    envlist = py39-django42, py39-ruff
+
+    [testenv]
+    basepython = python3.9
+    passenv =
+        PES_BACKEND
+
+    [testenv:py39-django42]
+    deps =
+        .[test]
+    commands =
+        python -m pytest -v --ds=tests.settings
+
+    [testenv:py39-ruff]
+    deps =
+        ruff
+    skip_install = true
+    commands =
+        ruff check premis_event_service tests
+"""

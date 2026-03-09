@@ -7,17 +7,18 @@ RUN dpkg-reconfigure -f noninteractive tzdata
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH /app
 
-RUN mkdir /app
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libxml2-dev \
+    libxslt1-dev \
+    python3-dev \
+    build-essential \
+    default-mysql-client \
+    netcat-openbsd \
+ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+COPY . /app/
 
-ADD Pipfile /app/
-ADD Pipfile.lock /app/
+RUN pip install '.[test]'
 
-RUN apt-get update -qq && apt-get install -y default-mysql-client netcat-openbsd
-
-RUN pip install -U pip setuptools
-RUN pip install pipenv
-RUN pipenv install --dev --deploy --ignore-pipfile
-
-ADD wait-for-mysqld.sh /wait-for-mysqld.sh
-ADD appstart.sh /appstart.sh

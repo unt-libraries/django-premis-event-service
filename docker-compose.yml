@@ -1,4 +1,3 @@
-version: '2'
 services:
     db:
         image: mariadb:10.4
@@ -6,14 +5,8 @@ services:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_DATABASE=premis_local
 
-    base:
+    web:
         build: .
-        volumes:
-            - .:/app/
-
-    app:
-        extends:
-            service: base
         depends_on:
             - db
         environment:
@@ -24,32 +17,10 @@ services:
             - PES_DEBUG_TOOLBAR=on
             # Uncomment for query logging.
             # - PES_DBDEBUG=on
-        command: ./appstart.sh
+        volumes:
+            - .:/app/
+        command: bash appstart.sh
         ports:
-            - "8000:80"
+            - "8000:8000"
         links:
-            - db
-
-    test:
-        extends:
-            service: base
-        environment:
-            - DJANGO_SETTINGS_MODULE=tests.settings
-            - PES_BACKEND=mysql
-        entrypoint: pipenv run tox -c /app/tox.ini --skip-missing-interpreters true
-        links:
-            - db
-        depends_on:
-            - db
-
-    manage:
-        extends:
-            service: base
-        environment:
-            - DJANGO_SETTINGS_MODULE=tests.settings
-            - PES_BACKEND=mysql
-        entrypoint: pipenv run /app/manage.py
-        links:
-            - db
-        depends_on:
             - db

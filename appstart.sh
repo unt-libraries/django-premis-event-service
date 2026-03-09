@@ -1,6 +1,10 @@
 #!/bin/bash
-/wait-for-mysqld.sh
+while ! nc -z db 3306;
+do
+  echo "waiting for mysqld...";
+  sleep 3;
+done
 echo "Migrate..."
-pipenv run python manage.py migrate --settings=tests.settings
+python manage.py migrate
 echo "Start app..."
-pipenv run python manage.py runserver 0.0.0.0:80 --settings=tests.settings
+python manage.py runserver 0.0.0.0:8000
